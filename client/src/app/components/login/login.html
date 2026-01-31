@@ -1,0 +1,129 @@
+<div
+  class="vh-100 d-flex align-items-center justify-content-center bg-light"
+  style="background: radial-gradient(circle at top right, #e0f2fe 0%, #f8fafc 50%)"
+>
+  <div class="row w-100 max-width-1200 px-4">
+    <!-- Left Side: Hero content -->
+    <div class="col-lg-7 d-none d-lg-flex flex-column justify-content-center pe-5">
+      <div class="mb-4">
+        <div class="bg-primary rounded-4 p-3 d-inline-block shadow-lg mb-4">
+          <i class="bi bi-heart-pulse-fill text-white fs-1"></i>
+        </div>
+        <h1 class="display-4 fw-bold mb-3">
+          Tu Socio en <span class="gradient-text">Salud Digital</span>
+        </h1>
+        <p class="fs-5 text-muted mb-5 lh-lg">
+          Gestiona tu clínica con la plataforma más avanzada. Optimiza citas, historiales clínicos y
+          comunicación con pacientes de forma segura y eficiente.
+        </p>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="glass-morphism p-4 rounded-4 shadow-sm">
+            <i class="bi bi-shield-check text-primary fs-3 mb-2 d-block"></i>
+            <h5 class="fw-bold mb-1">Seguridad Total</h5>
+            <p class="small text-muted mb-0">
+              Protección de datos bajo estándares internacionales.
+            </p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="glass-morphism p-4 rounded-4 shadow-sm">
+            <i class="bi bi-whatsapp text-success fs-3 mb-2 d-block"></i>
+            <h5 class="fw-bold mb-1">Recordatorios</h5>
+            <p class="small text-muted mb-0">Automatiza avisos por WhatsApp a tus pacientes.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Side: Login Form -->
+    <div class="col-lg-5">
+      <div class="card-premium border-0 p-5 shadow-lg animate-fade-in">
+        <div class="text-center mb-5">
+          <h2 class="fw-bold">Iniciar Sesión</h2>
+          <p class="text-muted">Ingresa tus credenciales para acceder</p>
+        </div>
+
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+          <div *ngIf="error()" class="alert alert-danger small border-0 py-2 mb-4 animate-fade-in">
+            {{ error() }}
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label small fw-bold text-uppercase">Email</label>
+            <div class="input-group glass-morphism rounded-3 border">
+              <span class="input-group-text bg-transparent border-0"
+                ><i class="bi bi-envelope text-muted"></i
+              ></span>
+              <input
+                type="email"
+                formControlName="email"
+                class="form-control bg-transparent border-0 py-3 shadow-none"
+                placeholder="nombre@ejemplo.com"
+              />
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <div class="d-flex justify-content-between">
+              <label class="form-label small fw-bold text-uppercase">Contraseña</label>
+              <a href="#" class="small text-primary text-decoration-none"
+                >¿Olvidaste tu contraseña?</a
+              >
+            </div>
+            <div class="input-group glass-morphism rounded-3 border">
+              <span class="input-group-text bg-transparent border-0"
+                ><i class="bi bi-lock text-muted"></i
+              ></span>
+              <input
+                [type]="showPassword() ? 'text' : 'password'"
+                formControlName="password"
+                class="form-control bg-transparent border-0 py-3 shadow-none"
+                placeholder="••••••••"
+              />
+              <span
+                class="input-group-text bg-transparent border-0"
+                (click)="togglePasswordVisibility()"
+                ><i
+                  class="bi cursor-pointer"
+                  [ngClass]="showPassword() ? 'bi-eye' : 'bi-eye-slash'"
+                ></i
+              ></span>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            class="btn btn-primary-premium w-100 py-3 mb-4 mt-2 fs-5"
+            [disabled]="loginForm.invalid || loading()"
+          >
+            <span *ngIf="!loading()">Ingresar al Sistema</span>
+            <span *ngIf="loading()"
+              ><span class="spinner-border spinner-border-sm me-2"></span> Cargando...</span
+            >
+          </button>
+
+          <div class="text-center">
+            <p class="small text-muted">
+              ¿No tienes cuenta?
+              <a routerLink="/register" class="text-primary fw-bold text-decoration-none"
+                >Regístrate aquí</a
+              >
+            </p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .max-width-1200 {
+    max-width: 1200px;
+  }
+  .cursor-pointer {
+    cursor: pointer;
+  }
+</style>

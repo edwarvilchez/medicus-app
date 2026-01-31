@@ -1,0 +1,194 @@
+<div class="animate-fade-in">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="mb-1">Agendamiento de Citas</h2>
+      <p class="text-muted">Gestión de turnos médicos y disponibilidad</p>
+    </div>
+    <button class="btn btn-primary-premium shadow-sm" (click)="openNewAppointmentModal()">
+      <i class="bi bi-plus-circle-fill me-2"></i> Agendar Nueva Cita
+    </button>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-3">
+      <div class="card-premium border-0 p-4 mb-4">
+        <h6 class="fw-bold mb-3">Filtrar por Especialidad</h6>
+        <div class="d-grid gap-2 mb-4">
+          <button class="btn btn-light text-start active px-3">Todas</button>
+          <button class="btn btn-light text-start px-3">Cardiología</button>
+          <button class="btn btn-light text-start px-3">Pediatría</button>
+          <button class="btn btn-light text-start px-3">Ginecología</button>
+        </div>
+
+        <h6 class="fw-bold mb-3">Recordatorios WhatsApp</h6>
+        <div class="p-3 bg-success bg-opacity-10 border border-success border-opacity-25 rounded-3">
+          <div class="d-flex align-items-center gap-2 text-success mb-2">
+            <i class="bi bi-whatsapp"></i>
+            <span class="fw-bold small">Servicio Activo</span>
+          </div>
+          <p class="small text-muted mb-0">Se enviarán recordatorios automáticamente al agendar.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-9">
+      <div class="card-premium border-0 p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h5 class="fw-bold mb-0">Citas Agendadas</h5>
+          <div class="btn-group glass-morphism border rounded-3 overflow-hidden">
+            <button class="btn btn-light border-0">Día</button>
+            <button class="btn btn-light border-0">Semana</button>
+            <button class="btn btn-light border-0">Mes</button>
+          </div>
+        </div>
+
+        <div class="timeline" *ngIf="appointments().length > 0; else noAppointments">
+          <div
+            class="appointment-row d-flex gap-3 py-3 border-bottom animate-fade-in"
+            *ngFor="let appt of appointments()"
+          >
+            <div class="time fw-bold text-primary text-end" style="width: 100px">
+              {{ appt.date | date: 'shortTime' }}
+            </div>
+            <div
+              class="content flex-grow-1 p-3 rounded-4 bg-primary bg-opacity-10 border-start border-primary border-4"
+            >
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <h6 class="mb-1 fw-bold">{{ appt.reason }}</h6>
+                  <p class="small text-muted mb-0">
+                    <i class="bi bi-person me-1"></i> Paciente: {{ appt.Patient?.User?.firstName }}
+                    {{ appt.Patient?.User?.lastName }}
+                  </p>
+                  <p class="small text-muted mb-0">
+                    <i class="bi bi-person-badge me-1"></i> Doctor:
+                    {{ appt.Doctor?.User?.firstName }} {{ appt.Doctor?.User?.lastName }}
+                  </p>
+                </div>
+                <div class="text-end">
+                  <span class="badge rounded-pill mb-2" [ngClass]="getStatusClass(appt.status)">{{
+                    appt.status
+                  }}</span>
+                  <div class="text-success small fw-bold" *ngIf="appt.status === 'Confirmed'">
+                    <i class="bi bi-whatsapp"></i> Recordatorio enviado
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <ng-template #noAppointments>
+          <div class="text-center py-5">
+            <i class="bi bi-calendar-x text-muted mb-3" style="font-size: 3rem"></i>
+            <p class="text-muted">No hay citas agendadas para este periodo.</p>
+            <button
+              class="btn btn-outline-primary btn-sm rounded-pill px-4"
+              (click)="openNewAppointmentModal()"
+            >
+              Comienza agendando una aquí
+            </button>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for New Appointment (Basic Simulation) -->
+<div
+  class="modal fade"
+  [class.show]="showModal()"
+  [style.display]="showModal() ? 'block' : 'none'"
+  tabindex="-1"
+  style="background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px)"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 card-premium">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold">Nueva Cita Médica</h5>
+        <button type="button" class="btn-close shadow-none" (click)="closeModal()"></button>
+      </div>
+      <div class="modal-body p-4">
+        <form [formGroup]="appointmentForm" (ngSubmit)="submitAppointment()">
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-uppercase">Paciente</label>
+            <select
+              class="form-select glass-morphism border rounded-3 py-2"
+              formControlName="patientId"
+            >
+              <option value="">Selecciona un paciente</option>
+              <option *ngFor="let p of patients()" [value]="p.id">
+                {{ p.User.firstName }} {{ p.User.lastName }}
+              </option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-uppercase">Doctor / Especialidad</label>
+            <select
+              class="form-select glass-morphism border rounded-3 py-2"
+              formControlName="doctorId"
+            >
+              <option value="">Selecciona un doctor</option>
+              <option *ngFor="let d of doctors()" [value]="d.id">
+                {{ d.User.firstName }} {{ d.User.lastName }} - {{ d.Specialty?.name }}
+              </option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-uppercase">Fecha y Hora</label>
+            <input
+              type="datetime-local"
+              class="form-control glass-morphism border rounded-3 py-2"
+              formControlName="date"
+            />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-uppercase">Motivo de Consulta</label>
+            <input
+              type="text"
+              class="form-control glass-morphism border rounded-3 py-2"
+              formControlName="reason"
+              placeholder="Ej: Control Mensual"
+            />
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label small fw-bold text-uppercase">Observaciones (Opcional)</label>
+            <textarea
+              class="form-control glass-morphism border rounded-3 py-2"
+              formControlName="notes"
+              rows="2"
+            ></textarea>
+          </div>
+
+          <button
+            type="submit"
+            class="btn btn-primary-premium w-100 py-3"
+            [disabled]="appointmentForm.invalid || whatsappSending()"
+          >
+            <span *ngIf="!whatsappSending()">Confirmar Agendamiento</span>
+            <span *ngIf="whatsappSending()">
+              <i class="bi bi-whatsapp me-2"></i> Procesando y Enviando...
+            </span>
+          </button>
+
+          <p class="text-center small text-muted mt-3 mb-0">
+            Al confirmar, se enviará un mensaje automático de <br />
+            bienvenida y recordatorio por WhatsApp.
+          </p>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .btn-light.active {
+    background: var(--primary);
+    color: white;
+  }
+</style>

@@ -1,0 +1,57 @@
+<nav class="navbar navbar-expand-lg glass-morphism sticky-top py-3">
+  <div class="container-fluid px-4">
+    <a class="navbar-brand d-flex align-items-center" routerLink="/">
+      <div
+        class="bg-primary rounded-circle p-2 me-2 d-flex align-items-center justify-content-center"
+        style="width: 40px; height: 40px"
+      >
+        <i class="bi bi-heart-pulse-fill text-white fs-5"></i>
+      </div>
+      <span class="fw-bold fs-4 gradient-text">MEDICUS</span>
+    </a>
+
+    <button
+      class="navbar-toggler border-0 shadow-none"
+      type="button"
+      (click)="toggleSidebar.emit()"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarText">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-4">
+        <li class="nav-item">
+          <a class="nav-link px-3 fw-medium text-dark active" routerLink="/dashboard">Dashboard</a>
+        </li>
+      </ul>
+
+      <div class="d-flex align-items-center gap-3">
+        <div class="dropdown">
+          <button
+            class="btn border-0 d-flex align-items-center gap-2 p-1 px-3 glass-morphism rounded-pill shadow-sm"
+            type="button"
+            id="userMenu"
+          >
+            <img
+              [src]="
+                'https://ui-avatars.com/api/?name=' +
+                (authService.currentUser()?.firstName || 'User') +
+                '&background=0ea5e9&color=fff'
+              "
+              class="rounded-circle"
+              width="32"
+              alt="avatar"
+            />
+            <span class="fw-semibold small d-none d-md-inline">{{
+              authService.currentUser()?.firstName
+            }}</span>
+            <i class="bi bi-chevron-down small text-muted"></i>
+          </button>
+        </div>
+        <button class="btn btn-sm btn-outline-danger border-0 rounded-circle" (click)="logout()">
+          <i class="bi bi-box-arrow-right fs-5"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>

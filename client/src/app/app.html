@@ -1,0 +1,16 @@
+<div class="app-container">
+  <!-- Navbar visible except on login/register -->
+  <app-navbar *ngIf="!isAuthPage()" (toggleSidebar)="toggleSidebar()"></app-navbar>
+
+  <div class="app-body" [class.sidebar-open]="isSidebarOpen">
+    <!-- Overlay for mobile closing -->
+    <div *ngIf="isSidebarOpen" class="sidebar-overlay" (click)="closeSidebar()"></div>
+
+    <!-- Sidebar visible except on login/register -->
+    <app-sidebar *ngIf="!isAuthPage()"></app-sidebar>
+
+    <main class="main-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

@@ -1,0 +1,127 @@
+<div class="animate-fade-in">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="mb-1">Personal de Enfermería</h2>
+      <p class="text-muted">
+        Gestión de perfiles, turnos y especialidades del equipo de enfermería
+      </p>
+    </div>
+    <button class="btn btn-primary-premium" (click)="createNewNurse()">
+      <i class="bi bi-person-plus-fill me-2"></i> Nueva Enfermera/o
+    </button>
+  </div>
+
+  <div class="card-premium border-0 p-4 mb-4">
+    <div class="row g-3">
+      <div class="col-md-8">
+        <div class="input-group glass-morphism rounded-3 border">
+          <span class="input-group-text bg-transparent border-0"
+            ><i class="bi bi-search text-muted"></i
+          ></span>
+          <input
+            type="text"
+            class="form-control bg-transparent border-0 py-2 shadow-none"
+            placeholder="Buscar por nombre o especialización..."
+            [(ngModel)]="searchTerm"
+            [ngModelOptions]="{ standalone: true }"
+          />
+        </div>
+      </div>
+      <div class="col-md-2">
+        <select
+          class="form-select glass-morphism border rounded-3 py-2"
+          [(ngModel)]="shiftFilter"
+          [ngModelOptions]="{ standalone: true }"
+        >
+          <option value="all">Todos los turnos</option>
+          <option value="Mañana">Mañana</option>
+          <option value="Tarde">Tarde</option>
+          <option value="Noche">Noche</option>
+          <option value="Rotativo">Rotativo</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button class="btn btn-primary-premium w-100 py-2" (click)="toggleAdvancedFilters()">
+          <i class="bi bi-funnel me-1"></i> Filtros
+        </button>
+      </div>
+    </div>
+
+    <!-- Advanced Filters Panel -->
+    <div class="mt-3 p-3 bg-light rounded-3" *ngIf="showAdvancedFilters()">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="mb-0 fw-bold">Filtros Avanzados</h6>
+        <button class="btn btn-sm btn-outline-secondary" (click)="clearFilters()">
+          <i class="bi bi-x-circle me-1"></i> Limpiar Filtros
+        </button>
+      </div>
+      <div class="row g-2">
+        <div class="col-md-12">
+          <p class="text-muted small mb-0">
+            <i class="bi bi-info-circle me-1"></i>
+            Mostrando {{ filteredNurses().length }} de {{ nurses().length }} enfermeras/os
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-premium border-0 overflow-hidden">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="bg-light">
+          <tr>
+            <th class="ps-4 py-3">Enfermero/a</th>
+            <th>Especialización</th>
+            <th>Turno</th>
+            <th>Licencia</th>
+            <th class="text-end pe-4">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let nurse of filteredNurses()">
+            <td class="ps-4">
+              <div class="d-flex align-items-center gap-3">
+                <img
+                  [src]="
+                    'https://ui-avatars.com/api/?name=' +
+                    nurse.User.firstName +
+                    '+' +
+                    nurse.User.lastName
+                  "
+                  class="rounded-circle"
+                  width="35"
+                />
+                <div>
+                  <h6 class="mb-0 fw-bold">{{ nurse.User.firstName }} {{ nurse.User.lastName }}</h6>
+                  <span class="small text-muted">{{ nurse.User.email }}</span>
+                </div>
+              </div>
+            </td>
+            <td>{{ nurse.specialization }}</td>
+            <td>
+              <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3">{{
+                nurse.shift
+              }}</span>
+            </td>
+            <td>{{ nurse.licenseNumber }}</td>
+            <td class="text-end pe-4">
+              <button class="btn btn-sm btn-light border-0 me-1">
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button
+                class="btn btn-sm btn-light border-0 text-danger"
+                (click)="deleteNurse(nurse.id)"
+              >
+                <i class="bi bi-trash"></i>
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="filteredNurses().length === 0">
+            <td colspan="5" class="text-center py-4 text-muted">No se encontraron enfermeros</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,108 @@
+/* App Container - Fixed Viewport */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+}
+
+.app-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  height: calc(100vh - 70px);
+  max-height: calc(100vh - 70px);
+  position: relative; /* Contexto para overlay */
+}
+
+/* Sidebar Default (Desktop) */
+app-sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  transition: transform 0.3s ease, width 0.3s ease;
+  z-index: 1000;
+  background-color: #f8fafc; /* Asegurar fondo opaco */
+}
+
+/* Main Content */
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 1.5rem;
+  background-color: #f8fafc;
+  height: 100%;
+  width: 100%; /* Asegura que tome el ancho disponible */
+}
+
+/* RESPONSIVE DESIGN (Mobile/Tablet) */
+@media (max-width: 991.98px) {
+  /* Sidebar oculto por defecto */
+  app-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 280px;
+    transform: translateX(-100%);
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    background: white; 
+  }
+
+  /* Clase para abrir sidebar via TS */
+  .sidebar-open app-sidebar {
+    transform: translateX(0);
+  }
+
+  /* Overlay oscuro */
+  .sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 900;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .sidebar-open .sidebar-overlay {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+/* Smooth scrolling */
+.main-content {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+.main-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.main-content::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.main-content::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.main-content::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Ensure no overflow on any child */
+.main-content > * {
+  max-width: 100%;
+}

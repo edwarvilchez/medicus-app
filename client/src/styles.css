@@ -1,0 +1,200 @@
+/* Global Styles for Medicus */
+@import 'bootstrap/dist/css/bootstrap.min.css';
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --primary: #0ea5e9;
+  --primary-dark: #0284c7;
+  --secondary: #64748b;
+  --accent: #10b981;
+  --background: #f8fafc;
+  --surface: #ffffff;
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --border: #e2e8f0;
+  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --glass: rgba(255, 255, 255, 0.7);
+  --radius: 12px;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background-color: var(--background);
+  color: var(--text);
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Fixed viewport layout */
+html {
+  height: 100%;
+  overflow: hidden !important;
+}
+
+html, body {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+}
+
+app-root {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+}
+
+/* Main content area with scroll */
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100%;
+  max-height: 100vh;
+  padding: 1rem;
+  background-color: #f8fafc;
+}
+
+/* Remove any default margins/paddings that could cause scroll */
+* {
+  box-sizing: border-box;
+}
+
+.min-vh-100,
+.vh-100 {
+  height: 100vh !important;
+  max-height: 100vh !important;
+  overflow: hidden !important;
+}
+
+/* Compact spacing for no-scroll layout */
+.compact-header {
+  margin-bottom: 0.75rem !important;
+  padding-bottom: 0 !important;
+}
+
+.compact-header h1,
+.compact-header h2,
+.compact-header h3,
+.compact-header h4 {
+  margin-bottom: 0.25rem !important;
+}
+
+.compact-card {
+  margin-bottom: 0.75rem !important;
+  padding: 0.75rem !important;
+}
+
+.compact-table {
+  font-size: 0.875rem;
+}
+
+.compact-table th,
+.compact-table td {
+  padding: 0.4rem !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.card-premium {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  overflow: hidden;
+}
+
+.card-premium:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-primary-premium {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  border: none;
+  color: white;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-primary-premium:hover {
+  filter: brightness(1.1);
+  transform: scale(1.02);
+}
+
+.glass-morphism {
+  background: var(--glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+/* SweetAlert2 Custom Styles */
+.swal-no-overflow {
+  max-height: 90vh !important;
+  overflow: visible !important;
+}
+
+.swal-no-overflow .swal2-html-container {
+  max-height: none !important;
+  overflow: visible !important;
+  padding: 0.5rem 1rem !important;
+}
+
+.swal2-popup {
+  padding: 1.5rem !important;
+}
+
+.swal2-title {
+  font-size: 1.5rem !important;
+  padding: 0.5rem 0 !important;
+}
+
+.swal2-actions {
+  margin-top: 1rem !important;
+}

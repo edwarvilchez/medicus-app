@@ -1,0 +1,87 @@
+<div class="animate-fade-in">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="mb-1">Control de Pagos</h2>
+      <p class="text-muted">Gestión de facturación y estados de cuenta</p>
+    </div>
+    <button class="btn btn-primary-premium">
+      <i class="bi bi-plus-circle me-2"></i> Nuevo Pago
+    </button>
+  </div>
+
+  <div class="card-premium border-0 p-4 mb-4">
+    <div class="row g-3">
+      <div class="col-md-9">
+        <div class="input-group glass-morphism rounded-3 border">
+          <span class="input-group-text bg-transparent border-0"
+            ><i class="bi bi-search text-muted"></i
+          ></span>
+          <input
+            type="text"
+            class="form-control bg-transparent border-0 py-2 shadow-none"
+            placeholder="Buscar por referencia, paciente o concepto..."
+            [(ngModel)]="searchTerm"
+            [ngModelOptions]="{ standalone: true }"
+          />
+        </div>
+      </div>
+      <div class="col-md-3">
+        <button class="btn btn-primary-premium w-100 py-2">Exportar Reporte</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-premium border-0 overflow-hidden">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="bg-light">
+          <tr>
+            <th class="ps-4 py-3">Referencia</th>
+            <th>Paciente</th>
+            <th>Concepto</th>
+            <th>Monto</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+            <th class="text-end pe-4">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of filteredPayments()">
+            <td class="ps-4 fw-bold">#{{ p.reference || 'N/A' }}</td>
+            <td>{{ p.Patient?.User?.firstName }} {{ p.Patient?.User?.lastName }}</td>
+            <td>{{ p.concept }}</td>
+            <td class="fw-bold">${{ p.amount | number: '1.2-2' }}</td>
+            <td>{{ p.createdAt | date: 'shortDate' }}</td>
+            <td>
+              <span
+                class="badge rounded-pill px-3"
+                [ngClass]="
+                  p.status === 'Paid'
+                    ? 'bg-success bg-opacity-10 text-success'
+                    : 'bg-warning bg-opacity-10 text-warning'
+                "
+                >{{ p.status }}</span
+              >
+            </td>
+            <td class="text-end pe-4">
+              <button class="btn btn-sm btn-light border-0 me-1" title="Ver Recibo">
+                <i class="bi bi-file-earmark-text"></i>
+              </button>
+              <button
+                class="btn btn-sm btn-light border-0 text-success"
+                *ngIf="p.status === 'Pending'"
+                (click)="collectPayment(p.id)"
+                title="Cobrar"
+              >
+                <i class="bi bi-wallet2 me-1"></i> Cobrar
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="filteredPayments().length === 0">
+            <td colspan="7" class="text-center py-4 text-muted">No se encontraron pagos</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

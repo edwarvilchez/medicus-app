@@ -1,0 +1,201 @@
+<div class="animate-fade-in">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="mb-1">Historial del Paciente</h2>
+      <p class="text-muted">Registro detallado de consultas, tratamientos y evolución</p>
+    </div>
+  </div>
+
+  <div class="row g-4 mb-4" *ngIf="!patientId()">
+    <div class="col-12">
+      <div class="card-premium p-4 border-0 text-center">
+        <h5 class="mb-3">Selecciona un Paciente para ver su Historial</h5>
+        <div class="row g-2 justify-content-center">
+          <div class="col-md-3" *ngFor="let p of patients()">
+            <button class="btn glass-morphism w-100 p-3 rounded-4" (click)="selectPatient(p.id)">
+              <img
+                [src]="
+                  'https://ui-avatars.com/api/?name=' + p.User.firstName + '+' + p.User.lastName
+                "
+                class="rounded-circle mb-2"
+                width="50"
+              />
+              <h6 class="mb-0">{{ p.User.firstName }} {{ p.User.lastName }}</h6>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4" *ngIf="patientId()">
+    <div class="col-lg-4">
+      <div class="card-premium border-0 p-4 sticky-top" style="top: 100px">
+        <div class="text-center mb-4">
+          <img
+            [src]="
+              'https://ui-avatars.com/api/?name=' +
+              patient()?.User?.firstName +
+              '+' +
+              patient()?.User?.lastName +
+              '&size=128'
+            "
+            class="rounded-circle shadow-sm mb-3"
+          />
+          <h4 class="mb-1">{{ patient()?.User?.firstName }} {{ patient()?.User?.lastName }}</h4>
+          <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2"
+            >ID: {{ patient()?.documentId }}</span
+          >
+        </div>
+
+        <div class="border-top pt-4">
+          <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted small fw-bold text-uppercase">Teléfono</span>
+            <span class="fw-bold">{{ patient()?.phone }}</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted small fw-bold text-uppercase">Género</span>
+            <span class="fw-bold">{{ patient()?.gender }}</span>
+          </div>
+        </div>
+
+        <div class="d-grid gap-2 mt-4">
+          <button class="btn btn-primary-premium" (click)="openRecordModal()">
+            Nuevo Informe Médico
+          </button>
+          <button class="btn glass-morphism border" (click)="patientId.set('')">
+            Cambiar Paciente
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-8">
+      <ul class="nav nav-pills glass-morphism p-2 rounded-4 mb-4" id="pills-tab" role="tablist">
+        <li class="nav-item flex-grow-1" role="presentation">
+          <button class="nav-link active w-100 rounded-3 py-2 fw-medium" data-bs-toggle="pill">
+            Consultas
+          </button>
+        </li>
+        <li class="nav-item flex-grow-1" role="presentation">
+          <button class="nav-link w-100 rounded-3 py-2 fw-medium" data-bs-toggle="pill">
+            Laboratorio
+          </button>
+        </li>
+        <li class="nav-item flex-grow-1" role="presentation">
+          <button class="nav-link w-100 rounded-3 py-2 fw-medium" data-bs-toggle="pill">
+            Tratamientos
+          </button>
+        </li>
+      </ul>
+
+      <div class="medical-records-timeline">
+        <!-- Record Item -->
+        <div class="card-premium border-0 p-4 mb-4 animate-fade-in" *ngFor="let rec of records()">
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <div>
+              <span class="text-primary small fw-bold">{{
+                rec.createdAt | date: 'mediumDate'
+              }}</span>
+              <h5 class="fw-bold mt-1">
+                {{ rec.diagnosis }} - Dr. {{ rec.Doctor?.User?.lastName }}
+              </h5>
+            </div>
+            <button class="btn btn-light btn-sm rounded-circle">
+              <i class="bi bi-printer"></i>
+            </button>
+          </div>
+          <div class="bg-light p-3 rounded-4 mb-3" *ngIf="rec.physicalExam">
+            <h6 class="small fw-bold text-uppercase text-muted mb-2">Examen Físico</h6>
+            <p class="mb-0">{{ rec.physicalExam }}</p>
+          </div>
+          <div class="row g-3">
+            <div class="col-md-6" *ngIf="rec.treatment">
+              <h6 class="small fw-bold text-uppercase text-muted mb-2">Tratamiento</h6>
+              <p class="small mb-0">{{ rec.treatment }}</p>
+            </div>
+            <div class="col-md-6" *ngIf="rec.indications">
+              <h6 class="small fw-bold text-uppercase text-muted mb-2">Indicaciones</h6>
+              <p class="small mb-0">{{ rec.indications }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center py-5" *ngIf="records().length === 0">
+          <p class="text-muted">No hay registros médicos para este paciente.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for New Medical Record -->
+  <div
+    class="modal fade"
+    [class.show]="showRecordModal()"
+    [style.display]="showRecordModal() ? 'block' : 'none'"
+    tabindex="-1"
+    style="background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px)"
+  >
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content border-0 card-premium">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold">Nuevo Informe Médico</h5>
+          <button
+            type="button"
+            class="btn-close shadow-none"
+            (click)="showRecordModal.set(false)"
+          ></button>
+        </div>
+        <div class="modal-body p-4">
+          <form [formGroup]="recordForm" (ngSubmit)="submitRecord()">
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label class="form-label small fw-bold text-uppercase">Diagnóstico</label>
+                <textarea
+                  formControlName="diagnosis"
+                  class="form-control glass-morphism border rounded-3"
+                  rows="2"
+                  placeholder="Escribe el diagnóstico principal..."
+                ></textarea>
+              </div>
+              <div class="col-md-12 mb-3">
+                <label class="form-label small fw-bold text-uppercase">Examen Físico</label>
+                <textarea
+                  formControlName="physicalExam"
+                  class="form-control glass-morphism border rounded-3"
+                  rows="2"
+                  placeholder="Detalles del examen físico..."
+                ></textarea>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label small fw-bold text-uppercase">Tratamiento</label>
+                <textarea
+                  formControlName="treatment"
+                  class="form-control glass-morphism border rounded-3"
+                  rows="3"
+                  placeholder="Medicamentos y dosis..."
+                ></textarea>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label small fw-bold text-uppercase">Indicaciones</label>
+                <textarea
+                  formControlName="indications"
+                  class="form-control glass-morphism border rounded-3"
+                  rows="3"
+                  placeholder="Recomendaciones generales..."
+                ></textarea>
+              </div>
+            </div>
+            <button
+              type="submit"
+              class="btn btn-primary-premium w-100 py-3 mt-3"
+              [disabled]="recordForm.invalid"
+            >
+              Guardar Informe en Historial
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

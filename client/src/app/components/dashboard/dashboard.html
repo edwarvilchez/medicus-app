@@ -1,0 +1,271 @@
+<div class="row g-4">
+  <div class="col-12">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <div>
+        <h2 class="mb-1">Panel de Control</h2>
+        <p class="text-muted">
+          Bienvenido de nuevo,
+          <span class="fw-bold text-dark">
+            {{ authService.currentUser()?.firstName }} {{ authService.currentUser()?.lastName }}
+          </span>
+        </p>
+      </div>
+      <div class="d-flex gap-2">
+        <button
+          class="btn glass-morphism border-0 px-3 py-2 rounded-3 shadow-sm"
+          (click)="downloadDailyReport()"
+        >
+          <i class="bi bi-download me-2"></i> Reporte Diario
+        </button>
+        <button class="btn btn-primary-premium shadow-sm" (click)="goToNewAppointment()">
+          <i class="bi bi-plus-lg me-2"></i> Nueva Cita
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== -->
+  <!-- VISTA PARA PERSONAL (ADMIN / DOCTOR) -->
+  <!-- ======================== -->
+  <ng-container *ngIf="!authService.hasRole(['PATIENT'])">
+    <!-- Stats Cards -->
+    <div class="col-md-3">
+      <div class="card-premium p-4 border-0 h-100">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <p class="text-muted fw-medium mb-1">Citas Hoy</p>
+            <h3 class="mb-0">{{ stats().appointmentsToday }}</h3>
+            <span class="text-success small fw-bold"> Actualizado </span>
+          </div>
+          <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-4">
+            <i class="bi bi-calendar-check fs-4"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card-premium p-4 border-0 h-100">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <p class="text-muted fw-medium mb-1">Pacientes Totales</p>
+            <h3 class="mb-0">{{ stats().totalPatients }}</h3>
+            <span class="text-success small fw-bold"> En el sistema </span>
+          </div>
+          <div class="bg-success bg-opacity-10 text-success p-3 rounded-4">
+            <i class="bi bi-person-plus fs-4"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card-premium p-4 border-0 h-100">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <p class="text-muted fw-medium mb-1">Ingresos Mes</p>
+            <h3 class="mb-0">${{ stats().monthlyIncome | number: '1.2-2' }}</h3>
+            <span class="text-primary small fw-bold">Facturado</span>
+          </div>
+          <div class="bg-warning bg-opacity-10 text-warning p-3 rounded-4">
+            <i class="bi bi-currency-dollar fs-4"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card-premium p-4 border-0 h-100">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <p class="text-muted fw-medium mb-1 number-font">Consultas Pendientes</p>
+            <h3 class="mb-0">{{ stats().pendingAppointments }}</h3>
+            <span class="text-primary small fw-bold">Por atender</span>
+          </div>
+          <div class="bg-info bg-opacity-10 text-info p-3 rounded-4">
+            <i class="bi bi-clock-history fs-4"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts/Main Content Area -->
+    <div class="col-md-8">
+      <div class="card-premium h-100 p-4 border-0">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h5 class="mb-0">Actividad de Consultas</h5>
+          <select class="form-select border-0 bg-light w-auto small">
+            <option>Últimos 7 días</option>
+            <option>Últimos 30 días</option>
+          </select>
+        </div>
+        <div class="chart-container" style="position: relative; height: 300px; width: 100%">
+          <canvas baseChart [data]="barChartData" [options]="barChartOptions" [type]="barChartType">
+          </canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card-premium h-100 p-4 border-0">
+        <h5 class="mb-4">Próximas Citas</h5>
+        <div class="d-grid gap-3">
+          <!-- Admin View of Appointments -->
+          <div
+            *ngFor="let apt of stats().upcomingAppointments"
+            class="d-flex align-items-center gap-3 p-2 rounded-3 bg-light bg-opacity-50"
+          >
+            <div
+              class="avatar-circle bg-primary bg-opacity-10 text-primary fw-bold"
+              style="
+                width: 45px;
+                height: 45px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+              "
+            >
+              {{ apt.patient.name.charAt(0) }}
+            </div>
+            <div class="flex-grow-1">
+              <h6 class="mb-0 small fw-bold">{{ apt.patient.name }}</h6>
+              <p class="text-muted small mb-0">
+                {{ apt.doctor.specialty }} - {{ formatTime(apt.time) }}
+              </p>
+            </div>
+            <button
+              class="btn btn-sm btn-light rounded-circle shadow-sm"
+              [routerLink]="['/appointments']"
+            >
+              <i class="bi bi-chevron-right small"></i>
+            </button>
+          </div>
+          <!-- Empty state -->
+          <div *ngIf="stats().upcomingAppointments?.length === 0" class="text-center py-4">
+            <i class="bi bi-calendar-x text-muted fs-1 mb-2"></i>
+            <p class="text-muted small mb-0">No hay citas programadas</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- ======================== -->
+  <!-- VISTA PARA PACIENTE (SIMPLIFICADA) -->
+  <!-- ======================== -->
+  <ng-container *ngIf="authService.hasRole(['PATIENT'])">
+    <div class="col-md-8">
+      <div class="card-premium h-100 p-4 border-0">
+        <h5 class="mb-4 text-primary">Mis Próximas Citas Médicas</h5>
+
+        <div *ngIf="stats().upcomingAppointments?.length > 0; else noAppointments">
+          <div class="d-grid gap-3">
+            <div
+              *ngFor="let apt of stats().upcomingAppointments"
+              class="d-flex align-items-center gap-3 p-3 rounded-4 bg-white shadow-sm border"
+            >
+              <!-- Icono Doctor -->
+              <div
+                class="bg-primary bg-opacity-10 text-primary rounded-4 p-3 d-flex align-items-center justify-content-center"
+                style="width: 60px; height: 60px"
+              >
+                <i class="bi bi-person-fill-add fs-3"></i>
+              </div>
+
+              <div class="flex-grow-1">
+                <h6 class="mb-1 fw-bold text-dark">{{ apt.doctor.name }}</h6>
+                <div class="d-flex flex-wrap gap-3 text-muted small">
+                  <span
+                    ><i class="bi bi-bandaid me-1 text-primary"></i>
+                    {{ apt.doctor.specialty }}</span
+                  >
+                  <span
+                    ><i class="bi bi-calendar-event me-1 text-primary"></i>
+                    {{ apt.date | date: 'dd MMM yyyy' }}</span
+                  >
+                  <span
+                    ><i class="bi bi-clock me-1 text-primary"></i> {{ formatTime(apt.time) }}</span
+                  >
+                </div>
+              </div>
+
+              <!-- Status Badge -->
+              <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">
+                Confirmada
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <ng-template #noAppointments>
+          <div class="text-center py-5">
+            <div class="bg-light rounded-circle p-4 d-inline-block mb-3">
+              <i class="bi bi-calendar-heart text-muted fs-1"></i>
+            </div>
+            <h5>No tienes citas programadas</h5>
+            <p class="text-muted mb-4">Agenda una nueva consulta para cuidar tu salud.</p>
+            <button class="btn btn-primary-premium px-4" (click)="goToNewAppointment()">
+              <i class="bi bi-plus-lg me-2"></i> Agendar Cita
+            </button>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+
+    <!-- Accesos Rápidos Paciente -->
+    <div class="col-md-4">
+      <div class="row g-4">
+        <div class="col-12">
+          <div
+            class="card-premium p-4 border-0 bg-primary text-white"
+            style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)"
+          >
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h4 class="fw-bold mb-1">Nueva Cita</h4>
+                <p class="text-white text-opacity-75 mb-3 small">
+                  Programa tu próxima visita médica fácilmente.
+                </p>
+                <button
+                  class="btn btn-light text-primary fw-medium rounded-pill px-4 shadow-sm"
+                  (click)="goToNewAppointment()"
+                >
+                  Agendar Ahora
+                </button>
+              </div>
+              <i class="bi bi-calendar-plus fs-1 text-white text-opacity-25"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="card-premium p-4 border-0">
+            <h6 class="fw-bold mb-3">Mis Resultados</h6>
+            <div
+              class="d-flex align-items-center justify-content-between p-3 rounded-3 bg-light cursor-pointer hover-scale transition"
+              [routerLink]="['/lab-results']"
+            >
+              <div class="d-flex align-items-center gap-3">
+                <div class="bg-warning bg-opacity-10 text-warning p-2 rounded-3">
+                  <i class="bi bi-file-earmark-medical fs-5"></i>
+                </div>
+                <div>
+                  <p class="mb-0 fw-bold small">Laboratorio</p>
+                  <p class="text-muted small mb-0">Ver exámenes recientes</p>
+                </div>
+              </div>
+              <i class="bi bi-chevron-right text-muted small"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+
+<style>
+  .border-dashed {
+    border: 2px dashed #e2e8f0;
+  }
+</style>
