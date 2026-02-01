@@ -20,7 +20,10 @@
 
       <div class="row g-4">
         <div class="col-md-6">
-          <div class="glass-morphism p-4 rounded-4 shadow-sm">
+          <div
+            class="glass-morphism p-4 rounded-4 shadow-sm cursor-pointer hover-scale transition-all"
+            (click)="showSecurityLaws()"
+          >
             <i class="bi bi-shield-check text-primary fs-3 mb-2 d-block"></i>
             <h5 class="fw-bold mb-1">Seguridad Total</h5>
             <p class="small text-muted mb-0">
@@ -29,7 +32,10 @@
           </div>
         </div>
         <div class="col-md-6">
-          <div class="glass-morphism p-4 rounded-4 shadow-sm">
+          <div
+            class="glass-morphism p-4 rounded-4 shadow-sm cursor-pointer hover-scale transition-all"
+            (click)="checkReminders()"
+          >
             <i class="bi bi-whatsapp text-success fs-3 mb-2 d-block"></i>
             <h5 class="fw-bold mb-1">Recordatorios</h5>
             <p class="small text-muted mb-0">Automatiza avisos por WhatsApp a tus pacientes.</p>

@@ -2,6 +2,18 @@
 
 Todas las modificaciones notables del proyecto serán documentadas en este archivo.
 
+## [1.2.7] - 2026-02-01
+
+### 🚀 Interactividad en Login y Soporte Legal
+
+#### Pantalla de Inicio de Sesión
+
+- ✅ **Seguridad Total Activa**: El botón ahora despliega un listado detallado de las leyes y estándares internacionales (ISO 27001, ISO 9001, GDPR, HIPAA) que protegen la aplicación.
+- ✅ **Recordatorios Inteligentes**: Implementada la lógica para el botón de recordatorios, informando al usuario sobre el requisito de tener una cita activa y estar autenticado para recibirlos vía WhatsApp.
+- ✅ **Feedback Visual**: Añadidas animaciones y estados hover (`hover-scale`) a las tarjetas informativas de la página de login.
+
+---
+
 ## [1.2.6] - 2026-02-01
 
 ### 🔐 Funcionalidad y Control de Acceso

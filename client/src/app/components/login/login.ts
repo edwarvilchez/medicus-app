@@ -62,4 +62,44 @@ export class Login {
       });
     }
   }
+  showSecurityLaws() {
+    Swal.fire({
+      title: 'Protección y Blindaje Legal',
+      html: `
+        <div class="text-start">
+          <p>Medicus cumple con los más altos estándares internacionales:</p>
+          <ul class="list-group list-group-flush mb-0 small">
+            <li class="list-group-item bg-transparent px-0 border-0">
+              <i class="bi bi-shield-check text-primary me-2"></i><strong>ISO/IEC 27001:</strong> Gestión de Seguridad de la Información.
+            </li>
+            <li class="list-group-item bg-transparent px-0 border-0">
+              <i class="bi bi-award text-success me-2"></i><strong>ISO 9001:</strong> Gestión de Calidad en procesos.
+            </li>
+            <li class="list-group-item bg-transparent px-0 border-0">
+              <i class="bi bi-globe text-info me-2"></i><strong>GDPR:</strong> Reglamento General de Protección de Datos (EU).
+            </li>
+            <li class="list-group-item bg-transparent px-0 border-0">
+              <i class="bi bi-file-earmark-medical text-warning me-2"></i><strong>HIPAA:</strong> Estándares de privacidad para salud.
+            </li>
+          </ul>
+        </div>
+      `,
+      icon: 'info',
+      confirmButtonText: 'Entendido',
+      confirmButtonColor: '#0ea5e9'
+    });
+  }
+
+  checkReminders() {
+    Swal.fire({
+      title: 'Servicio de Recordatorios',
+      text: 'El sistema envía recordatorios automáticos vía WhatsApp para todas las citas confirmadas. Por seguridad, debes iniciar sesión para verificar si tienes una cita activa con recordatorio programado.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Ir al Formulario',
+      cancelButtonText: 'Cerrar',
+      confirmButtonColor: '#0ea5e9',
+      cancelButtonColor: '#64748b'
+    });
+  }
 }
