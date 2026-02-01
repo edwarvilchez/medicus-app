@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { LanguageService } from '../../services/language.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -15,11 +16,13 @@ import Swal from 'sweetalert2';
 export class Register {
   registerForm: FormGroup;
   loading = false;
+  currentYear = new Date().getFullYear();
 
   constructor(
     private fb: FormBuilder,
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    public langService: LanguageService
   ) {
     this.registerForm = this.fb.group({
       // User data

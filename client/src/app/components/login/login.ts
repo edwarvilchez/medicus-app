@@ -17,6 +17,7 @@ export class Login {
   loginForm: FormGroup;
   loading = signal(false);
   error = signal('');
+  currentYear = new Date().getFullYear();
 
   constructor(
     private fb: FormBuilder,

@@ -1,4 +1,6 @@
-<div class="min-vh-100 d-flex align-items-center justify-content-center bg-theme-gradient py-4">
+<div
+  class="min-vh-100 d-flex align-items-center justify-content-center bg-theme-gradient py-4 position-relative"
+>
   <div class="row w-100 max-width-1200 px-4">
     <!-- Left Side: Hero content -->
     <div class="col-lg-7 d-none d-lg-flex flex-column justify-content-center pe-5">
@@ -131,6 +133,48 @@
             </p>
           </div>
         </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer fixed at bottom -->
+  <div
+    class="position-absolute bottom-0 w-100 py-3 bg-white bg-opacity-50 backdrop-blur"
+    style="backdrop-filter: blur(10px)"
+  >
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-6 text-center text-md-start">
+          <p class="mb-0 text-muted small">
+            &copy; {{ currentYear }} Medicus. {{ langService.translate('footer.rights') }}
+          </p>
+          <small class="gradient-text fw-bold">{{ langService.translate('footer.devLove') }}</small>
+        </div>
+        <div class="col-md-6 text-center text-md-end mt-2 mt-md-0">
+          <div class="social-links d-flex justify-content-center justify-content-md-end gap-3">
+            <a
+              href="#"
+              class="social-icon instagram"
+              title="Instagram"
+              style="width: 28px; height: 28px; font-size: 0.9rem"
+              ><i class="bi bi-instagram"></i
+            ></a>
+            <a
+              href="#"
+              class="social-icon facebook"
+              title="Facebook"
+              style="width: 28px; height: 28px; font-size: 0.9rem"
+              ><i class="bi bi-facebook"></i
+            ></a>
+            <a
+              href="#"
+              class="social-icon tiktok"
+              title="TikTok"
+              style="width: 28px; height: 28px; font-size: 0.9rem"
+              ><i class="bi bi-tiktok"></i
+            ></a>
+          </div>
+        </div>
       </div>
     </div>
   </div>
