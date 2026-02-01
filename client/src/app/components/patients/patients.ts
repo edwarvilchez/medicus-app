@@ -4,6 +4,7 @@ import { RouterModule, Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { LanguageService } from '../../services/language.service';
 
 @Component({
   selector: 'app-patients',
@@ -34,7 +35,11 @@ export class Patients implements OnInit {
     });
   });
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    public langService: LanguageService
+  ) {}
 
   ngOnInit() {
     this.loadPatients();

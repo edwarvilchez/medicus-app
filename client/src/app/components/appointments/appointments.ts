@@ -5,6 +5,7 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } 
 import { AppointmentService } from '../../services/appointment.service';
 import { HttpClient } from '@angular/common/http';
 import Swal from 'sweetalert2';
+import { LanguageService } from '../../services/language.service';
 
 @Component({
   selector: 'app-appointments',
@@ -26,7 +27,8 @@ export class Appointments implements OnInit {
   constructor(
     private appointmentService: AppointmentService,
     private http: HttpClient,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    public langService: LanguageService
   ) {
     this.appointmentForm = this.fb.group({
       patientId: ['', Validators.required],

@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { LanguageService } from '../../services/language.service';
 
 @Component({
   selector: 'app-doctors',
@@ -13,11 +14,11 @@ import Swal from 'sweetalert2';
     <div class="h-100">
       <div class="d-flex justify-content-between align-items-center compact-header">
         <div>
-          <h4 class="mb-1">Equipo Médico</h4>
-          <p class="text-muted small mb-0">Directorio de doctores y especialistas</p>
+          <h4 class="mb-1">{{ langService.translate('doctors.title') }}</h4>
+          <p class="text-muted small mb-0">{{ langService.translate('doctors.subtitle') }}</p>
         </div>
         <button class="btn btn-primary-premium btn-sm" (click)="createNewDoctor()">
-          <i class="bi bi-person-plus-fill me-2"></i> Nuevo Doctor
+          <i class="bi bi-person-plus-fill me-2"></i> {{ langService.translate('doctors.new') }}
         </button>
       </div>
 
@@ -31,7 +32,7 @@ import Swal from 'sweetalert2';
               <input 
                 type="text" 
                 class="form-control bg-transparent border-0 py-1 shadow-none" 
-                placeholder="Buscar por nombre o especialidad..." 
+                [placeholder]="langService.translate('doctors.searchPlaceholder')" 
                 [(ngModel)]="searchTerm" 
                 [ngModelOptions]="{standalone: true}">
             </div>
@@ -41,7 +42,7 @@ import Swal from 'sweetalert2';
               class="form-select glass-morphism border rounded-3 py-1"
               [(ngModel)]="specialtyFilter"
               [ngModelOptions]="{standalone: true}">
-              <option value="all">Todas las especialidades</option>
+              <option value="all">{{ langService.translate('doctors.allSpecialties') }}</option>
               <option *ngFor="let specialty of specialties()" [value]="specialty.id">
                 {{ specialty.name }}
               </option>
@@ -68,19 +69,19 @@ import Swal from 'sweetalert2';
             <p class="text-primary small fw-bold mb-2">{{ doctor.Specialty?.name || 'Especialista' }}</p>
             
             <div class="d-flex justify-content-center gap-2 mb-2">
-              <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1" style="font-size: 0.75rem;">Disponible</span>
+              <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1" style="font-size: 0.75rem;">{{ langService.translate('doctors.available') }}</span>
               <span class="badge bg-light text-muted rounded-pill px-2 py-1" style="font-size: 0.75rem;">Lic: {{ doctor.licenseNumber }}</span>
             </div>
 
             <div class="d-grid gap-1">
-              <button class="btn btn-light rounded-pill py-1 border-0 btn-sm">Ver Perfil</button>
-              <button class="btn btn-primary-premium rounded-pill py-1 btn-sm">Agendar</button>
+              <button class="btn btn-light rounded-pill py-1 border-0 btn-sm">{{ langService.translate('doctors.viewProfile') }}</button>
+              <button class="btn btn-primary-premium rounded-pill py-1 btn-sm">{{ langService.translate('doctors.schedule') }}</button>
             </div>
           </div>
         </div>
         
         <div class="col-12 text-center py-4" *ngIf="filteredDoctors().length === 0">
-          <p class="text-muted">No se encontraron doctores con esos criterios.</p>
+          <p class="text-muted">{{ langService.translate('doctors.noResults') }}</p>
         </div>
       </div>
     </div>
@@ -110,7 +111,10 @@ export class Doctors implements OnInit {
     });
   });
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    public langService: LanguageService
+  ) {}
 
   ngOnInit() {
     this.loadDoctors();

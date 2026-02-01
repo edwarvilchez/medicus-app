@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import Swal from 'sweetalert2';
 import { LabPdfService } from '../../services/lab-pdf.service';
+import { LanguageService } from '../../services/language.service';
 import { LabReport, HEMATOLOGY_STRUCTURE, CHEMISTRY_STRUCTURE } from './lab-report.model';
 
 @Component({
@@ -50,7 +51,10 @@ export class LabResults implements OnInit {
     }
   ]);
 
-  constructor(private pdfService: LabPdfService) {}
+  constructor(
+    private pdfService: LabPdfService,
+    public langService: LanguageService
+  ) {}
 
   ngOnInit() {
     // Aquí cargaríamos los datos reales del servicio

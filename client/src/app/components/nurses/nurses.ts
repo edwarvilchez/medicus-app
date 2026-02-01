@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { LanguageService } from '../../services/language.service';
 
 @Component({
   selector: 'app-nurses',
@@ -34,7 +35,10 @@ export class Nurses implements OnInit {
     });
   });
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    public langService: LanguageService
+  ) {}
 
   ngOnInit() {
     this.loadNurses();

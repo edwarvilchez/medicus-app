@@ -107,7 +107,87 @@ export class LanguageService {
           appointments: 'Citas Hoy',
           income: 'Ingresos Mes',
           pending: 'Pendientes'
+        },
+        reminderSent: 'Recordatorio enviado',
+        active: 'Activo'
+      },
+      specialties: {
+        all: 'Todas',
+        cardiology: 'Cardiología',
+        pediatrics: 'Pediatría',
+        gynecology: 'Ginecología'
+      },
+      nurses: {
+        title: 'Personal de Enfermería',
+        subtitle: 'Gestión de perfiles, turnos y especialidades del equipo de enfermería',
+        new: 'Nueva Enfermera/o',
+        searchPlaceholder: 'Buscar por nombre o especialización...',
+        allShifts: 'Todos los turnos',
+        filters: 'Filtros',
+        table: {
+          nurse: 'Enfermero/a',
+          specialty: 'Especialización',
+          shift: 'Turno',
+          license: 'Licencia'
+        },
+        noResults: 'No se encontraron enfermeros'
+      },
+      lab: {
+        title: 'Laboratorio',
+        subtitle: 'Gestión de resultados y exámenes médicos',
+        new: 'Nuevo Resultado',
+        searchPlaceholder: 'Buscar por paciente...',
+        examType: 'Tipo de Examen',
+        table: {
+          patient: 'PACIENTE',
+          exam: 'TIPO EXAMEN',
+          date: 'FECHA'
         }
+      },
+      patients_list: {
+        title: 'Pacientes',
+        subtitle: 'Gestiona el padrón de pacientes de la clínica',
+        new: 'Nuevo Paciente',
+        searchPlaceholder: 'Buscar por nombre, apellido o ID...',
+        allGenders: 'Todos los géneros',
+        table: {
+          patient: 'Paciente',
+          document: 'ID / Documento',
+          gender: 'Género',
+          phone: 'Teléfono'
+        }
+      },
+      appointments_list: {
+        title: 'Agendamiento de Citas',
+        subtitle: 'Gestión de turnos médicos y disponibilidad',
+        new: 'Agendar Nueva Cita',
+        filterSpecialty: 'Filtrar por Especialidad',
+        all: 'Todas',
+        whatsappService: 'Recordatorios WhatsApp',
+        serviceActive: 'Servicio Activo',
+        whatsappDesc: 'Se enviarán recordatorios automáticamente al agendar.',
+        scheduled: 'Citas Agendadas',
+        tabs: {
+          day: 'Día',
+          week: 'Semana',
+          month: 'Mes'
+        },
+        doctorSpecialty: 'Doctor / Especialidad',
+        time: 'Hora',
+        reason: 'Motivo de Consulta',
+        reasonPlaceholder: 'Ej: Control Mensual',
+        notes: 'Observaciones (Opcional)'
+      },
+      doctors: {
+        title: 'Equipo Médico',
+        subtitle: 'Directorio de doctores y especialistas',
+        new: 'Nuevo Doctor',
+        searchPlaceholder: 'Buscar por nombre o especialidad...',
+        allSpecialties: 'Todas las especialidades',
+        noResults: 'No se encontraron doctores con esos criterios.',
+        viewProfile: 'Ver Perfil',
+        schedule: 'Agendar',
+        available: 'Disponible'
       }
     },
     en: {
@@ -205,7 +285,87 @@ export class LanguageService {
           appointments: 'Today\'s Appointments',
           income: 'Month Revenue',
           pending: 'Pending'
+        },
+        reminderSent: 'Reminder sent',
+        active: 'Active'
+      },
+      specialties: {
+        all: 'All',
+        cardiology: 'Cardiology',
+        pediatrics: 'Pediatrics',
+        gynecology: 'Gynecology'
+      },
+      nurses: {
+        title: 'Nursing Staff',
+        subtitle: 'Profile, shift, and specialty management of the nursing team',
+        new: 'New Nurse',
+        searchPlaceholder: 'Search by name or specialty...',
+        allShifts: 'All shifts',
+        filters: 'Filters',
+        table: {
+          nurse: 'Nurse',
+          specialty: 'Specialty',
+          shift: 'Shift',
+          license: 'License'
+        },
+        noResults: 'No nurses found'
+      },
+      lab: {
+        title: 'Laboratory',
+        subtitle: 'Medical results and exams management',
+        new: 'New Result',
+        searchPlaceholder: 'Search by patient...',
+        examType: 'Exam Type',
+        table: {
+          patient: 'PATIENT',
+          exam: 'EXAM TYPE',
+          date: 'DATE'
         }
+      },
+      patients_list: {
+        title: 'Patients',
+        subtitle: 'Manage the clinic patient database',
+        new: 'New Patient',
+        searchPlaceholder: 'Search by name, last name or ID...',
+        allGenders: 'All genders',
+        table: {
+          patient: 'Patient',
+          document: 'ID / Documento',
+          gender: 'Gender',
+          phone: 'Phone'
+        }
+      },
+      appointments_list: {
+        title: 'Appointment Scheduling',
+        subtitle: 'Medical shifts and availability management',
+        new: 'Schedule New Appointment',
+        filterSpecialty: 'Filter by Specialty',
+        all: 'All',
+        whatsappService: 'WhatsApp Reminders',
+        serviceActive: 'Service Active',
+        whatsappDesc: 'Reminders will be sent automatically when scheduling.',
+        scheduled: 'Scheduled Appointments',
+        tabs: {
+          day: 'Day',
+          week: 'Week',
+          month: 'Month'
+        },
+        doctorSpecialty: 'Doctor / Specialty',
+        time: 'Time',
+        reason: 'Reason for Visit',
+        reasonPlaceholder: 'e.g. Monthly Checkup',
+        notes: 'Notes (Optional)'
+      },
+      doctors: {
+        title: 'Medical Team',
+        subtitle: 'Directory of doctors and specialists',
+        new: 'New Doctor',
+        searchPlaceholder: 'Search by name or specialty...',
+        allSpecialties: 'All specialties',
+        noResults: 'No doctors found with those criteria.',
+        viewProfile: 'View Profile',
+        schedule: 'Schedule',
+        available: 'Available'
       }
     }
   };

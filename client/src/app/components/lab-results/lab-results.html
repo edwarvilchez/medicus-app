@@ -2,11 +2,11 @@
   <!-- Header -->
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-      <h2 class="fw-bold mb-1">Laboratorio</h2>
-      <p class="text-muted">Gestión de resultados y exámenes médicos</p>
+      <h2 class="fw-bold mb-1">{{ langService.translate('lab.title') }}</h2>
+      <p class="text-muted">{{ langService.translate('lab.subtitle') }}</p>
     </div>
     <button class="btn btn-primary-premium shadow-sm" (click)="uploadResult()">
-      <i class="bi bi-cloud-upload me-2"></i> Nuevo Resultado
+      <i class="bi bi-cloud-upload me-2"></i> {{ langService.translate('lab.new') }}
     </button>
   </div>
 
@@ -21,14 +21,14 @@
           <input
             type="text"
             class="form-control bg-transparent border-0 shadow-none"
-            placeholder="Buscar por paciente..."
+            [placeholder]="langService.translate('lab.searchPlaceholder')"
             [formControl]="searchControl"
           />
         </div>
       </div>
       <div class="col-md-3">
         <select class="form-select glass-morphism border rounded-3 py-2 text-muted">
-          <option value="">Tipo de Examen</option>
+          <option value="">{{ langService.translate('lab.examType') }}</option>
           <option value="Sangre">Hematología</option>
           <option value="Orina">Uroanálisis</option>
           <option value="Imagen">Imagenología</option>
@@ -36,7 +36,7 @@
       </div>
       <div class="col-md-3">
         <select class="form-select glass-morphism border rounded-3 py-2 text-muted">
-          <option value="">Estado</option>
+          <option value="">{{ langService.translate('common.status') }}</option>
           <option value="Completado">Completado</option>
           <option value="Pendiente">Pendiente</option>
         </select>
@@ -52,11 +52,21 @@
           <table class="table table-hover align-middle mb-0">
             <thead class="bg-light">
               <tr>
-                <th class="ps-4 py-3 text-muted text-uppercase small fw-bold">Paciente</th>
-                <th class="py-3 text-muted text-uppercase small fw-bold">Tipo Examen</th>
-                <th class="py-3 text-muted text-uppercase small fw-bold">Fecha</th>
-                <th class="py-3 text-muted text-uppercase small fw-bold">Estado</th>
-                <th class="pe-4 py-3 text-end text-muted text-uppercase small fw-bold">Acciones</th>
+                <th class="ps-4 py-3 text-muted text-uppercase small fw-bold">
+                  {{ langService.translate('lab.table.patient') }}
+                </th>
+                <th class="py-3 text-muted text-uppercase small fw-bold">
+                  {{ langService.translate('lab.table.exam') }}
+                </th>
+                <th class="py-3 text-muted text-uppercase small fw-bold">
+                  {{ langService.translate('lab.table.date') }}
+                </th>
+                <th class="py-3 text-muted text-uppercase small fw-bold">
+                  {{ langService.translate('common.status') }}
+                </th>
+                <th class="pe-4 py-3 text-end text-muted text-uppercase small fw-bold">
+                  {{ langService.translate('common.actions') }}
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -105,14 +115,14 @@
                 <td class="pe-4 py-3 text-end">
                   <button
                     class="btn btn-sm btn-light text-primary me-2 rounded-3"
-                    title="Ver Detalles"
+                    [title]="langService.translate('common.actions')"
                     (click)="viewResult(result)"
                   >
                     <i class="bi bi-eye"></i>
                   </button>
                   <button
                     class="btn btn-sm btn-light text-secondary rounded-3"
-                    title="Descargar PDF"
+                    [title]="langService.translate('common.printing')"
                     (click)="downloadResult(result)"
                   >
                     <i class="bi bi-download"></i>
@@ -127,9 +137,9 @@
                     <div class="bg-light rounded-circle p-4 mb-3">
                       <i class="bi bi-file-earmark-medical text-muted fs-1"></i>
                     </div>
-                    <h5 class="text-muted mb-1">Sin Resultados</h5>
+                    <h5 class="text-muted mb-1">{{ langService.translate('common.noResults') }}</h5>
                     <p class="text-muted small mb-0">
-                      No hay exámenes de laboratorio registrados aún.
+                      {{ langService.translate('common.noResults') }}
                     </p>
                   </div>
                 </td>
