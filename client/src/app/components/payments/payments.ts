@@ -41,6 +41,71 @@ export class Payments implements OnInit {
       .subscribe(data => this.payments.set(data));
   }
 
+  createNewPayment() {
+    // Primero cargamos los pacientes para el selector
+    this.http.get<any[]>('http://localhost:5000/api/patients', { headers: this.getHeaders() })
+      .subscribe(patients => {
+        Swal.fire({
+          title: 'Emitir Nuevo Pago',
+          html: `
+            <div class="text-start">
+              <div class="mb-3">
+                <label class="form-label small fw-bold mb-1">Paciente</label>
+                <select id="patientId" class="form-select form-select-sm">
+                  ${patients.map(p => `<option value="${p.id}">${p.User.firstName} ${p.User.lastName} (${p.documentId})</option>`).join('')}
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label small fw-bold mb-1">Concepto / Servicio</label>
+                <input id="concept" class="form-control form-control-sm" placeholder="Ej: Consulta General, Examen...">
+              </div>
+              <div class="row g-2">
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold mb-1">Monto ($)</label>
+                  <input id="amount" type="number" class="form-control form-control-sm" placeholder="0.00">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold mb-1">Referencia</label>
+                  <input id="reference" class="form-control form-control-sm" placeholder="REF-XXXXX">
+                </div>
+              </div>
+            </div>
+          `,
+          showCancelButton: true,
+          confirmButtonText: 'Generar Recibo',
+          cancelButtonText: 'Cancelar',
+          confirmButtonColor: '#0ea5e9',
+          cancelButtonColor: '#64748b',
+          preConfirm: () => {
+            const patientId = (document.getElementById('patientId') as HTMLSelectElement).value;
+            const concept = (document.getElementById('concept') as HTMLInputElement).value;
+            const amount = (document.getElementById('amount') as HTMLInputElement).value;
+            const reference = (document.getElementById('reference') as HTMLInputElement).value;
+
+            if (!patientId || !concept || !amount) {
+              Swal.showValidationMessage('Paciente, concepto y monto son obligatorios');
+              return false;
+            }
+
+            return { patientId, concept, amount, reference, status: 'Pending' };
+          }
+        }).then(result => {
+          if (result.isConfirmed) {
+            this.http.post('http://localhost:5000/api/payments', result.value, { headers: this.getHeaders() })
+              .subscribe({
+                next: () => {
+                  this.loadPayments();
+                  Swal.fire('¡Generado!', 'El pago ha sido registrado como pendiente.', 'success');
+                },
+                error: (err) => {
+                  Swal.fire('Error', err.error?.message || 'No se pudo generar el pago', 'error');
+                }
+              });
+          }
+        });
+      });
+  }
+
   collectPayment(id: string) {
     Swal.fire({
       title: '¿Confirmar cobro?',

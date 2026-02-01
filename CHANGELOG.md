@@ -2,6 +2,18 @@
 
 Todas las modificaciones notables del proyecto serán documentadas en este archivo.
 
+## [1.2.9] - 2026-02-01
+
+### 💰 Gestión Financiera Activa
+
+#### Módulo de Pagos
+
+- ✅ **Emisión de Pagos**: Implementada la funcionalidad para crear nuevos cobros desde la interfaz, con selector de pacientes e integración de conceptos y montos.
+- ✅ **Flujo de Cobro**: Mejora en la interacción para marcar pagos como "Pagados" mediante SweetAlert2.
+- ✅ **Datos Operacionales**: Inyección de datos de prueba para validación de flujos financieros y reportes.
+
+---
+
 ## [1.2.8] - 2026-02-01
 
 ### 🛠️ Mejoras de Usabilidad y Navegación
