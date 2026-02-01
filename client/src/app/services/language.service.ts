@@ -57,7 +57,16 @@ export class LanguageService {
         nurses: 'Enfermería',
         administration: 'ADMINISTRACIÓN',
         staff: 'Personal Staff',
-        payments: 'Pagos'
+        payments: 'Pagos',
+        bank: 'Banco',
+        instrument: 'Tipo de Pago',
+        method: 'Método',
+        cash: 'Efectivo',
+        transfer: 'Transferencia',
+        mobile: 'Pago Móvil',
+        debit: 'Débito',
+        credit: 'Crédito',
+        currency: 'Moneda'
       },
       landing: {
         title: 'Tu Socio en',
@@ -130,7 +139,16 @@ export class LanguageService {
         nurses: 'Nursing',
         administration: 'ADMINISTRATION',
         staff: 'Staff Members',
-        payments: 'Payments'
+        payments: 'Payments',
+        bank: 'Bank',
+        instrument: 'Payment Type',
+        method: 'Method',
+        cash: 'Cash',
+        transfer: 'Transfer',
+        mobile: 'Mobile Payment',
+        debit: 'Debit Card',
+        credit: 'Credit Card',
+        currency: 'Currency'
       },
       landing: {
         title: 'Your Partner in',

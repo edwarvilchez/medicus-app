@@ -2,6 +2,20 @@
 
 Todas las modificaciones notables del proyecto serán documentadas en este archivo.
 
+## [1.5.0] - 2026-02-01
+
+### 🏦 Gestión Financiera Avanzada
+
+#### Instrumentos de Pago y Bancos
+
+- ✅ **Detalle de Transacción**: Añadida la opción de registrar el banco de origen y el instrumento de pago (Transferencia, Pago Móvil, Débito, Crédito).
+- ✅ **Soporte de Efectivo Dual**: Implementada la capacidad de registrar pagos en efectivo directamente en **$ (Dólares)** o **Bs. (Bolívares)** con conversión automática a la moneda base.
+- ✅ **Registro Directo**: Nueva opción para marcar un pago como "Pagado" en el momento de su emision, ideal para cobros en taquilla.
+- ✅ **Recibos Enriquecidos**: Los comprobantes de pago ahora muestran el banco y el método utilizado para una mejor trazabilidad.
+- ✅ **Interfaz Dinámica**: El formulario de pago ahora oculta campos irrelevantes (como banco o referencia) cuando se selecciona "Efectivo".
+
+---
+
 ## [1.4.2] - 2026-02-01
 
 ### 🎨 Simplificación Visual

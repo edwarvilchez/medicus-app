@@ -52,38 +52,74 @@ export class Payments implements OnInit {
   }
 
   createNewPayment() {
-    // Primero cargamos los pacientes para el selector
     this.http.get<any[]>('http://localhost:5000/api/patients', { headers: this.getHeaders() })
       .subscribe(patients => {
+        const patientOptions = patients.map(p => 
+          `<option value="${p.id}">${p.User.firstName} ${p.User.lastName} (${p.documentId || 'N/A'})</option>`
+        ).join('');
+
         Swal.fire({
-          title: 'Emitir Nuevo Pago',
+          title: this.langService.translate('payments.newPayment'),
           html: `
             <div class="text-start">
               <div class="mb-3">
-                <label class="form-label small fw-bold mb-1">Paciente</label>
+                <label class="form-label small fw-bold mb-1">${this.langService.translate('payments.patient')}</label>
                 <select id="patientId" class="form-select form-select-sm">
-                  ${patients.map(p => `<option value="${p.id}">${p.User.firstName} ${p.User.lastName} (${p.documentId})</option>`).join('')}
+                  ${patientOptions}
                 </select>
               </div>
               <div class="mb-3">
-                <label class="form-label small fw-bold mb-1">Concepto / Servicio</label>
-                <input id="concept" class="form-control form-control-sm" placeholder="Ej: Consulta General, Examen...">
+                <label class="form-label small fw-bold mb-1">${this.langService.translate('payments.concept')}</label>
+                <input id="concept" class="form-control form-control-sm" placeholder="${this.langService.translate('common.search')}">
               </div>
-              <div class="row g-2">
+              
+              <div class="row g-2 mb-3">
                 <div class="col-md-6">
-                  <label class="form-label small fw-bold mb-1">Monto ($)</label>
-                  <input id="amount" type="number" class="form-control form-control-sm" placeholder="0.00">
+                  <label class="form-label small fw-bold mb-1">${this.langService.translate('sidebar.instrument')}</label>
+                  <select id="instrument" class="form-select form-select-sm" onchange="const b = document.getElementById('bankGrp'); const r = document.getElementById('refGrp'); if(this.value === 'Efectivo'){ b.classList.add('d-none'); r.classList.add('d-none'); } else { b.classList.remove('d-none'); r.classList.remove('d-none'); }">
+                    <option value="Efectivo">${this.langService.translate('sidebar.cash')}</option>
+                    <option value="Transferencia">${this.langService.translate('sidebar.transfer')}</option>
+                    <option value="Pago Móvil">${this.langService.translate('sidebar.mobile')}</option>
+                    <option value="Débito">${this.langService.translate('sidebar.debit')}</option>
+                    <option value="Crédito">${this.langService.translate('sidebar.credit')}</option>
+                  </select>
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label small fw-bold mb-1">Referencia</label>
+                  <label class="form-label small fw-bold mb-1">${this.langService.translate('sidebar.currency')}</label>
+                  <select id="payCurrency" class="form-select form-select-sm">
+                    <option value="USD">USD ($)</option>
+                    <option value="VES">VES (Bs.)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="mb-3 d-none" id="bankGrp">
+                <label class="form-label small fw-bold mb-1">${this.langService.translate('sidebar.bank')}</label>
+                <input id="bank" class="form-control form-control-sm" placeholder="Ej: Banesco, Mercantil...">
+              </div>
+
+              <div class="row g-2">
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold mb-1">${this.langService.translate('payments.amount')}</label>
+                  <input id="amount" type="number" class="form-control form-control-sm" placeholder="0.00">
+                </div>
+                <div class="col-md-6 d-none" id="refGrp">
+                  <label class="form-label small fw-bold mb-1">${this.langService.translate('payments.reference')}</label>
                   <input id="reference" class="form-control form-control-sm" placeholder="REF-XXXXX">
+                </div>
+              </div>
+
+              <div class="mt-3">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="markAsPaid">
+                  <label class="form-check-label small" for="markAsPaid">${this.langService.translate('payments.paid')}</label>
                 </div>
               </div>
             </div>
           `,
           showCancelButton: true,
-          confirmButtonText: 'Generar Recibo',
-          cancelButtonText: 'Cancelar',
+          confirmButtonText: this.langService.translate('payments.newPayment'),
+          cancelButtonText: this.langService.translate('common.cancel'),
           confirmButtonColor: '#0ea5e9',
           cancelButtonColor: '#64748b',
           preConfirm: () => {
@@ -91,13 +127,30 @@ export class Payments implements OnInit {
             const concept = (document.getElementById('concept') as HTMLInputElement).value;
             const amount = (document.getElementById('amount') as HTMLInputElement).value;
             const reference = (document.getElementById('reference') as HTMLInputElement).value;
+            const instrument = (document.getElementById('instrument') as HTMLSelectElement).value;
+            const bank = (document.getElementById('bank') as HTMLInputElement).value;
+            const currency = (document.getElementById('payCurrency') as HTMLSelectElement).value;
+            const isPaid = (document.getElementById('markAsPaid') as HTMLInputElement).checked;
 
             if (!patientId || !concept || !amount) {
-              Swal.showValidationMessage('Paciente, concepto y monto son obligatorios');
+              Swal.showValidationMessage(this.langService.translate('common.error'));
               return false;
             }
 
-            return { patientId, concept, amount, reference, status: 'Pending' };
+            let finalAmount = parseFloat(amount);
+            if (currency === 'VES') {
+                finalAmount = finalAmount / this.currencyService.rate();
+            }
+
+            return { 
+                patientId, 
+                concept, 
+                amount: finalAmount, 
+                reference, 
+                instrument, 
+                bank,
+                status: isPaid ? 'Paid' : 'Pending' 
+            };
           }
         }).then(result => {
           if (result.isConfirmed) {
@@ -105,10 +158,10 @@ export class Payments implements OnInit {
               .subscribe({
                 next: () => {
                   this.loadPayments();
-                  Swal.fire('¡Generado!', 'El pago ha sido registrado como pendiente.', 'success');
+                  Swal.fire(this.langService.translate('common.success'), '', 'success');
                 },
                 error: (err) => {
-                  Swal.fire('Error', err.error?.message || 'No se pudo generar el pago', 'error');
+                  Swal.fire(this.langService.translate('common.error'), err.error?.message || 'Error', 'error');
                 }
               });
           }
@@ -158,6 +211,12 @@ export class Payments implements OnInit {
           </div>
           <div class="d-flex justify-content-between mb-2">
             <strong>${this.langService.translate('payments.fecha')}:</strong> <span>${new Date(payment.createdAt).toLocaleDateString()}</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2" *ngIf="payment.instrument">
+            <strong>${this.langService.translate('sidebar.instrument')}:</strong> <span>${payment.instrument}</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2" *ngIf="payment.bank">
+            <strong>${this.langService.translate('sidebar.bank')}:</strong> <span>${payment.bank}</span>
           </div>
           <div class="d-flex justify-content-between">
             <strong>${this.langService.translate('common.status')}:</strong> 

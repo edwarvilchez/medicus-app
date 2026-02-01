@@ -24,6 +24,12 @@ const Payment = sequelize.define('Payment', {
   },
   concept: {
     type: DataTypes.STRING
+  },
+  bank: {
+    type: DataTypes.STRING
+  },
+  instrument: {
+    type: DataTypes.STRING
   }
 });
 
