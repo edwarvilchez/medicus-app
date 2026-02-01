@@ -37,7 +37,8 @@ export class Register {
       gender: ['', Validators.required],
       address: [''],
       bloodType: [''],
-      allergies: ['']
+      allergies: [''],
+      acceptTerms: [false, Validators.requiredTrue]
     }, { validators: this.passwordMatchValidator });
   }
 

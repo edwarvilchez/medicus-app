@@ -171,6 +171,31 @@ Para garantizar la estabilidad y funcionalidad, se han implementado scripts de m
 
 ---
 
+---
+
+## 🛡️ 7. Seguridad y Cumplimiento (Compliance)
+
+El sistema ha sido arquitectado bajo pilares de seguridad robustos, alineándose con estándares internacionales:
+
+### **1. ISO/IEC 27001 (Seguridad de la Información)**
+
+- **Confidencialidad**: Encriptación de datos sensibles y transporte vía HTTPS.
+- **Integridad**: Validación de esquemas en base de datos y sanitización de inputs.
+- **Disponibilidad**: Arquitectura desacoplada lista para escalado horizontal.
+
+### **2. GDPR / RGPD (Protección de Datos)**
+
+- **Consentimiento Explícito**: Formulario de registro con aceptación de términos.
+- **Privacidad por Diseño**: Acceso a datos médicos limitado estrictamente por roles de usuario.
+- **Transparencia**: Notificaciones claras sobre el uso y tratamiento de la información personal.
+
+### **3. ISO 9001:2015 (Gestión de Calidad)**
+
+- **Enfoque en el Usuario**: Dashboards diferenciados para optimizar la experiencia del paciente y del clínico.
+- **Mantenimiento Preventivo**: Scripts de utilería para integridad de bases de datos y estabilidad del sistema.
+
+---
+
 ## 🚀 Despliegue y Ejecución
 
 **Requisitos**: Node.js v18+, Base de datos SQL.

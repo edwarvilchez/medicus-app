@@ -2,6 +2,19 @@
 
 Todas las modificaciones notables del proyecto serán documentadas en este archivo.
 
+## [1.2.4] - 2026-02-01
+
+### 🛡️ Cumplimiento y Protección Legal
+
+#### Estándares Internacionales (Compliance)
+
+- ✅ **ISO 27001 & ISO 9001**: Actualización de la arquitectura y documentación para alinearse con estándares de Seguridad de la Información y Gestión de Calidad.
+- ✅ **GDPR / RGPD**: Implementación de consentimiento explícito en el registro para la protección de datos personales.
+- ✅ **Registro de Usuario**: Añadido checkbox de aceptación de términos con mención explícita a normas internacionales para blindaje legal.
+- ✅ **Documentación Técnica**: Actualización de `ARCHITECTURE.md` y `README.md` con las nuevas políticas de seguridad y cumplimiento.
+
+---
+
 ## [1.2.3] - 2026-02-01
 
 ### 🎉 Estabilidad y Ajustes de Layout

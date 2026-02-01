@@ -2,7 +2,7 @@
 
 Sistema completo de gestión para clínicas médicas desarrollado con Angular y Node.js.
 
-![Version](https://img.shields.io/badge/version-1.2.3-blue.svg)
+![Version](https://img.shields.io/badge/version-1.2.4-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
 ## 📋 Características Principales
@@ -46,6 +46,15 @@ Sistema completo de gestión para clínicas médicas desarrollado con Angular y 
 - ✅ Formularios optimizados sin scroll
 - ✅ Animaciones suaves
 - ✅ Modo oscuro (próximamente)
+
+## 🛡️ Estándares y Cumplimiento Internacional
+
+Medicus está diseñado siguiendo los más altos estándares internacionales para garantizar la seguridad de la información y la calidad del servicio:
+
+- 🔒 **ISO/IEC 27001**: Implementamos controles de seguridad de la información para proteger la confidencialidad, integridad y disponibilidad de los datos médicos.
+- 💎 **ISO 9001:2015**: Procesos orientados a la gestión de calidad y mejora continua de la experiencia del paciente y doctor.
+- 🇪🇺 **GDPR (RGPD)**: Cumplimiento estricto del Reglamento General de Protección de Datos, asegurando el derecho a la privacidad, acceso y olvido de los usuarios.
+- ⚖️ **Protección Legal Internacional**: Uso de marcos legales vigentes para la protección de propiedad intelectual y datos sensibles.
 
 ## 🚀 Tecnologías
 
