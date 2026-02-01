@@ -2,6 +2,17 @@
 
 Todas las modificaciones notables del proyecto serán documentadas en este archivo.
 
+## [1.2.8] - 2026-02-01
+
+### 🛠️ Mejoras de Usabilidad y Navegación
+
+#### Sidebar (Navegación Lateral)
+
+- ✅ **Scroll Interno**: Se ha habilitado el desplazamiento vertical en la barra lateral para asegurar el acceso a todas las secciones administrativas y médicas en pantallas de menor resolución.
+- ✅ **Estilo Premium**: Aplicada la clase `custom-scrollbar` para mantener la coherencia visual con el resto de la aplicación.
+
+---
+
 ## [1.2.7] - 2026-02-01
 
 ### 🚀 Interactividad en Login y Soporte Legal
