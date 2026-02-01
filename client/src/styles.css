@@ -284,6 +284,25 @@ h6 {
   background: #000000;
 }
 
+.app-footer-auth {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  width: 100%;
+  z-index: 10;
+  position: relative;
+}
+
+.animate-bounce-subtle {
+  transition: all 0.3s ease;
+}
+
+.animate-bounce-subtle:hover {
+  transform: translateY(-2px);
+  background-color: var(--primary);
+  color: white;
+}
+
 .main-content {
   display: flex;
   flex-direction: column;

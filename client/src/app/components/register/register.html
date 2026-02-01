@@ -1,371 +1,377 @@
 <div
-  class="min-vh-100 d-flex align-items-start justify-content-center bg-light py-4 position-relative"
+  class="min-vh-100 d-flex flex-column"
   style="background: radial-gradient(circle at top right, #e0f2fe 0%, #f8fafc 50%)"
 >
-  <div class="row w-100 max-width-1200 px-4 my-0">
-    <!-- Left Side: Hero content -->
-    <div class="col-lg-5 d-none d-lg-flex flex-column justify-content-center pe-5">
-      <div class="mb-4">
-        <div class="bg-primary rounded-4 p-3 d-inline-block shadow-lg mb-4">
-          <i class="bi bi-heart-pulse-fill text-white fs-1"></i>
+  <!-- Main Content Wrapper -->
+  <div class="flex-grow-1 d-flex align-items-start justify-content-center py-5">
+    <div class="row w-100 max-width-1200 px-4 my-0">
+      <!-- Left Side: Hero content -->
+      <div class="col-lg-5 d-none d-lg-flex flex-column justify-content-center pe-5">
+        <div class="mb-4">
+          <div class="bg-primary rounded-4 p-3 d-inline-block shadow-lg mb-4">
+            <i class="bi bi-heart-pulse-fill text-white fs-1"></i>
+          </div>
+          <h1 class="h1 fw-bold mb-3">Únete a <br /><span class="gradient-text">Medicus</span></h1>
+          <p class="fs-5 text-muted mb-4">
+            Crea tu cuenta y accede a la <br />mejor plataforma de gestión clínica.
+          </p>
         </div>
-        <h1 class="h1 fw-bold mb-3">Únete a <br /><span class="gradient-text">Medicus</span></h1>
-        <p class="fs-5 text-muted mb-4">
-          Crea tu cuenta y accede a la <br />mejor plataforma de gestión clínica.
-        </p>
-      </div>
 
-      <div class="row g-3">
-        <div class="col-12 col-xl-10">
-          <div
-            class="glass-morphism p-3 rounded-4 shadow-sm cursor-pointer hover-scale transition-all"
-            routerLink="/agendar-cita"
-          >
-            <div class="d-flex align-items-center gap-3">
-              <i class="bi bi-calendar-check text-primary fs-3"></i>
-              <div>
-                <h6 class="fw-bold mb-0">Agenda Fácil</h6>
-                <p class="small text-muted mb-0">Reserva tus citas médicas en segundos.</p>
+        <div class="row g-3">
+          <div class="col-12 col-xl-10">
+            <div
+              class="glass-morphism p-3 rounded-4 shadow-sm cursor-pointer hover-scale transition-all"
+              routerLink="/agendar-cita"
+            >
+              <div class="d-flex align-items-center gap-3">
+                <i class="bi bi-calendar-check text-primary fs-3"></i>
+                <div>
+                  <h6 class="fw-bold mb-0">Agenda Fácil</h6>
+                  <p class="small text-muted mb-0">Reserva tus citas médicas en segundos.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-xl-10">
+            <div
+              class="glass-morphism p-3 rounded-4 shadow-sm cursor-pointer hover-scale transition-all"
+              (click)="viewHistory()"
+            >
+              <div class="d-flex align-items-center gap-3">
+                <i class="bi bi-file-medical text-success fs-3"></i>
+                <div>
+                  <h6 class="fw-bold mb-0">Historial Digital</h6>
+                  <p class="small text-muted mb-0">
+                    Accede a tu historial médico desde cualquier lugar.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="col-12 col-xl-10">
-          <div
-            class="glass-morphism p-3 rounded-4 shadow-sm cursor-pointer hover-scale transition-all"
-            (click)="viewHistory()"
-          >
-            <div class="d-flex align-items-center gap-3">
-              <i class="bi bi-file-medical text-success fs-3"></i>
-              <div>
-                <h6 class="fw-bold mb-0">Historial Digital</h6>
-                <p class="small text-muted mb-0">
-                  Accede a tu historial médico desde cualquier lugar.
+      </div>
+
+      <!-- Right Side: Register Form -->
+      <div class="col-lg-7">
+        <div class="card-premium border-0 p-3 shadow-lg animate-fade-in">
+          <div class="text-center mb-3">
+            <!-- Branding -->
+            <div class="d-flex align-items-center justify-content-center gap-2 mb-1">
+              <div class="bg-primary rounded-3 p-1.5 d-inline-flex">
+                <i class="bi bi-heart-pulse-fill text-white" style="font-size: 1rem"></i>
+              </div>
+              <h2 class="fw-bold mb-0 text-primary" style="font-size: 1.3rem">MEDICUS</h2>
+            </div>
+            <p class="fw-bold mb-0">Crear Cuenta</p>
+            <p class="text-muted x-small mb-0">Completa el formulario para registrarte</p>
+          </div>
+
+          <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+            <!-- Scrollable Fields Container -->
+            <div
+              style="max-height: 60vh; overflow-y: auto; overflow-x: hidden; padding: 0.5rem 0.2rem"
+              class="custom-scrollbar px-1 mb-2"
+            >
+              <!-- Username & Email -->
+              <div class="row g-2 mb-2">
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold mb-1">Usuario</label>
+                  <input
+                    type="text"
+                    class="form-control glass-morphism border rounded-3 py-1.5"
+                    formControlName="username"
+                    placeholder="usuario123"
+                  />
+                  <small
+                    class="text-danger"
+                    *ngIf="
+                      registerForm.get('username')?.touched && registerForm.get('username')?.invalid
+                    "
+                  >
+                    {{ getErrorMessage('username') }}
+                  </small>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold mb-1">Email</label>
+                  <input
+                    type="email"
+                    class="form-control glass-morphism border rounded-3 py-1.5"
+                    formControlName="email"
+                    placeholder="correo@ejemplo.com"
+                  />
+                  <small
+                    class="text-danger"
+                    *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.invalid"
+                  >
+                    {{ getErrorMessage('email') }}
+                  </small>
+                </div>
+              </div>
+
+              <!-- Password & Confirm -->
+              <div class="row g-2 mb-2">
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold mb-1">Contraseña</label>
+                  <input
+                    type="password"
+                    class="form-control glass-morphism border rounded-3 py-1.5"
+                    formControlName="password"
+                    placeholder="••••••••"
+                  />
+                  <small
+                    class="text-danger"
+                    *ngIf="
+                      registerForm.get('password')?.touched && registerForm.get('password')?.invalid
+                    "
+                  >
+                    {{ getErrorMessage('password') }}
+                  </small>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold mb-1">Confirmar</label>
+                  <input
+                    type="password"
+                    class="form-control glass-morphism border rounded-3 py-1.5"
+                    formControlName="confirmPassword"
+                    placeholder="••••••••"
+                  />
+                  <small
+                    class="text-danger"
+                    *ngIf="
+                      registerForm.get('confirmPassword')?.touched &&
+                      registerForm.get('confirmPassword')?.invalid
+                    "
+                  >
+                    {{ getErrorMessage('confirmPassword') }}
+                  </small>
+                </div>
+              </div>
+
+              <!-- First & Last Name -->
+              <div class="row g-2 mb-2">
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold mb-1">Nombre</label>
+                  <input
+                    type="text"
+                    class="form-control glass-morphism border rounded-3 py-1.5"
+                    formControlName="firstName"
+                    placeholder="Juan"
+                  />
+                  <small
+                    class="text-danger"
+                    *ngIf="
+                      registerForm.get('firstName')?.touched &&
+                      registerForm.get('firstName')?.invalid
+                    "
+                  >
+                    {{ getErrorMessage('firstName') }}
+                  </small>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold mb-1">Apellido</label>
+                  <input
+                    type="text"
+                    class="form-control glass-morphism border rounded-3 py-1.5"
+                    formControlName="lastName"
+                    placeholder="Pérez"
+                  />
+                  <small
+                    class="text-danger"
+                    *ngIf="
+                      registerForm.get('lastName')?.touched && registerForm.get('lastName')?.invalid
+                    "
+                  >
+                    {{ getErrorMessage('lastName') }}
+                  </small>
+                </div>
+              </div>
+
+              <!-- Document & Phone -->
+              <div class="row g-2 mb-2">
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold mb-1">Cédula</label>
+                  <input
+                    type="text"
+                    class="form-control glass-morphism border rounded-3 py-1.5"
+                    formControlName="documentId"
+                    placeholder="V-12345678"
+                  />
+                  <small
+                    class="text-danger"
+                    *ngIf="
+                      registerForm.get('documentId')?.touched &&
+                      registerForm.get('documentId')?.invalid
+                    "
+                  >
+                    {{ getErrorMessage('documentId') }}
+                  </small>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold mb-1">
+                    <i class="bi bi-whatsapp text-success me-1"></i>Teléfono
+                  </label>
+                  <input
+                    type="tel"
+                    class="form-control glass-morphism border rounded-3 py-1.5"
+                    formControlName="phone"
+                    placeholder="+58 424-1234567"
+                  />
+                  <small
+                    class="text-danger"
+                    *ngIf="registerForm.get('phone')?.touched && registerForm.get('phone')?.invalid"
+                  >
+                    {{ getErrorMessage('phone') }}
+                  </small>
+                </div>
+              </div>
+
+              <!-- Birth Date & Gender -->
+              <div class="row g-2 mb-2">
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold mb-1">Fecha Nacimiento</label>
+                  <input
+                    type="date"
+                    class="form-control glass-morphism border rounded-3 py-1.5"
+                    formControlName="birthDate"
+                  />
+                  <small
+                    class="text-danger"
+                    *ngIf="
+                      registerForm.get('birthDate')?.touched &&
+                      registerForm.get('birthDate')?.invalid
+                    "
+                  >
+                    {{ getErrorMessage('birthDate') }}
+                  </small>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold mb-1">Género</label>
+                  <select
+                    class="form-select glass-morphism border rounded-3 py-1.5"
+                    formControlName="gender"
+                  >
+                    <option value="">Seleccionar...</option>
+                    <option value="Male">Masculino</option>
+                    <option value="Female">Femenino</option>
+                    <option value="Other">Otro</option>
+                  </select>
+                  <small
+                    class="text-danger"
+                    *ngIf="
+                      registerForm.get('gender')?.touched && registerForm.get('gender')?.invalid
+                    "
+                  >
+                    {{ getErrorMessage('gender') }}
+                  </small>
+                </div>
+              </div>
+
+              <!-- Optional Fields (Collapsed) -->
+              <div class="mb-2">
+                <label class="form-label small fw-bold mb-1">Dirección (Opcional)</label>
+                <input
+                  type="text"
+                  class="form-control glass-morphism border rounded-3 py-2"
+                  formControlName="address"
+                  placeholder="Calle, ciudad, estado..."
+                />
+              </div>
+
+              <div class="row g-2 mb-3">
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold mb-1">Tipo Sangre (Opcional)</label>
+                  <select
+                    class="form-select glass-morphism border rounded-3 py-1.5"
+                    formControlName="bloodType"
+                  >
+                    <option value="">Seleccionar...</option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                  </select>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold mb-1">Alergias (Opcional)</label>
+                  <input
+                    type="text"
+                    class="form-control glass-morphism border rounded-3 py-1.5"
+                    formControlName="allergies"
+                    placeholder="Penicilina, Polen..."
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Compliance & Transparency Checkbox -->
+            <div class="mb-3 px-1">
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="acceptTerms"
+                  formControlName="acceptTerms"
+                />
+                <label class="form-check-label x-small text-muted lh-sm" for="acceptTerms">
+                  Acepto los términos y la política de privacidad. Mis datos serán tratados bajo los
+                  estándares
+                  <span class="fw-bold text-primary">ISO 27001</span> (Seguridad),
+                  <span class="fw-bold text-success">ISO 9001</span> (Calidad) y el cumplimiento de
+                  la <span class="fw-bold text-info">GDPR</span> (Protección de Datos
+                  Internacional).
+                </label>
+              </div>
+              <small
+                class="text-danger x-small d-block mt-1"
+                *ngIf="
+                  registerForm.get('acceptTerms')?.touched &&
+                  registerForm.get('acceptTerms')?.invalid
+                "
+              >
+                Debes aceptar los términos para continuar.
+              </small>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="d-grid gap-2 mt-2">
+              <button type="submit" class="btn btn-primary-premium py-2" [disabled]="loading">
+                <span *ngIf="!loading">
+                  <i class="bi bi-person-plus-fill me-2"></i>Crear Cuenta
+                </span>
+                <span *ngIf="loading">
+                  <span class="spinner-border spinner-border-sm me-2"></span>
+                  Registrando...
+                </span>
+              </button>
+
+              <div class="text-center">
+                <p class="text-muted mb-0 small">
+                  ¿Ya tienes una cuenta?
+                  <a routerLink="/login" class="text-primary fw-bold text-decoration-none">
+                    Inicia Sesión
+                  </a>
                 </p>
               </div>
             </div>
-          </div>
+          </form>
         </div>
-      </div>
-    </div>
-
-    <!-- Right Side: Register Form -->
-    <div class="col-lg-7">
-      <div class="card-premium border-0 p-3 shadow-lg animate-fade-in">
-        <div class="text-center mb-3">
-          <!-- Branding -->
-          <div class="d-flex align-items-center justify-content-center gap-2 mb-1">
-            <div class="bg-primary rounded-3 p-1.5 d-inline-flex">
-              <i class="bi bi-heart-pulse-fill text-white" style="font-size: 1rem"></i>
-            </div>
-            <h2 class="fw-bold mb-0 text-primary" style="font-size: 1.3rem">MEDICUS</h2>
-          </div>
-          <p class="fw-bold mb-0">Crear Cuenta</p>
-          <p class="text-muted x-small mb-0">Completa el formulario para registrarte</p>
-        </div>
-
-        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-          <!-- Scrollable Fields Container -->
-          <div
-            style="max-height: 62vh; overflow-y: auto; overflow-x: hidden; padding: 0.5rem 0.2rem"
-            class="custom-scrollbar px-1 mb-2"
-          >
-            <!-- Username & Email -->
-            <div class="row g-2 mb-2">
-              <div class="col-md-6">
-                <label class="form-label small fw-bold mb-1">Usuario</label>
-                <input
-                  type="text"
-                  class="form-control glass-morphism border rounded-3 py-1.5"
-                  formControlName="username"
-                  placeholder="usuario123"
-                />
-                <small
-                  class="text-danger"
-                  *ngIf="
-                    registerForm.get('username')?.touched && registerForm.get('username')?.invalid
-                  "
-                >
-                  {{ getErrorMessage('username') }}
-                </small>
-              </div>
-
-              <div class="col-md-6">
-                <label class="form-label small fw-bold mb-1">Email</label>
-                <input
-                  type="email"
-                  class="form-control glass-morphism border rounded-3 py-1.5"
-                  formControlName="email"
-                  placeholder="correo@ejemplo.com"
-                />
-                <small
-                  class="text-danger"
-                  *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.invalid"
-                >
-                  {{ getErrorMessage('email') }}
-                </small>
-              </div>
-            </div>
-
-            <!-- Password & Confirm -->
-            <div class="row g-2 mb-2">
-              <div class="col-md-6">
-                <label class="form-label small fw-bold mb-1">Contraseña</label>
-                <input
-                  type="password"
-                  class="form-control glass-morphism border rounded-3 py-1.5"
-                  formControlName="password"
-                  placeholder="••••••••"
-                />
-                <small
-                  class="text-danger"
-                  *ngIf="
-                    registerForm.get('password')?.touched && registerForm.get('password')?.invalid
-                  "
-                >
-                  {{ getErrorMessage('password') }}
-                </small>
-              </div>
-
-              <div class="col-md-6">
-                <label class="form-label small fw-bold mb-1">Confirmar</label>
-                <input
-                  type="password"
-                  class="form-control glass-morphism border rounded-3 py-1.5"
-                  formControlName="confirmPassword"
-                  placeholder="••••••••"
-                />
-                <small
-                  class="text-danger"
-                  *ngIf="
-                    registerForm.get('confirmPassword')?.touched &&
-                    registerForm.get('confirmPassword')?.invalid
-                  "
-                >
-                  {{ getErrorMessage('confirmPassword') }}
-                </small>
-              </div>
-            </div>
-
-            <!-- First & Last Name -->
-            <div class="row g-2 mb-2">
-              <div class="col-md-6">
-                <label class="form-label small fw-bold mb-1">Nombre</label>
-                <input
-                  type="text"
-                  class="form-control glass-morphism border rounded-3 py-1.5"
-                  formControlName="firstName"
-                  placeholder="Juan"
-                />
-                <small
-                  class="text-danger"
-                  *ngIf="
-                    registerForm.get('firstName')?.touched && registerForm.get('firstName')?.invalid
-                  "
-                >
-                  {{ getErrorMessage('firstName') }}
-                </small>
-              </div>
-
-              <div class="col-md-6">
-                <label class="form-label small fw-bold mb-1">Apellido</label>
-                <input
-                  type="text"
-                  class="form-control glass-morphism border rounded-3 py-1.5"
-                  formControlName="lastName"
-                  placeholder="Pérez"
-                />
-                <small
-                  class="text-danger"
-                  *ngIf="
-                    registerForm.get('lastName')?.touched && registerForm.get('lastName')?.invalid
-                  "
-                >
-                  {{ getErrorMessage('lastName') }}
-                </small>
-              </div>
-            </div>
-
-            <!-- Document & Phone -->
-            <div class="row g-2 mb-2">
-              <div class="col-md-6">
-                <label class="form-label small fw-bold mb-1">Cédula</label>
-                <input
-                  type="text"
-                  class="form-control glass-morphism border rounded-3 py-1.5"
-                  formControlName="documentId"
-                  placeholder="V-12345678"
-                />
-                <small
-                  class="text-danger"
-                  *ngIf="
-                    registerForm.get('documentId')?.touched &&
-                    registerForm.get('documentId')?.invalid
-                  "
-                >
-                  {{ getErrorMessage('documentId') }}
-                </small>
-              </div>
-
-              <div class="col-md-6">
-                <label class="form-label small fw-bold mb-1">
-                  <i class="bi bi-whatsapp text-success me-1"></i>Teléfono
-                </label>
-                <input
-                  type="tel"
-                  class="form-control glass-morphism border rounded-3 py-1.5"
-                  formControlName="phone"
-                  placeholder="+58 424-1234567"
-                />
-                <small
-                  class="text-danger"
-                  *ngIf="registerForm.get('phone')?.touched && registerForm.get('phone')?.invalid"
-                >
-                  {{ getErrorMessage('phone') }}
-                </small>
-              </div>
-            </div>
-
-            <!-- Birth Date & Gender -->
-            <div class="row g-2 mb-2">
-              <div class="col-md-6">
-                <label class="form-label small fw-bold mb-1">Fecha Nacimiento</label>
-                <input
-                  type="date"
-                  class="form-control glass-morphism border rounded-3 py-1.5"
-                  formControlName="birthDate"
-                />
-                <small
-                  class="text-danger"
-                  *ngIf="
-                    registerForm.get('birthDate')?.touched && registerForm.get('birthDate')?.invalid
-                  "
-                >
-                  {{ getErrorMessage('birthDate') }}
-                </small>
-              </div>
-
-              <div class="col-md-6">
-                <label class="form-label small fw-bold mb-1">Género</label>
-                <select
-                  class="form-select glass-morphism border rounded-3 py-1.5"
-                  formControlName="gender"
-                >
-                  <option value="">Seleccionar...</option>
-                  <option value="Male">Masculino</option>
-                  <option value="Female">Femenino</option>
-                  <option value="Other">Otro</option>
-                </select>
-                <small
-                  class="text-danger"
-                  *ngIf="registerForm.get('gender')?.touched && registerForm.get('gender')?.invalid"
-                >
-                  {{ getErrorMessage('gender') }}
-                </small>
-              </div>
-            </div>
-
-            <!-- Optional Fields (Collapsed) -->
-            <div class="mb-2">
-              <label class="form-label small fw-bold mb-1">Dirección (Opcional)</label>
-              <input
-                type="text"
-                class="form-control glass-morphism border rounded-3 py-2"
-                formControlName="address"
-                placeholder="Calle, ciudad, estado..."
-              />
-            </div>
-
-            <div class="row g-2 mb-3">
-              <div class="col-md-6">
-                <label class="form-label small fw-bold mb-1">Tipo Sangre (Opcional)</label>
-                <select
-                  class="form-select glass-morphism border rounded-3 py-1.5"
-                  formControlName="bloodType"
-                >
-                  <option value="">Seleccionar...</option>
-                  <option value="A+">A+</option>
-                  <option value="A-">A-</option>
-                  <option value="B+">B+</option>
-                  <option value="B-">B-</option>
-                  <option value="AB+">AB+</option>
-                  <option value="AB-">AB-</option>
-                  <option value="O+">O+</option>
-                  <option value="O-">O-</option>
-                </select>
-              </div>
-
-              <div class="col-md-6">
-                <label class="form-label small fw-bold mb-1">Alergias (Opcional)</label>
-                <input
-                  type="text"
-                  class="form-control glass-morphism border rounded-3 py-1.5"
-                  formControlName="allergies"
-                  placeholder="Penicilina, Polen..."
-                />
-              </div>
-            </div>
-          </div>
-
-          <!-- Compliance & Transparency Checkbox -->
-          <div class="mb-3 px-1">
-            <div class="form-check">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                id="acceptTerms"
-                formControlName="acceptTerms"
-              />
-              <label class="form-check-label x-small text-muted lh-sm" for="acceptTerms">
-                Acepto los términos y la política de privacidad. Mis datos serán tratados bajo los
-                estándares
-                <span class="fw-bold text-primary">ISO 27001</span> (Seguridad),
-                <span class="fw-bold text-success">ISO 9001</span> (Calidad) y el cumplimiento de la
-                <span class="fw-bold text-info">GDPR</span> (Protección de Datos Internacional).
-              </label>
-            </div>
-            <small
-              class="text-danger x-small d-block mt-1"
-              *ngIf="
-                registerForm.get('acceptTerms')?.touched && registerForm.get('acceptTerms')?.invalid
-              "
-            >
-              Debes aceptar los términos para continuar.
-            </small>
-          </div>
-
-          <!-- Submit Button -->
-          <div class="d-grid gap-2 mt-2">
-            <button type="submit" class="btn btn-primary-premium py-2" [disabled]="loading">
-              <span *ngIf="!loading">
-                <i class="bi bi-person-plus-fill me-2"></i>Crear Cuenta
-              </span>
-              <span *ngIf="loading">
-                <span class="spinner-border spinner-border-sm me-2"></span>
-                Registrando...
-              </span>
-            </button>
-
-            <div class="text-center">
-              <p class="text-muted mb-0 small">
-                ¿Ya tienes una cuenta?
-                <a routerLink="/login" class="text-primary fw-bold text-decoration-none">
-                  Inicia Sesión
-                </a>
-              </p>
-            </div>
-          </div>
-        </form>
       </div>
     </div>
   </div>
 
-  <!-- Footer fixed at bottom (simplified for auth pages) -->
-  <div
-    class="position-absolute bottom-0 w-100 py-3 bg-white bg-opacity-50 backdrop-blur"
-    style="backdrop-filter: blur(10px)"
-  >
-    <div class="container">
+  <!-- Footer -->
+  <footer class="app-footer-auth py-4 mt-auto">
+    <div class="container-fluid px-5">
       <div class="row align-items-center">
         <div class="col-md-6 text-center text-md-start">
           <p class="mb-0 text-muted small">
@@ -373,32 +379,28 @@
           </p>
           <small class="gradient-text fw-bold">{{ langService.translate('footer.devLove') }}</small>
         </div>
-        <div class="col-md-6 text-center text-md-end mt-2 mt-md-0">
+        <div class="col-md-6 text-center text-md-end mt-3 mt-md-0">
           <div class="social-links d-flex justify-content-center justify-content-md-end gap-3">
-            <a
-              href="#"
-              class="social-icon instagram"
-              title="Instagram"
-              style="width: 28px; height: 28px; font-size: 0.9rem"
+            <a href="#" class="social-icon instagram" title="Instagram"
               ><i class="bi bi-instagram"></i
             ></a>
-            <a
-              href="#"
-              class="social-icon facebook"
-              title="Facebook"
-              style="width: 28px; height: 28px; font-size: 0.9rem"
+            <a href="#" class="social-icon facebook" title="Facebook"
               ><i class="bi bi-facebook"></i
             ></a>
-            <a
-              href="#"
-              class="social-icon tiktok"
-              title="TikTok"
-              style="width: 28px; height: 28px; font-size: 0.9rem"
-              ><i class="bi bi-tiktok"></i
-            ></a>
+            <a href="#" class="social-icon tiktok" title="TikTok"><i class="bi bi-tiktok"></i></a>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </footer>
 </div>
+
+<style>
+  .app-footer-auth {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    width: 100%;
+    z-index: 10;
+  }
+</style>

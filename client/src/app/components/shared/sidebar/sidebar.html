@@ -1,5 +1,8 @@
-<div class="sidebar glass-morphism h-100 p-3 custom-scrollbar" style="overflow-y: auto">
-  <div class="list-group list-group-flush gap-2">
+<div
+  class="sidebar glass-morphism h-100 p-3 custom-scrollbar d-flex flex-column"
+  style="overflow-y: auto"
+>
+  <div class="list-group list-group-flush gap-2 flex-grow-1">
     <a
       routerLink="/dashboard"
       routerLinkActive="active"
@@ -86,6 +89,17 @@
       <span class="fw-medium">{{ langService.translate('sidebar.payments') }}</span>
     </a>
   </div>
+
+  <div class="mt-auto pt-4 shadow-sm">
+    <div class="border-top mb-3 opacity-25"></div>
+    <a
+      routerLink="/login"
+      class="list-group-item list-group-item-action border-0 rounded-3 py-2 d-flex align-items-center gap-3 text-danger logout-item"
+    >
+      <i class="bi bi-box-arrow-left fs-5"></i>
+      <span class="fw-bold">Cerrar Sesión / Salir</span>
+    </a>
+  </div>
 </div>
 
 <style>
@@ -102,5 +116,9 @@
     background: linear-gradient(135deg, var(--primary), var(--primary-dark));
     color: white !important;
     box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+  }
+  .logout-item:hover {
+    background: rgba(239, 68, 68, 0.1) !important;
+    color: #dc2626 !important;
   }
 </style>
