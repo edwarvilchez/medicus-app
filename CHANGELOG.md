@@ -2,6 +2,19 @@
 
 Todas las modificaciones notables del proyecto serán documentadas en este archivo.
 
+## [1.3.0] - 2026-02-01
+
+### 💰 Inteligencia Financiera y Gestión de Pagos
+
+#### Módulo de Pagos (Funcionalidad Total)
+
+- ✅ **Búsqueda Reactiva**: Implementada búsqueda instantánea por referencia, nombre de paciente o concepto utilizando Signals de Angular.
+- ✅ **Comprobantes Digitales**: Visualización detallada de recibos con modal dinámico (SweetAlert2) y opción de impresión.
+- ✅ **Exportación de Datos**: Añadida funcionalidad de exportación a formato CSV para auditoría y reportes contables externos.
+- ✅ **Carga de Datos Operacionales**: Seed de datos reales para validación inmediata de flujos financieros complejos.
+
+---
+
 ## [1.2.9] - 2026-02-01
 
 ### 💰 Gestión Financiera Activa

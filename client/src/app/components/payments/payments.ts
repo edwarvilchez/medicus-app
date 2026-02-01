@@ -16,6 +16,10 @@ export class Payments implements OnInit {
   payments = signal<any[]>([]);
   searchTerm = signal('');
 
+  updateSearch(event: any) {
+    this.searchTerm.set(event.target.value);
+  }
+
   filteredPayments = computed(() => {
     const term = this.searchTerm().toLowerCase();
     return this.payments().filter(p => 
@@ -123,5 +127,79 @@ export class Payments implements OnInit {
           });
       }
     });
+  }
+
+  viewReceipt(payment: any) {
+    Swal.fire({
+      title: 'Comprobante de Pago',
+      html: `
+        <div class="text-start border p-3 rounded bg-light">
+          <div class="d-flex justify-content-between mb-2">
+            <strong>Referencia:</strong> <span>#${payment.reference || 'N/A'}</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <strong>Paciente:</strong> <span>${payment.Patient?.User?.firstName} ${payment.Patient?.User?.lastName}</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <strong>Concepto:</strong> <span>${payment.concept}</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <strong>Monto:</strong> <span class="fw-bold text-success">$${payment.amount.toFixed(2)}</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <strong>Fecha:</strong> <span>${new Date(payment.createdAt).toLocaleDateString()}</span>
+          </div>
+          <div class="d-flex justify-content-between">
+            <strong>Estado:</strong> 
+            <span class="badge ${payment.status === 'Paid' ? 'bg-success' : 'bg-warning'} text-white">
+              ${payment.status === 'Paid' ? 'Pagado' : 'Pendiente'}
+            </span>
+          </div>
+        </div>
+      `,
+      confirmButtonText: 'Cerrar',
+      confirmButtonColor: '#0ea5e9',
+      showCancelButton: true,
+      cancelButtonText: '<i class="bi bi-printer me-1"></i> Imprimir',
+      cancelButtonColor: '#64748b'
+    }).then(result => {
+      if (result.dismiss === Swal.DismissReason.cancel) {
+        window.print();
+      }
+    });
+  }
+
+  exportReport() {
+    if (this.filteredPayments().length === 0) {
+      Swal.fire('Atención', 'No hay datos para exportar', 'warning');
+      return;
+    }
+
+    const headers = ['Referencia', 'Paciente', 'Concepto', 'Monto', 'Fecha', 'Estado'];
+    const rows = this.filteredPayments().map(p => [
+      p.reference || 'N/A',
+      `${p.Patient?.User?.firstName} ${p.Patient?.User?.lastName}`,
+      p.concept,
+      p.amount,
+      new Date(p.createdAt).toLocaleDateString(),
+      p.status
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(r => r.join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `Reporte_Pagos_Medicus_${new Date().toLocaleDateString()}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    Swal.fire('¡Éxito!', 'Reporte exportado correctamente.', 'success');
   }
 }

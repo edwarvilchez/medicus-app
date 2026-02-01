@@ -20,13 +20,14 @@
             type="text"
             class="form-control bg-transparent border-0 py-2 shadow-none"
             placeholder="Buscar por referencia, paciente o concepto..."
-            [(ngModel)]="searchTerm"
-            [ngModelOptions]="{ standalone: true }"
+            (input)="updateSearch($event)"
           />
         </div>
       </div>
       <div class="col-md-3">
-        <button class="btn btn-primary-premium w-100 py-2">Exportar Reporte</button>
+        <button class="btn btn-primary-premium w-100 py-2" (click)="exportReport()">
+          Exportar Reporte
+        </button>
       </div>
     </div>
   </div>
@@ -64,7 +65,11 @@
               >
             </td>
             <td class="text-end pe-4">
-              <button class="btn btn-sm btn-light border-0 me-1" title="Ver Recibo">
+              <button
+                class="btn btn-sm btn-light border-0 me-1"
+                title="Ver Recibo"
+                (click)="viewReceipt(p)"
+              >
                 <i class="bi bi-file-earmark-text"></i>
               </button>
               <button
