@@ -109,6 +109,23 @@ export class Register {
     }
   }
 
+  viewHistory() {
+    Swal.fire({
+      title: 'Acceso Restringido',
+      text: 'Para ver tu historial médico digital, debes ser un paciente registrado e iniciar sesión en la plataforma por motivos de seguridad y privacidad (ISO 27001).',
+      icon: 'info',
+      showCancelButton: true,
+      confirmButtonText: 'Iniciar Sesión',
+      cancelButtonText: 'Cerrar',
+      confirmButtonColor: '#0ea5e9',
+      cancelButtonColor: '#64748b'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.router.navigate(['/login']);
+      }
+    });
+  }
+
   getErrorMessage(fieldName: string): string {
     const control = this.registerForm.get(fieldName);
     if (control?.hasError('required')) {

@@ -2,6 +2,18 @@
 
 Todas las modificaciones notables del proyecto serán documentadas en este archivo.
 
+## [1.2.6] - 2026-02-01
+
+### 🔐 Funcionalidad y Control de Acceso
+
+#### Historial Digital
+
+- ✅ **Interactividad Implementada**: La tarjeta de "Historial Digital" ahora es funcional y cuenta con efectos visuales (`hover-scale`, `cursor-pointer`).
+- ✅ **Control de Acceso (Seguridad)**: Se ha implementado una validación visual que informa al usuario que el acceso al historial médico está restringido solo a pacientes registrados y autenticados, cumpliendo con la norma **ISO 27001**.
+- ✅ **Flujo de Usuario**: Integración con el sistema de navegación para redirigir al login si el usuario desea consultar su historial.
+
+---
+
 ## [1.2.4] - 2026-02-01
 
 ### 🛡️ Cumplimiento y Protección Legal
