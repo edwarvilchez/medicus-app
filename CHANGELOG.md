@@ -2,6 +2,24 @@
 
 Todas las modificaciones notables del proyecto serán documentadas en este archivo.
 
+## [1.2.2] - 2026-02-01
+
+### 🎉 Refinamiento Visual y Legibilidad
+
+#### Formulario de Registro (Mejoras Finales)
+
+- ✅ **Ensanchamiento del Formulario**: Incrementado el ancho del formulario (`col-lg-7`) para mayor comodidad visual.
+- ✅ **Legibilidad Restaurada**:
+  - Regreso a tamaños de fuente estándar (`small`) en etiquetas.
+  - Eliminación de controles compactos (`form-control-sm`) para mejor visibilidad.
+  - Incremento del espaciado interno y gaps para un diseño menos saturado.
+- ✅ **Hero Section Rediseñada**:
+  - ✨ **Stack de Tarjetas**: Las tarjetas de "Agenda Fácil" e "Historial Digital" ahora se muestran verticalmente.
+  - ✨ **Mejor Layout Interno**: Íconos y texto alineados horizontalmente para mejor lectura.
+  - ✨ **Textos Multilínea**: Títulos y descripciones ajustados para un flujo de lectura más natural.
+
+---
+
 ## [1.2.1] - 2026-01-31
 
 ### 🎉 Mejoras de UI/UX (Refinamiento Extremo)

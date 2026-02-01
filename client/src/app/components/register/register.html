@@ -4,64 +4,71 @@
 >
   <div class="row w-100 max-width-1200 px-4 my-0">
     <!-- Left Side: Hero content -->
-    <div class="col-lg-7 d-none d-lg-flex flex-column justify-content-center pe-5">
+    <div class="col-lg-5 d-none d-lg-flex flex-column justify-content-center pe-5">
       <div class="mb-4">
         <div class="bg-primary rounded-4 p-3 d-inline-block shadow-lg mb-4">
           <i class="bi bi-heart-pulse-fill text-white fs-1"></i>
         </div>
-        <h1 class="h2 fw-bold mb-2">Únete a <span class="gradient-text">Medicus</span></h1>
-        <p class="small text-muted mb-4">
-          Crea tu cuenta y accede a la mejor plataforma de gestión clínica. Agenda citas y mantente
-          conectado con tu salud.
+        <h1 class="h1 fw-bold mb-3">Únete a <br /><span class="gradient-text">Medicus</span></h1>
+        <p class="fs-5 text-muted mb-4">
+          Crea tu cuenta y accede a la <br />mejor plataforma de gestión clínica.
         </p>
       </div>
 
       <div class="row g-3">
-        <div class="col-md-6">
+        <div class="col-12 col-xl-10">
           <div
             class="glass-morphism p-3 rounded-4 shadow-sm cursor-pointer hover-scale transition-all"
             routerLink="/agendar-cita"
           >
-            <i class="bi bi-calendar-check text-primary fs-4 mb-2 d-block"></i>
-            <h6 class="fw-bold mb-1">Agenda Fácil</h6>
-            <p class="x-small text-muted mb-0">Reserva tus citas médicas en segundos.</p>
+            <div class="d-flex align-items-center gap-3">
+              <i class="bi bi-calendar-check text-primary fs-3"></i>
+              <div>
+                <h6 class="fw-bold mb-0">Agenda Fácil</h6>
+                <p class="small text-muted mb-0">Reserva tus citas médicas en segundos.</p>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-12 col-xl-10">
           <div class="glass-morphism p-3 rounded-4 shadow-sm">
-            <i class="bi bi-file-medical text-success fs-4 mb-2 d-block"></i>
-            <h6 class="fw-bold mb-1">Historial Digital</h6>
-            <p class="x-small text-muted mb-0">
-              Accede a tu historial médico desde cualquier lugar.
-            </p>
+            <div class="d-flex align-items-center gap-3">
+              <i class="bi bi-file-medical text-success fs-3"></i>
+              <div>
+                <h6 class="fw-bold mb-0">Historial Digital</h6>
+                <p class="small text-muted mb-0">
+                  Accede a tu historial médico desde cualquier lugar.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Right Side: Register Form -->
-    <div class="col-lg-5">
+    <div class="col-lg-7">
       <div class="card-premium border-0 p-3 shadow-lg animate-fade-in">
-        <div class="text-center mb-1">
+        <div class="text-center mb-2">
           <!-- Branding -->
-          <div class="d-flex align-items-center justify-content-center gap-1 mb-1">
-            <div class="bg-primary rounded-2 p-1 d-inline-flex">
-              <i class="bi bi-heart-pulse-fill text-white" style="font-size: 1rem"></i>
+          <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
+            <div class="bg-primary rounded-3 p-2 d-inline-flex">
+              <i class="bi bi-heart-pulse-fill text-white" style="font-size: 1.2rem"></i>
             </div>
-            <h2 class="fw-bold mb-0 text-primary" style="font-size: 1.2rem">MEDICUS</h2>
+            <h2 class="fw-bold mb-0 text-primary" style="font-size: 1.5rem">MEDICUS</h2>
           </div>
-          <p class="fw-bold small mb-0">Crear Cuenta</p>
-          <p class="x-small text-muted mb-0">Completa el formulario para registrarte</p>
+          <h3 class="h5 fw-bold mb-1">Crear Cuenta</h3>
+          <p class="text-muted small mb-0">Completa el formulario para registrarte</p>
         </div>
 
         <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
           <!-- Username & Email -->
-          <div class="row g-1 mb-1">
+          <div class="row g-3 mb-3">
             <div class="col-md-6">
-              <label class="form-label x-small fw-bold mb-1">Usuario</label>
+              <label class="form-label small fw-bold mb-1">Usuario</label>
               <input
                 type="text"
-                class="form-control form-control-sm glass-morphism border rounded-3"
+                class="form-control glass-morphism border rounded-3 py-2"
                 formControlName="username"
                 placeholder="usuario123"
               />
@@ -76,10 +83,10 @@
             </div>
 
             <div class="col-md-6">
-              <label class="form-label x-small fw-bold mb-1">Email</label>
+              <label class="form-label small fw-bold mb-1">Email</label>
               <input
                 type="email"
-                class="form-control form-control-sm glass-morphism border rounded-3"
+                class="form-control glass-morphism border rounded-3 py-2"
                 formControlName="email"
                 placeholder="correo@ejemplo.com"
               />
@@ -93,12 +100,12 @@
           </div>
 
           <!-- Password & Confirm -->
-          <div class="row g-1 mb-1">
+          <div class="row g-3 mb-3">
             <div class="col-md-6">
-              <label class="form-label x-small fw-bold mb-1">Contraseña</label>
+              <label class="form-label small fw-bold mb-1">Contraseña</label>
               <input
                 type="password"
-                class="form-control form-control-sm glass-morphism border rounded-3"
+                class="form-control glass-morphism border rounded-3 py-2"
                 formControlName="password"
                 placeholder="••••••••"
               />
@@ -113,10 +120,10 @@
             </div>
 
             <div class="col-md-6">
-              <label class="form-label x-small fw-bold mb-1">Confirmar</label>
+              <label class="form-label small fw-bold mb-1">Confirmar</label>
               <input
                 type="password"
-                class="form-control form-control-sm glass-morphism border rounded-3"
+                class="form-control glass-morphism border rounded-3 py-2"
                 formControlName="confirmPassword"
                 placeholder="••••••••"
               />
@@ -133,12 +140,12 @@
           </div>
 
           <!-- First & Last Name -->
-          <div class="row g-1 mb-1">
+          <div class="row g-3 mb-3">
             <div class="col-md-6">
-              <label class="form-label x-small fw-bold mb-1">Nombre</label>
+              <label class="form-label small fw-bold mb-1">Nombre</label>
               <input
                 type="text"
-                class="form-control form-control-sm glass-morphism border rounded-3"
+                class="form-control glass-morphism border rounded-3 py-2"
                 formControlName="firstName"
                 placeholder="Juan"
               />
@@ -153,10 +160,10 @@
             </div>
 
             <div class="col-md-6">
-              <label class="form-label x-small fw-bold mb-1">Apellido</label>
+              <label class="form-label small fw-bold mb-1">Apellido</label>
               <input
                 type="text"
-                class="form-control form-control-sm glass-morphism border rounded-3"
+                class="form-control glass-morphism border rounded-3 py-2"
                 formControlName="lastName"
                 placeholder="Pérez"
               />
@@ -172,12 +179,12 @@
           </div>
 
           <!-- Document & Phone -->
-          <div class="row g-1 mb-1">
+          <div class="row g-3 mb-3">
             <div class="col-md-6">
-              <label class="form-label x-small fw-bold mb-1">Cédula</label>
+              <label class="form-label small fw-bold mb-1">Cédula</label>
               <input
                 type="text"
-                class="form-control form-control-sm glass-morphism border rounded-3"
+                class="form-control glass-morphism border rounded-3 py-2"
                 formControlName="documentId"
                 placeholder="V-12345678"
               />
@@ -192,12 +199,12 @@
             </div>
 
             <div class="col-md-6">
-              <label class="form-label x-small fw-bold mb-1">
+              <label class="form-label small fw-bold mb-1">
                 <i class="bi bi-whatsapp text-success me-1"></i>Teléfono
               </label>
               <input
                 type="tel"
-                class="form-control form-control-sm glass-morphism border rounded-3"
+                class="form-control glass-morphism border rounded-3 py-2"
                 formControlName="phone"
                 placeholder="+58 424-1234567"
               />
@@ -211,12 +218,12 @@
           </div>
 
           <!-- Birth Date & Gender -->
-          <div class="row g-1 mb-1">
+          <div class="row g-3 mb-3">
             <div class="col-md-6">
-              <label class="form-label x-small fw-bold mb-1">Fecha Nacimiento</label>
+              <label class="form-label small fw-bold mb-1">Fecha Nacimiento</label>
               <input
                 type="date"
-                class="form-control form-control-sm glass-morphism border rounded-3"
+                class="form-control glass-morphism border rounded-3 py-2"
                 formControlName="birthDate"
               />
               <small
@@ -230,9 +237,9 @@
             </div>
 
             <div class="col-md-6">
-              <label class="form-label x-small fw-bold mb-1">Género</label>
+              <label class="form-label small fw-bold mb-1">Género</label>
               <select
-                class="form-select form-select-sm glass-morphism border rounded-3"
+                class="form-select glass-morphism border rounded-3 py-2"
                 formControlName="gender"
               >
                 <option value="">Seleccionar...</option>
@@ -250,21 +257,21 @@
           </div>
 
           <!-- Optional Fields (Collapsed) -->
-          <div class="mb-1">
-            <label class="form-label x-small fw-bold mb-1">Dirección (Opcional)</label>
+          <div class="mb-3">
+            <label class="form-label small fw-bold mb-1">Dirección (Opcional)</label>
             <input
               type="text"
-              class="form-control form-control-sm glass-morphism border rounded-3"
+              class="form-control glass-morphism border rounded-3 py-2"
               formControlName="address"
               placeholder="Calle, ciudad, estado..."
             />
           </div>
 
-          <div class="row g-1 mb-2">
+          <div class="row g-3 mb-4">
             <div class="col-md-6">
-              <label class="form-label x-small fw-bold mb-1">Tipo Sangre (Opcional)</label>
+              <label class="form-label small fw-bold mb-1">Tipo Sangre (Opcional)</label>
               <select
-                class="form-select form-select-sm glass-morphism border rounded-3"
+                class="form-select glass-morphism border rounded-3 py-2"
                 formControlName="bloodType"
               >
                 <option value="">Seleccionar...</option>
@@ -280,10 +287,10 @@
             </div>
 
             <div class="col-md-6">
-              <label class="form-label x-small fw-bold mb-1">Alergias (Opcional)</label>
+              <label class="form-label small fw-bold mb-1">Alergias (Opcional)</label>
               <input
                 type="text"
-                class="form-control form-control-sm glass-morphism border rounded-3"
+                class="form-control glass-morphism border rounded-3 py-2"
                 formControlName="allergies"
                 placeholder="Penicilina, Polen..."
               />
@@ -302,8 +309,8 @@
               </span>
             </button>
 
-            <div class="text-center mt-1">
-              <p class="text-muted mb-0 x-small">
+            <div class="text-center mt-2">
+              <p class="text-muted mb-0 small">
                 ¿Ya tienes una cuenta?
                 <a routerLink="/login" class="text-primary fw-bold text-decoration-none">
                   Inicia Sesión
