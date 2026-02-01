@@ -2,6 +2,19 @@
 
 Todas las modificaciones notables del proyecto serán documentadas en este archivo.
 
+## [1.5.1] - 2026-02-01
+
+### 📐 Optimización de Interfaz (No-Scroll)
+
+#### Compactación Global
+
+- ✅ **Layout Sin Scroll**: Ajuste de paddings y gaps globales para permitir que el Dashboard principal sea visible en una sola pantalla sin necesidad de scroll vertical en resoluciones estándar.
+- ✅ **Dashboard Compacto**: Reducción de tamaño de tarjetas de estadísticas, altura del gráfico de actividad y optimización de la lista de próximas citas.
+- ✅ **Navegación Esbelta**: Reducción del grosor de la barra superior (Navbar) y compactación de los elementos del menú lateral (Sidebar).
+- ✅ **Legibilidad Mejorada**: Ajuste de jerarquía de títulos (H2 a H3) y uso de fuentes `x-small` para datos secundarios.
+
+---
+
 ## [1.5.0] - 2026-02-01
 
 ### 🏦 Gestión Financiera Avanzada
