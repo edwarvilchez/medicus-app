@@ -2,6 +2,23 @@
 
 Todas las modificaciones notables del proyecto serán documentadas en este archivo.
 
+## [1.4.0] - 2026-02-01
+
+### 🎨 Experiencia de Usuario y Finanzas Globales
+
+#### Gestión de Temas (Claro/Oscuro)
+
+- ✅ **Modo Oscuro Nativo**: Implementado soporte completo para tema oscuro mediante variables CSS y persistencia en LocalStorage.
+- ✅ **Conmutador en Navbar**: Botón inteligente en la barra de navegación para alternar modos visuales con micro-animaciones.
+
+#### Soporte Multimoneda (Dual Currency)
+
+- ✅ **Conversión en Tiempo Real**: Implementado motor financiero para mostrar montos en USD ($) y VES (Bs.) simultáneamente.
+- ✅ **Visualización Dual**: La tabla de pagos ahora muestra el monto en la moneda principal y su equivalente estimado en la secundaria.
+- ✅ **Recibos Multimoneda**: Los comprobantes de pago ahora reflejan el cobro en ambas denominaciones para mayor transparencia legal.
+
+---
+
 ## [1.3.1] - 2026-02-01
 
 ### 🌎 Soporte Multi-idioma (i18n)

@@ -51,7 +51,15 @@
             <td class="ps-4 fw-bold">#{{ p.reference || 'N/A' }}</td>
             <td>{{ p.Patient?.User?.firstName }} {{ p.Patient?.User?.lastName }}</td>
             <td>{{ p.concept }}</td>
-            <td class="fw-bold">${{ p.amount | number: '1.2-2' }}</td>
+            <td class="fw-bold">
+              {{ currencyService.formatAmount(p.amount) }}
+              <div class="x-small text-muted" *ngIf="currencyService.currency() === 'USD'">
+                ≈ {{ currencyService.formatAmount(p.amount, 'VES') }}
+              </div>
+              <div class="x-small text-muted" *ngIf="currencyService.currency() === 'VES'">
+                ≈ {{ currencyService.formatAmount(p.amount, 'USD') }}
+              </div>
+            </td>
             <td>{{ p.createdAt | date: 'shortDate' }}</td>
             <td>
               <span

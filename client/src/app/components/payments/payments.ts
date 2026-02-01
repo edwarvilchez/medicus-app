@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { LanguageService } from '../../services/language.service';
+import { CurrencyService } from '../../services/currency.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -33,7 +34,8 @@ export class Payments implements OnInit {
 
   constructor(
     private http: HttpClient,
-    public langService: LanguageService
+    public langService: LanguageService,
+    public currencyService: CurrencyService
   ) {}
 
   ngOnInit() {
@@ -148,7 +150,11 @@ export class Payments implements OnInit {
             <strong>${this.langService.translate('payments.concept')}:</strong> <span>${payment.concept}</span>
           </div>
           <div class="d-flex justify-content-between mb-2">
-            <strong>${this.langService.translate('payments.amount')}:</strong> <span class="fw-bold text-success">$${payment.amount.toFixed(2)}</span>
+            <strong>${this.langService.translate('payments.amount')}:</strong> 
+            <div class="text-end">
+              <span class="fw-bold text-success d-block">${this.currencyService.formatAmount(payment.amount, 'USD')}</span>
+              <span class="small text-muted">${this.currencyService.formatAmount(payment.amount, 'VES')}</span>
+            </div>
           </div>
           <div class="d-flex justify-content-between mb-2">
             <strong>${this.langService.translate('payments.fecha')}:</strong> <span>${new Date(payment.createdAt).toLocaleDateString()}</span>

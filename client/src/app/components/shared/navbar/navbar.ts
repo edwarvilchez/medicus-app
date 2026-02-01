@@ -3,6 +3,8 @@ import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../services/auth.service';
 import { LanguageService } from '../../../services/language.service';
+import { ThemeService } from '../../../services/theme.service';
+import { CurrencyService } from '../../../services/currency.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -17,11 +19,21 @@ export class Navbar {
 
   constructor(
     public authService: AuthService, 
-    public langService: LanguageService
+    public langService: LanguageService,
+    public themeService: ThemeService,
+    public currencyService: CurrencyService
   ) {}
 
   setLanguage(lang: 'es' | 'en') {
     this.langService.setLanguage(lang);
+  }
+
+  toggleTheme() {
+    this.themeService.toggleTheme();
+  }
+
+  setCurrency(currency: 'USD' | 'VES') {
+    this.currencyService.setCurrency(currency);
   }
 
   logout() {
