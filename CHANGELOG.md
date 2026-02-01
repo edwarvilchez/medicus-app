@@ -2,6 +2,17 @@
 
 Todas las modificaciones notables del proyecto serán documentadas en este archivo.
 
+## [1.4.2] - 2026-02-01
+
+### 🎨 Simplificación Visual
+
+#### Eliminación de Modo Oscuro
+
+- ✅ **Enfoque en Claridad**: Eliminación completa del motor de temas y del modo oscuro para priorizar una estética médica limpia, brillante y de alto contraste basada en luz natural.
+- ✅ **Limpieza de Código**: Remoción de servicios de tema, selectores de UI y más de 100 líneas de CSS específicas para el modo nocturno.
+
+---
+
 ## [1.4.1] - 2026-02-01
 
 ### 🧠 Psicología del Color y Refinamiento Estético
