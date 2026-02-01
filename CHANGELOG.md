@@ -2,6 +2,19 @@
 
 Todas las modificaciones notables del proyecto serán documentadas en este archivo.
 
+## [1.4.1] - 2026-02-01
+
+### 🧠 Psicología del Color y Refinamiento Estético
+
+#### Rediseño del Modo Oscuro (Medical Midnight)
+
+- ✅ **Psicología del Color**: Sustitución de grises genéricos por una paleta de "Medianoche Médica" (`#0b0f1a`) que transmite serenidad, limpieza y profesionalismo.
+- ✅ **Contraste Suave**: Optimización de legibilidad mediante el uso de blancos suaves y azules vibrantes optimizados para fondos oscuros.
+- ✅ **Componentes Cohesivos**: Ajuste de Glassmorphism, modales (SweetAlert2) y elementos de formulario para integrarse perfectamente en el flujo visual nocturno.
+- ✅ **Fondo Dinámico**: Implementación de gradientes radiales adaptativos que evitan la sensación de una interfaz plana y pesada.
+
+---
+
 ## [1.4.0] - 2026-02-01
 
 ### 🎨 Experiencia de Usuario y Finanzas Globales
