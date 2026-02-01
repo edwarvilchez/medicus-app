@@ -62,9 +62,12 @@ client/src/app/
 │   ├── lab-results/      # Módulo de laboratorio (Nuevo)
 │   ├── login/            # Autenticación
 │   └── shared/           # Componentes reutilizables (Sidebar, Navbar)
-├── services/             # Lógica de comunicación con API
+├── services/             # Lógica de comunicación con API y globales
 │   ├── auth.service.ts   # Login/Register
-│   ├── lab-pdf.service.ts # Generador de Reportes PDF
+│   ├── laboratory.service.ts # Gestión de resultados
+│   ├── payment.service.ts # Transacciones financieras
+│   ├── language.service.ts # Motor de traducción reactivo (Signals)
+│   ├── currency.service.ts # Motor de conversión monetaria
 │   └── stats.service.ts  # Datos para dashboard
 ├── guards/               # Protección de rutas (AuthGuard)
 ├── models/               # Interfaces TypeScript
@@ -150,6 +153,25 @@ La aplicación es totalmente **Cross-Device** (Escritorio, Tablet, Móvil).
 - **Pacientes**: Expediente clínico digital centralizado.
 - **Doctores**: Gestión de perfiles profesionales.
 
+### **5. Inteligencia Financiera y Pagos (Version 1.4.x)**
+
+Módulo avanzado para el control de ingresos y facturación de la clínica.
+
+- **Búsqueda Reactiva**: Filtrado instantáneo por referencia, paciente o concepto.
+- **Gestión de Cobros**: Flujo de estados (Pendiente/Pagado) con actualización en tiempo real.
+- **Exportación de Reportes**: Generación de archivos CSV para auditorías externas.
+- **Recibos Digitales**: Visualización de comprobantes con opción de impresión directa.
+
+### **6. Globalización y Flexibilidad (i18n & Multicurrency)**
+
+El sistema ha sido diseñado para operar en entornos internacionales y mercados dinámicos.
+
+- **Soporte Multidioma (ES/EN)**: Motor de traducción basado en **Angular Signals** que permite el cambio de idioma instantáneo en toda la UI sin recargar la aplicación.
+- **Sistema Multimoneda (USD/VES)**:
+  - Conversión dinámica de montos basada en una tasa de cambio configurable.
+  - Visualización dual de precios en tablas y recibos (Moneda principal y equivalente estimado).
+  - Persistencia de preferencias del usuario mediante LocalStorage.
+
 ---
 
 ## 🔄 6. Flujo de Datos
@@ -217,4 +239,4 @@ El sistema ha sido arquitectado bajo pilares de seguridad robustos, alineándose
 
 ---
 
-_Documentación generada automáticamente por Antigravity Agent - Enero 2026_
+_Documentación actualizada por Antigravity Agent - Febrero 2026 (v1.4.2)_
