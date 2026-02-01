@@ -42,8 +42,15 @@
     <div class="col-lg-5">
       <div class="card-premium border-0 p-5 shadow-lg animate-fade-in">
         <div class="text-center mb-5">
-          <h2 class="fw-bold">Iniciar Sesión</h2>
-          <p class="text-muted">Ingresa tus credenciales para acceder</p>
+          <!-- Branding -->
+          <div class="d-flex align-items-center justify-content-center gap-2 mb-3">
+            <div class="bg-primary rounded-3 p-2 d-inline-flex">
+              <i class="bi bi-heart-pulse-fill text-white" style="font-size: 1.5rem"></i>
+            </div>
+            <h2 class="fw-bold mb-0 text-primary">MEDICUS</h2>
+          </div>
+          <h3 class="h5 fw-bold mb-2">Iniciar Sesión</h3>
+          <p class="text-muted small">Ingresa tus credenciales para acceder</p>
         </div>
 
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
@@ -69,7 +76,7 @@
           <div class="mb-4">
             <div class="d-flex justify-content-between">
               <label class="form-label small fw-bold text-uppercase">Contraseña</label>
-              <a href="#" class="small text-primary text-decoration-none"
+              <a routerLink="/forgot-password" class="small text-primary text-decoration-none"
                 >¿Olvidaste tu contraseña?</a
               >
             </div>

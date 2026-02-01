@@ -194,90 +194,85 @@ async function createTestUsers() {
   for (const userData of testUsers) {
     try {
       // Check if user already exists
-      const existingUser = await User.findOne({ where: { email: userData.email } });
+      let user = await User.findOne({ where: { email: userData.email } });
+      let isNewUser = false;
       
-      if (existingUser) {
+      if (user) {
+        // Update existing user's password (hooks will handle hashing)
+        user.password = userData.password;
+        await user.save();
+        
         results.existing.push({
           type: userData.type,
           name: `${userData.firstName} ${userData.lastName}`,
           email: userData.email,
           username: userData.username
         });
-        console.log(`ℹ️  Ya existe: ${userData.email}`);
-        continue;
+        console.log(`ℹ️  Actualizado password para: ${userData.email}`);
+      } else {
+        // Create user (hooks will handle hashing)
+        user = await User.create({
+          username: userData.username,
+          email: userData.email,
+          password: userData.password,
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          phone: userData.phone,
+          roleId: (await Role.findOne({ where: { name: userData.type } })).id
+        });
+        isNewUser = true;
       }
 
-      // Get role
-      const role = await Role.findOne({ where: { name: userData.type } });
-      if (!role) {
-        throw new Error(`Role ${userData.type} not found`);
+      if (isNewUser) {
+          // Create profile based on type ONLY if new user (to avoid duplicates or errors if profile exists)
+          // Ideally we should upsert profiles too, but for now let's assume if user exists, profile likely exists or we skip to avoid complexity
+          // actually, the original code only created profile if user was created.
+          
+          if (userData.type === 'DOCTOR') {
+            const specialty = await Specialty.findOne({ 
+              where: { name: userData.profile.specialtyName } 
+            });
+            
+            await Doctor.create({
+              userId: user.id,
+              licenseNumber: userData.profile.licenseNumber,
+              specialtyId: specialty ? specialty.id : null
+            });
+          } else if (userData.type === 'NURSE') {
+            await Nurse.create({
+              userId: user.id,
+              licenseNumber: userData.profile.licenseNumber,
+              specialization: userData.profile.specialization,
+              shift: userData.profile.shift
+            });
+          } else if (userData.type === 'ADMINISTRATIVE') {
+            await Staff.create({
+              userId: user.id,
+              employeeId: userData.profile.employeeId,
+              position: userData.profile.position,
+              departmentName: userData.profile.departmentName
+            });
+          } else if (userData.type === 'PATIENT') {
+            await Patient.create({
+              userId: user.id,
+              documentId: userData.profile.documentId,
+              dateOfBirth: userData.profile.dateOfBirth,
+              gender: userData.profile.gender,
+              address: userData.profile.address,
+              emergencyContact: userData.profile.emergencyContact
+            });
+          }
+
+          results.created.push({
+            type: userData.type,
+            name: `${userData.firstName} ${userData.lastName}`,
+            email: userData.email,
+            username: userData.username,
+            password: userData.password
+          });
+          console.log(`✅ Creado: ${userData.email}`);
       }
-
-      // Hash password
-      const hashedPassword = await bcrypt.hash(userData.password, 10);
-
-      // Create user
-      const user = await User.create({
-        username: userData.username,
-        email: userData.email,
-        password: hashedPassword,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        phone: userData.phone,
-        roleId: role.id
-      });
-
-      // Create profile based on type
-      let profileCreated = false;
       
-      if (userData.type === 'DOCTOR') {
-        const specialty = await Specialty.findOne({ 
-          where: { name: userData.profile.specialtyName } 
-        });
-        
-        await Doctor.create({
-          userId: user.id,
-          licenseNumber: userData.profile.licenseNumber,
-          specialtyId: specialty ? specialty.id : null
-        });
-        profileCreated = true;
-      } else if (userData.type === 'NURSE') {
-        await Nurse.create({
-          userId: user.id,
-          licenseNumber: userData.profile.licenseNumber,
-          specialization: userData.profile.specialization,
-          shift: userData.profile.shift
-        });
-        profileCreated = true;
-      } else if (userData.type === 'ADMINISTRATIVE') {
-        await Staff.create({
-          userId: user.id,
-          employeeId: userData.profile.employeeId,
-          position: userData.profile.position,
-          departmentName: userData.profile.departmentName
-        });
-        profileCreated = true;
-      } else if (userData.type === 'PATIENT') {
-        await Patient.create({
-          userId: user.id,
-          documentId: userData.profile.documentId,
-          dateOfBirth: userData.profile.dateOfBirth,
-          gender: userData.profile.gender,
-          address: userData.profile.address,
-          emergencyContact: userData.profile.emergencyContact
-        });
-        profileCreated = true;
-      }
-
-      results.created.push({
-        type: userData.type,
-        name: `${userData.firstName} ${userData.lastName}`,
-        email: userData.email,
-        username: userData.username,
-        password: userData.password
-      });
-
-      console.log(`✅ Creado: ${userData.email}`);
     } catch (error) {
       results.errors.push({
         email: userData.email,

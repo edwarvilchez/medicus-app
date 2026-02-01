@@ -2,78 +2,137 @@ const { Role, User, Patient, Doctor, Specialty, Department } = require('../model
 
 const seedTestData = async () => {
   try {
-    // 1. Ensure Roles
-    const superAdminRole = await Role.findOne({ where: { name: 'SUPERADMIN' } });
-    const doctorRole = await Role.findOne({ where: { name: 'DOCTOR' } });
-    const patientRole = await Role.findOne({ where: { name: 'PATIENT' } });
+    // 1. Ensure Roles (Fetched from DB, seeded by seeds.js)
+    const roles = {};
+    const roleNames = ['SUPERADMIN', 'DOCTOR', 'NURSE', 'ADMINISTRATIVE', 'PATIENT'];
     
-    if (!patientRole) {
-        await Role.findOrCreate({ where: { name: 'PATIENT' }, defaults: { name: 'PATIENT', description: 'Paciente del sistema' } });
+    for (const name of roleNames) {
+        roles[name] = await Role.findOne({ where: { name } });
+        if (!roles[name]) {
+            console.warn(`Role ${name} not found, skipping related users.`);
+        }
     }
 
-    // Create SUPERADMIN user
-    const [adminUser] = await User.findOrCreate({
-      where: { username: 'superadmin' },
-      defaults: {
-        username: 'superadmin',
-        email: 'admin@medicus.com',
-        password: 'admin123',
-        firstName: 'Super',
-        lastName: 'Admin',
-        roleId: superAdminRole.id
-      }
-    });
-    console.log('✅ SUPERADMIN created: admin@medicus.com / admin123');
+    // --- USERS DATA ---
+    const users = [
+        // SUPERADMIN
+        {
+            username: 'superadmin', email: 'admin@medicus.com', password: 'admin123',
+            firstName: 'Administrador', lastName: 'Sistema', role: 'SUPERADMIN'
+        },
+        // DOCTORS
+        {
+            username: 'dr.martinez', email: 'dr.martinez@medicus.com', password: 'doctor123',
+            firstName: 'Carlos', lastName: 'Martínez', role: 'DOCTOR',
+            specialtyConfig: { name: 'Cardiología', license: 'MED-001', phone: '+58412-1111111' }
+        },
+        {
+            username: 'dr.rodriguez', email: 'dr.rodriguez@medicus.com', password: 'doctor123',
+            firstName: 'Ana', lastName: 'Rodríguez', role: 'DOCTOR',
+            specialtyConfig: { name: 'Pediatría', license: 'MED-002', phone: '+58412-2222222' }
+        },
+        {
+            username: 'dr.lopez', email: 'dr.lopez@medicus.com', password: 'doctor123',
+            firstName: 'Miguel', lastName: 'López', role: 'DOCTOR',
+            specialtyConfig: { name: 'Dermatología', license: 'MED-003', phone: '+58412-3333333' }
+        },
+        // NURSES
+        {
+            username: 'enf.garcia', email: 'enf.garcia@medicus.com', password: 'nurse123',
+            firstName: 'María', lastName: 'García', role: 'NURSE'
+        },
+        {
+            username: 'enf.fernandez', email: 'enf.fernandez@medicus.com', password: 'nurse123',
+            firstName: 'Laura', lastName: 'Fernández', role: 'NURSE'
+        },
+        {
+            username: 'enf.torres', email: 'enf.torres@medicus.com', password: 'nurse123',
+            firstName: 'Carmen', lastName: 'Torres', role: 'NURSE'
+        },
+        // ADMINISTRATIVE
+        {
+            username: 'staff.ramirez', email: 'staff.ramirez@medicus.com', password: 'staff123',
+            firstName: 'Pedro', lastName: 'Ramírez', role: 'ADMINISTRATIVE'
+        },
+        {
+            username: 'staff.morales', email: 'staff.morales@medicus.com', password: 'staff123',
+            firstName: 'Sofía', lastName: 'Morales', role: 'ADMINISTRATIVE'
+        },
+        {
+            username: 'staff.silva', email: 'staff.silva@medicus.com', password: 'staff123',
+            firstName: 'Roberto', lastName: 'Silva', role: 'ADMINISTRATIVE'
+        },
+        // PATIENTS
+        {
+            username: 'pac.gonzalez', email: 'pac.gonzalez@email.com', password: 'patient123',
+            firstName: 'Juan', lastName: 'González', role: 'PATIENT',
+            patientConfig: { documentId: 'V-11111111', phone: '+58424-1111111', gender: 'Male' }
+        },
+        {
+            username: 'pac.perez', email: 'pac.perez@email.com', password: 'patient123',
+            firstName: 'Elena', lastName: 'Pérez', role: 'PATIENT',
+            patientConfig: { documentId: 'V-22222222', phone: '+58424-2222222', gender: 'Female' }
+        },
+        {
+            username: 'pac.diaz', email: 'pac.diaz@email.com', password: 'patient123',
+            firstName: 'Luis', lastName: 'Díaz', role: 'PATIENT',
+            patientConfig: { documentId: 'V-33333333', phone: '+58424-3333333', gender: 'Male' }
+        }
+    ];
 
-    // 2. Create Specialty and Department
-    const [dept] = await Department.findOrCreate({ where: { name: 'Cardiología' }, defaults: { name: 'Cardiología' } });
-    const [spec] = await Specialty.findOrCreate({ where: { name: 'Cardiología Clínica', departmentId: dept.id }, defaults: { name: 'Cardiología Clínica', departmentId: dept.id } });
+    for (const userData of users) {
+        if (!roles[userData.role]) continue;
 
-    // 3. Create a Doctor
-    const [docUser] = await User.findOrCreate({
-      where: { username: 'dr_gomez' },
-      defaults: {
-        username: 'dr_gomez',
-        email: 'gomez@medicus.com',
-        password: 'password123',
-        firstName: 'Alberto',
-        lastName: 'Gomez',
-        roleId: doctorRole.id
-      }
-    });
+        const [user, created] = await User.findOrCreate({
+            where: { email: userData.email }, // Check by email to avoid duplicates
+            defaults: {
+                username: userData.username,
+                email: userData.email,
+                password: userData.password,
+                firstName: userData.firstName,
+                lastName: userData.lastName,
+                roleId: roles[userData.role].id
+            }
+        });
 
-    await Doctor.findOrCreate({
-      where: { userId: docUser.id },
-      defaults: {
-        userId: docUser.id,
-        licenseNumber: 'DOC-12345',
-        phone: '+584120001122',
-        specialtyId: spec.id
-      }
-    });
+        if (created) {
+            console.log(`✅ User created: ${userData.username} (${userData.role})`);
+        }
 
-    // 4. Create a Patient
-    const [patUser] = await User.findOrCreate({
-      where: { username: 'cruiz' },
-      defaults: {
-        username: 'cruiz',
-        email: 'cruiz@gmail.com',
-        password: 'password123',
-        firstName: 'Carlos',
-        lastName: 'Ruiz',
-        roleId: (await Role.findOne({where:{name:'PATIENT'}}))?.id
-      }
-    });
+        // Handle specific role data
+        if (userData.role === 'DOCTOR' && userData.specialtyConfig) {
+            const [dept] = await Department.findOrCreate({ 
+                where: { name: userData.specialtyConfig.name }, 
+                defaults: { name: userData.specialtyConfig.name } 
+            });
+            const [spec] = await Specialty.findOrCreate({ 
+                where: { name: userData.specialtyConfig.name, departmentId: dept.id }, 
+                defaults: { name: userData.specialtyConfig.name, departmentId: dept.id } 
+            });
+            
+            await Doctor.findOrCreate({
+                where: { userId: user.id },
+                defaults: {
+                    userId: user.id,
+                    licenseNumber: userData.specialtyConfig.license,
+                    phone: userData.specialtyConfig.phone,
+                    specialtyId: spec.id
+                }
+            });
+        }
 
-    await Patient.findOrCreate({
-      where: { userId: patUser.id },
-      defaults: {
-        userId: patUser.id,
-        documentId: 'V-12345678',
-        phone: '+584125556677',
-        gender: 'Male'
-      }
-    });
+        if (userData.role === 'PATIENT' && userData.patientConfig) {
+             await Patient.findOrCreate({
+                where: { userId: user.id },
+                defaults: {
+                    userId: user.id,
+                    documentId: userData.patientConfig.documentId,
+                    phone: userData.patientConfig.phone,
+                    gender: userData.patientConfig.gender
+                }
+            });
+        }
+    }
 
     console.log('Test data seeded successfully');
   } catch (error) {

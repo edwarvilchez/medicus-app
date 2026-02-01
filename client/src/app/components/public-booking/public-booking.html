@@ -1,0 +1,305 @@
+<div class="min-vh-100 bg-gradient-to-br from-blue-50 to-white py-3">
+  <div class="container">
+    <!-- Branding Header -->
+    <div class="text-center mb-3">
+      <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
+        <div class="bg-primary rounded-3 p-2 d-inline-flex">
+          <i class="bi bi-heart-pulse-fill text-white" style="font-size: 1.5rem"></i>
+        </div>
+        <h2 class="fw-bold mb-0 text-primary">MEDICUS</h2>
+      </div>
+      <h3 class="h5 fw-bold mb-1">Agenda tu Cita Médica</h3>
+      <p class="text-muted small mb-0">Rápido, fácil y sin necesidad de crear una cuenta</p>
+    </div>
+
+    <!-- Progress Steps -->
+    <div class="row justify-content-center mb-2">
+      <div class="col-lg-7">
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="text-center flex-fill">
+            <div
+              class="rounded-circle mx-auto mb-1 d-flex align-items-center justify-content-center"
+              [ngClass]="step() >= 1 ? 'bg-primary text-white' : 'bg-light text-muted'"
+              style="width: 40px; height: 40px; font-size: 0.9rem"
+            >
+              <i class="bi bi-person-fill"></i>
+            </div>
+            <small
+              class="fw-bold"
+              [ngClass]="step() >= 1 ? 'text-primary' : 'text-muted'"
+              style="font-size: 0.75rem"
+            >
+              Tus Datos
+            </small>
+          </div>
+          <div
+            class="flex-fill"
+            style="height: 2px; margin: 0 10px 15px 10px"
+            [ngClass]="step() >= 2 ? 'bg-primary' : 'bg-light'"
+          ></div>
+          <div class="text-center flex-fill">
+            <div
+              class="rounded-circle mx-auto mb-1 d-flex align-items-center justify-content-center"
+              [ngClass]="step() >= 2 ? 'bg-primary text-white' : 'bg-light text-muted'"
+              style="width: 40px; height: 40px; font-size: 0.9rem"
+            >
+              <i class="bi bi-calendar-check"></i>
+            </div>
+            <small
+              class="fw-bold"
+              [ngClass]="step() >= 2 ? 'text-primary' : 'text-muted'"
+              style="font-size: 0.75rem"
+            >
+              Agendar Cita
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <div class="row justify-content-center">
+      <div class="col-lg-7">
+        <div class="card-premium border-0 p-3">
+          <form [formGroup]="bookingForm" (ngSubmit)="onSubmit()">
+            <!-- Step 1: Personal Information -->
+            <div *ngIf="step() === 1" class="animate-fade-in">
+              <h5 class="fw-bold mb-3" style="font-size: 1rem">
+                <i class="bi bi-person-circle text-primary me-2"></i>
+                Información Personal
+              </h5>
+
+              <div class="row g-2">
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold text-uppercase">Nombre</label>
+                  <input
+                    type="text"
+                    class="form-control glass-morphism border rounded-3 py-2"
+                    formControlName="firstName"
+                    placeholder="Juan"
+                  />
+                  <small
+                    class="text-danger"
+                    *ngIf="
+                      bookingForm.get('firstName')?.touched && bookingForm.get('firstName')?.invalid
+                    "
+                  >
+                    {{ getErrorMessage('firstName') }}
+                  </small>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold text-uppercase">Apellido</label>
+                  <input
+                    type="text"
+                    class="form-control glass-morphism border rounded-3 py-2"
+                    formControlName="lastName"
+                    placeholder="Pérez"
+                  />
+                  <small
+                    class="text-danger"
+                    *ngIf="
+                      bookingForm.get('lastName')?.touched && bookingForm.get('lastName')?.invalid
+                    "
+                  >
+                    {{ getErrorMessage('lastName') }}
+                  </small>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold text-uppercase">Email</label>
+                  <input
+                    type="email"
+                    class="form-control glass-morphism border rounded-3 py-2"
+                    formControlName="email"
+                    placeholder="correo@ejemplo.com"
+                  />
+                  <small
+                    class="text-danger"
+                    *ngIf="bookingForm.get('email')?.touched && bookingForm.get('email')?.invalid"
+                  >
+                    {{ getErrorMessage('email') }}
+                  </small>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold text-uppercase">
+                    <i class="bi bi-whatsapp text-success me-1"></i>Teléfono / WhatsApp
+                  </label>
+                  <input
+                    type="tel"
+                    class="form-control glass-morphism border rounded-3 py-2"
+                    formControlName="phone"
+                    placeholder="+58 424-1234567"
+                  />
+                  <small
+                    class="text-danger"
+                    *ngIf="bookingForm.get('phone')?.touched && bookingForm.get('phone')?.invalid"
+                  >
+                    {{ getErrorMessage('phone') }}
+                  </small>
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label small fw-bold text-uppercase">Cédula / Documento</label>
+                  <input
+                    type="text"
+                    class="form-control glass-morphism border rounded-3 py-2"
+                    formControlName="documentId"
+                    placeholder="V-12345678"
+                  />
+                  <small
+                    class="text-danger"
+                    *ngIf="
+                      bookingForm.get('documentId')?.touched &&
+                      bookingForm.get('documentId')?.invalid
+                    "
+                  >
+                    {{ getErrorMessage('documentId') }}
+                  </small>
+                </div>
+              </div>
+
+              <div class="d-grid gap-2 mt-3">
+                <button type="button" class="btn btn-primary-premium py-2" (click)="nextStep()">
+                  Continuar <i class="bi bi-arrow-right ms-2"></i>
+                </button>
+                <a routerLink="/login" class="text-center text-muted small">
+                  ¿Ya tienes cuenta? <span class="text-primary fw-bold">Inicia sesión</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- Step 2: Appointment Details -->
+            <div *ngIf="step() === 2" class="animate-fade-in">
+              <h5 class="fw-bold mb-3" style="font-size: 1rem">
+                <i class="bi bi-calendar-check text-primary me-2"></i>
+                Detalles de la Cita
+              </h5>
+
+              <div class="row g-3">
+                <div class="col-12">
+                  <label class="form-label small fw-bold text-uppercase"
+                    >Doctor / Especialidad</label
+                  >
+                  <select
+                    class="form-select glass-morphism border rounded-3 py-2"
+                    formControlName="doctorId"
+                  >
+                    <option value="">Selecciona un doctor...</option>
+                    <option *ngFor="let d of doctors()" [value]="d.id">
+                      Dr. {{ d.User.firstName }} {{ d.User.lastName }} -
+                      {{ d.Specialty?.name || 'Medicina General' }}
+                    </option>
+                  </select>
+                  <small
+                    class="text-danger"
+                    *ngIf="
+                      bookingForm.get('doctorId')?.touched && bookingForm.get('doctorId')?.invalid
+                    "
+                  >
+                    {{ getErrorMessage('doctorId') }}
+                  </small>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold text-uppercase">Fecha</label>
+                  <input
+                    type="date"
+                    class="form-control glass-morphism border rounded-3 py-2"
+                    formControlName="appointmentDate"
+                    [min]="getMinDate()"
+                  />
+                  <small
+                    class="text-danger"
+                    *ngIf="
+                      bookingForm.get('appointmentDate')?.touched &&
+                      bookingForm.get('appointmentDate')?.invalid
+                    "
+                  >
+                    {{ getErrorMessage('appointmentDate') }}
+                  </small>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold text-uppercase">Hora</label>
+                  <select
+                    class="form-select glass-morphism border rounded-3 py-2"
+                    formControlName="appointmentTime"
+                  >
+                    <option value="">Selecciona una hora...</option>
+                    <option *ngFor="let time of timeSlots" [value]="time">{{ time }}</option>
+                  </select>
+                  <small
+                    class="text-danger"
+                    *ngIf="
+                      bookingForm.get('appointmentTime')?.touched &&
+                      bookingForm.get('appointmentTime')?.invalid
+                    "
+                  >
+                    {{ getErrorMessage('appointmentTime') }}
+                  </small>
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label small fw-bold text-uppercase">Motivo de Consulta</label>
+                  <input
+                    type="text"
+                    class="form-control glass-morphism border rounded-3 py-2"
+                    formControlName="reason"
+                    placeholder="Ej: Consulta General, Control, Chequeo..."
+                  />
+                  <small
+                    class="text-danger"
+                    *ngIf="bookingForm.get('reason')?.touched && bookingForm.get('reason')?.invalid"
+                  >
+                    {{ getErrorMessage('reason') }}
+                  </small>
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label small fw-bold text-uppercase"
+                    >Observaciones (Opcional)</label
+                  >
+                  <textarea
+                    class="form-control glass-morphism border rounded-3 py-2"
+                    formControlName="notes"
+                    rows="2"
+                    placeholder="Información adicional que quieras compartir..."
+                  ></textarea>
+                </div>
+              </div>
+
+              <div class="row g-2 mt-3">
+                <div class="col-md-4">
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary w-100 py-2"
+                    (click)="previousStep()"
+                  >
+                    <i class="bi bi-arrow-left me-2"></i>Atrás
+                  </button>
+                </div>
+                <div class="col-md-8">
+                  <button
+                    type="submit"
+                    class="btn btn-primary-premium w-100 py-2"
+                    [disabled]="loading()"
+                  >
+                    <span *ngIf="!loading()">
+                      <i class="bi bi-check-circle-fill me-2"></i>Confirmar Cita
+                    </span>
+                    <span *ngIf="loading()">
+                      <span class="spinner-border spinner-border-sm me-2"></span>
+                      Agendando...
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

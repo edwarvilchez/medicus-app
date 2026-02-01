@@ -21,6 +21,7 @@ sequelize.authenticate()
   .catch(err => console.log('Error: ' + err));
 
 // Routes
+app.use('/api/public', require('./routes/public.routes')); // Public routes (no auth)
 app.use('/api/auth', require('./routes/auth.routes'));
 app.use('/api/appointments', require('./routes/appointment.routes'));
 app.use('/api/patients', require('./routes/patient.routes'));
@@ -46,6 +47,10 @@ sequelize.sync({ force: false })
   .then(async () => {
     await seedRoles();
     await seedTestData();
+    
+    // Start Scheduler
+    require('./utils/scheduler')();
+
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}.`);
     });

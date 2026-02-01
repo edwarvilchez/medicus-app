@@ -30,7 +30,11 @@ export class App implements OnInit {
   // ... methods
   isAuthPage(): boolean {
       const path = window.location.pathname;
-      return path.includes('login') || path.includes('register');
+      return path.includes('login') 
+          || path.includes('register')
+          || path.includes('agendar-cita')
+          || path.includes('forgot-password')
+          || path.includes('reset-password');
   }
 
   toggleSidebar() {

@@ -20,6 +20,10 @@ const Appointment = sequelize.define('Appointment', {
   },
   notes: {
     type: DataTypes.TEXT
+  },
+  reminderSent: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
   }
 });
 

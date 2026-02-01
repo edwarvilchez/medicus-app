@@ -27,12 +27,14 @@ exports.createAppointment = async (req, res) => {
     const doctorName = `${appointmentDetails.Doctor.User.firstName} ${appointmentDetails.Doctor.User.lastName}`;
     const appointmentDate = new Date(date);
     
-    // Send WhatsApp (async, don't block response)
-    whatsapp.sendAppointmentReminder(patientPhone, {
+    // Send WhatsApp with Calendar Link
+    whatsapp.sendAppointmentConfirmation(patientPhone, {
       patientName,
       doctorName,
       date: appointmentDate.toLocaleDateString(),
-      time: appointmentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      time: appointmentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      appointmentId: appointment.id,
+      rawDate: appointmentDate
     }).catch(err => console.error('WhatsApp Error:', err));
 
     res.status(201).json(appointmentDetails);
@@ -61,8 +63,91 @@ exports.updateStatus = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
     await Appointment.update({ status }, { where: { id } });
+    
+    // Handle specific status updates (like cancellation) if done via this generic endpoint
+    if (status === 'Cancelled') {
+        const appointment = await Appointment.findByPk(id, {
+            include: [{ model: Patient, include: [User] }]
+        });
+        
+        if (appointment) {
+            const dateObj = new Date(appointment.date);
+            whatsapp.sendCancellationNotice(appointment.Patient.User.phone, {
+                patientName: appointment.Patient.User.firstName,
+                date: dateObj.toLocaleDateString(),
+                time: dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            }).catch(e => console.error(e));
+        }
+    }
+
     res.json({ message: 'Status updated' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
+};
+
+exports.cancelAppointment = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const appointment = await Appointment.findByPk(id, {
+            include: [{ model: Patient, include: [User] }]
+        });
+
+        if (!appointment) return res.status(404).json({ error: 'Cita no encontrada' });
+
+        appointment.status = 'Cancelled';
+        await appointment.save();
+
+        const dateObj = new Date(appointment.date);
+        
+        // Notify patient
+        whatsapp.sendCancellationNotice(appointment.Patient.User.phone, {
+            patientName: appointment.Patient.User.firstName,
+            date: dateObj.toLocaleDateString(),
+            time: dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
+
+        res.json({ message: 'Cita cancelada con éxito' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+exports.rescheduleAppointment = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { newDate } = req.body;
+        
+        const appointment = await Appointment.findByPk(id, {
+             include: [
+                { model: Patient, include: [User] },
+                { model: Doctor, include: [User] }
+            ]
+        });
+
+        if (!appointment) return res.status(404).json({ error: 'Cita no encontrada' });
+
+        appointment.date = newDate;
+        appointment.status = 'Confirmed'; // Re-confirm if it was cancelled
+        appointment.reminderSent = false; // Reset reminder
+        await appointment.save();
+
+        const patientName = `${appointment.Patient.User.firstName} ${appointment.Patient.User.lastName}`;
+        const doctorName = `${appointment.Doctor.User.firstName} ${appointment.Doctor.User.lastName}`;
+        const appointmentDate = new Date(newDate);
+
+        // Send new confirmation
+        whatsapp.sendAppointmentConfirmation(appointment.Patient.User.phone, {
+            patientName,
+            doctorName,
+            date: appointmentDate.toLocaleDateString(),
+            time: appointmentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            appointmentId: appointment.id,
+            rawDate: appointmentDate
+        });
+
+        res.json({ message: 'Cita reagendada con éxito', appointment });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 };

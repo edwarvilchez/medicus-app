@@ -137,13 +137,26 @@
             </select>
           </div>
 
-          <div class="mb-3">
-            <label class="form-label small fw-bold text-uppercase">Fecha y Hora</label>
-            <input
-              type="datetime-local"
-              class="form-control glass-morphism border rounded-3 py-2"
-              formControlName="date"
-            />
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label small fw-bold text-uppercase">Fecha</label>
+              <input
+                type="date"
+                class="form-control glass-morphism border rounded-3 py-2"
+                formControlName="appointmentDate"
+                [min]="getMinDate()"
+              />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-bold text-uppercase">Hora</label>
+              <select
+                class="form-select glass-morphism border rounded-3 py-2"
+                formControlName="appointmentTime"
+              >
+                <option value="">Selecciona una hora</option>
+                <option *ngFor="let time of timeSlots" [value]="time">{{ time }}</option>
+              </select>
+            </div>
           </div>
 
           <div class="mb-3">

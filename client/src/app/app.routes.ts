@@ -1,6 +1,9 @@
 import { Routes } from '@angular/router';
 import { Login } from './components/login/login';
 import { Register } from './components/register/register';
+import { ForgotPassword } from './components/forgot-password/forgot-password';
+import { ResetPassword } from './components/reset-password/reset-password';
+import { PublicBooking } from './components/public-booking/public-booking';
 import { Dashboard } from './components/dashboard/dashboard';
 import { Patients } from './components/patients/patients';
 import { Appointments } from './components/appointments/appointments';
@@ -15,6 +18,9 @@ import { roleGuard } from './guards/role.guard';
 export const routes: Routes = [
   { path: 'login', component: Login },
   { path: 'register', component: Register },
+  { path: 'forgot-password', component: ForgotPassword },
+  { path: 'reset-password/:token', component: ResetPassword },
+  { path: 'agendar-cita', component: PublicBooking }, // Public booking - no auth required
   { 
     path: '', 
     redirectTo: 'dashboard', 

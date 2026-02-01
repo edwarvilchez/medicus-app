@@ -1,0 +1,134 @@
+# Changelog - Medicus
+
+Todas las modificaciones notables del proyecto serán documentadas en este archivo.
+
+## [1.2.0] - 2026-01-31
+
+### 🎉 Nuevas Características
+
+#### Sistema de Recuperación de Contraseña
+
+- ✅ **Forgot Password**: Endpoint para solicitar restablecimiento de contraseña
+- ✅ **Reset Password**: Endpoint para cambiar contraseña con token seguro
+- ✅ **Tokens Seguros**: Generación de tokens con expiración de 1 hora
+- ✅ **Notificaciones Email**:
+  - Email con enlace de recuperación
+  - Email de confirmación al cambiar contraseña
+- ✅ **Componentes Frontend**:
+  - `ForgotPassword`: Formulario para solicitar recuperación
+  - `ResetPassword`: Formulario para establecer nueva contraseña
+  - Validación de contraseñas coincidentes
+  - Toggles de visibilidad de contraseña
+
+#### Mejoras de UI/UX
+
+- ✅ **Branding Consistente**: Logo y nombre "MEDICUS" en todas las páginas públicas
+- ✅ **Layouts Optimizados**: Formularios sin scroll en pantallas normales
+- ✅ **Páginas Públicas Limpias**: Sin sidebar/navbar en:
+  - Login
+  - Registro
+  - Agendamiento público
+  - Recuperación de contraseña
+  - Restablecimiento de contraseña
+
+#### Sistema de Notificaciones Mejorado
+
+- ✅ **Email de Confirmación**: Envío automático al agendar citas públicas
+- ✅ **Formato Profesional**: Emails con detalles completos y formato atractivo
+- ✅ **WhatsApp Simulado**: Mensajes en consola con enlace a Google Calendar
+- ✅ **Logs Mejorados**: Indicadores visuales de éxito/error en notificaciones
+
+### 🔧 Mejoras Técnicas
+
+#### Backend
+
+- **Modelo User**: Agregados campos `resetToken` y `resetExpires`
+- **Auth Controller**: Métodos `forgotPassword` y `resetPassword`
+- **Email Service**: Configurado con Nodemailer y Gmail
+- **Public Controller**: Envío de emails de confirmación de citas
+- **Migración DB**: Script para agregar columnas de reset a tabla Users
+
+#### Frontend
+
+- **Rutas**: Agregadas `/forgot-password` y `/reset-password/:token`
+- **Componentes**: Nuevos componentes standalone de Angular
+- **Validación**: Formularios reactivos con validación en tiempo real
+- **Navegación**: Enlaces integrados en login y registro
+
+#### Configuración
+
+- **Variables de Entorno**: Configuración SMTP completa
+  ```
+  SMTP_HOST=smtp.gmail.com
+  SMTP_PORT=587
+  SMTP_SECURE=false
+  SMTP_EMAIL=edwarvilchez1977@gmail.com
+  SMTP_PASSWORD=[App Password]
+  FROM_NAME=Clínica Medicus
+  FROM_EMAIL=edwarvilchez1977@gmail.com
+  CLIENT_URL=http://localhost:4200
+  ```
+
+### 🎨 Diseño
+
+#### Componentes Optimizados
+
+- **Login**: Branding agregado, layout mejorado
+- **Register**: Formulario compacto sin scroll
+- **PublicBooking**: Diseño en 2 pasos optimizado
+- **ForgotPassword**: Header con branding y diseño limpio
+- **ResetPassword**: Validación visual de contraseñas
+
+#### Espaciado y Tipografía
+
+- Padding reducido en todos los formularios públicos
+- Títulos más compactos (h5, h6 en lugar de h2, h3)
+- Espaciado entre campos optimizado (g-2 en lugar de g-3)
+- Botones con padding uniforme (py-2)
+
+### 🔒 Seguridad
+
+- ✅ Tokens de un solo uso con expiración
+- ✅ Hashing de contraseñas con bcryptjs
+- ✅ Validación de email en backend
+- ✅ Protección contra tokens expirados
+
+### 📝 Documentación
+
+- Actualizado CHANGELOG.md
+- Documentadas variables de entorno necesarias
+- Instrucciones de configuración de email
+
+### 🐛 Correcciones
+
+- Corregido script de migración SQL usando queryInterface de Sequelize
+- Mejorado manejo de errores en envío de emails
+- Logs más descriptivos para debugging
+
+---
+
+## [1.1.0] - 2026-01-30
+
+### Características Previas
+
+- Sistema de agendamiento público
+- Gestión de pacientes, doctores y citas
+- Dashboard con estadísticas
+- Sistema de roles y permisos
+- Notificaciones WhatsApp (simuladas)
+
+---
+
+## Formato del Changelog
+
+Este changelog sigue el formato de [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
+y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
+
+### Tipos de Cambios
+
+- **Added** (Agregado): Nuevas características
+- **Changed** (Cambiado): Cambios en funcionalidad existente
+- **Deprecated** (Obsoleto): Características que serán removidas
+- **Removed** (Removido): Características removidas
+- **Fixed** (Corregido): Corrección de bugs
+- **Security** (Seguridad): Cambios de seguridad

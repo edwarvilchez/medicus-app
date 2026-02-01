@@ -1,1 +1,291 @@
-<p>register works!</p>
+<div class="min-vh-100 d-flex align-items-center justify-content-center bg-light py-2">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 col-xl-7">
+        <div class="card-premium border-0 p-3">
+          <!-- Branding Header -->
+          <div class="text-center mb-2">
+            <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
+              <div class="bg-primary rounded-3 p-2 d-inline-flex">
+                <i class="bi bi-heart-pulse-fill text-white" style="font-size: 1.3rem"></i>
+              </div>
+              <h2 class="fw-bold mb-0 text-primary" style="font-size: 1.5rem">MEDICUS</h2>
+            </div>
+            <h3 class="h6 fw-bold mb-1">Registro de Paciente</h3>
+            <p class="text-muted small mb-0">Completa tus datos para crear tu cuenta</p>
+          </div>
+
+          <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+            <!-- Información de Usuario -->
+            <div class="mb-2">
+              <h6 class="fw-bold mb-2 text-primary" style="font-size: 0.9rem">
+                <i class="bi bi-person-circle me-2"></i>Información de Usuario
+              </h6>
+
+              <div class="row g-2">
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold text-uppercase">Nombre de Usuario</label>
+                  <input
+                    type="text"
+                    class="form-control glass-morphism border rounded-3 py-2"
+                    formControlName="username"
+                    placeholder="usuario123"
+                  />
+                  <small
+                    class="text-danger"
+                    *ngIf="
+                      registerForm.get('username')?.touched && registerForm.get('username')?.invalid
+                    "
+                  >
+                    {{ getErrorMessage('username') }}
+                  </small>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold text-uppercase">Email</label>
+                  <input
+                    type="email"
+                    class="form-control glass-morphism border rounded-3 py-2"
+                    formControlName="email"
+                    placeholder="correo@ejemplo.com"
+                  />
+                  <small
+                    class="text-danger"
+                    *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.invalid"
+                  >
+                    {{ getErrorMessage('email') }}
+                  </small>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold text-uppercase">Contraseña</label>
+                  <input
+                    type="password"
+                    class="form-control glass-morphism border rounded-3 py-2"
+                    formControlName="password"
+                    placeholder="••••••••"
+                  />
+                  <small
+                    class="text-danger"
+                    *ngIf="
+                      registerForm.get('password')?.touched && registerForm.get('password')?.invalid
+                    "
+                  >
+                    {{ getErrorMessage('password') }}
+                  </small>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold text-uppercase"
+                    >Confirmar Contraseña</label
+                  >
+                  <input
+                    type="password"
+                    class="form-control glass-morphism border rounded-3 py-2"
+                    formControlName="confirmPassword"
+                    placeholder="••••••••"
+                  />
+                  <small
+                    class="text-danger"
+                    *ngIf="
+                      registerForm.get('confirmPassword')?.touched &&
+                      registerForm.get('confirmPassword')?.invalid
+                    "
+                  >
+                    {{ getErrorMessage('confirmPassword') }}
+                  </small>
+                </div>
+              </div>
+            </div>
+
+            <!-- Información Personal -->
+            <div class="mb-2">
+              <h6 class="fw-bold mb-2 text-primary" style="font-size: 0.9rem">
+                <i class="bi bi-person-vcard me-2"></i>Información Personal
+              </h6>
+
+              <div class="row g-2">
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold text-uppercase">Nombre</label>
+                  <input
+                    type="text"
+                    class="form-control glass-morphism border rounded-3 py-2"
+                    formControlName="firstName"
+                    placeholder="Juan"
+                  />
+                  <small
+                    class="text-danger"
+                    *ngIf="
+                      registerForm.get('firstName')?.touched &&
+                      registerForm.get('firstName')?.invalid
+                    "
+                  >
+                    {{ getErrorMessage('firstName') }}
+                  </small>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold text-uppercase">Apellido</label>
+                  <input
+                    type="text"
+                    class="form-control glass-morphism border rounded-3 py-2"
+                    formControlName="lastName"
+                    placeholder="Pérez"
+                  />
+                  <small
+                    class="text-danger"
+                    *ngIf="
+                      registerForm.get('lastName')?.touched && registerForm.get('lastName')?.invalid
+                    "
+                  >
+                    {{ getErrorMessage('lastName') }}
+                  </small>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold text-uppercase">Cédula / Documento</label>
+                  <input
+                    type="text"
+                    class="form-control glass-morphism border rounded-3 py-2"
+                    formControlName="documentId"
+                    placeholder="V-12345678"
+                  />
+                  <small
+                    class="text-danger"
+                    *ngIf="
+                      registerForm.get('documentId')?.touched &&
+                      registerForm.get('documentId')?.invalid
+                    "
+                  >
+                    {{ getErrorMessage('documentId') }}
+                  </small>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold text-uppercase">
+                    <i class="bi bi-whatsapp text-success me-1"></i>Teléfono / WhatsApp
+                  </label>
+                  <input
+                    type="tel"
+                    class="form-control glass-morphism border rounded-3 py-2"
+                    formControlName="phone"
+                    placeholder="+58 424-1234567"
+                  />
+                  <small
+                    class="text-danger"
+                    *ngIf="registerForm.get('phone')?.touched && registerForm.get('phone')?.invalid"
+                  >
+                    {{ getErrorMessage('phone') }}
+                  </small>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold text-uppercase">Fecha de Nacimiento</label>
+                  <input
+                    type="date"
+                    class="form-control glass-morphism border rounded-3 py-2"
+                    formControlName="birthDate"
+                  />
+                  <small
+                    class="text-danger"
+                    *ngIf="
+                      registerForm.get('birthDate')?.touched &&
+                      registerForm.get('birthDate')?.invalid
+                    "
+                  >
+                    {{ getErrorMessage('birthDate') }}
+                  </small>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold text-uppercase">Género</label>
+                  <select
+                    class="form-select glass-morphism border rounded-3 py-2"
+                    formControlName="gender"
+                  >
+                    <option value="">Seleccionar...</option>
+                    <option value="Male">Masculino</option>
+                    <option value="Female">Femenino</option>
+                    <option value="Other">Otro</option>
+                  </select>
+                  <small
+                    class="text-danger"
+                    *ngIf="
+                      registerForm.get('gender')?.touched && registerForm.get('gender')?.invalid
+                    "
+                  >
+                    {{ getErrorMessage('gender') }}
+                  </small>
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label small fw-bold text-uppercase"
+                    >Dirección (Opcional)</label
+                  >
+                  <textarea
+                    class="form-control glass-morphism border rounded-3 py-2"
+                    formControlName="address"
+                    rows="1"
+                    placeholder="Calle, ciudad, estado..."
+                  ></textarea>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold text-uppercase"
+                    >Tipo de Sangre (Opcional)</label
+                  >
+                  <select
+                    class="form-select glass-morphism border rounded-3 py-2"
+                    formControlName="bloodType"
+                  >
+                    <option value="">Seleccionar...</option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                  </select>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold text-uppercase">Alergias (Opcional)</label>
+                  <input
+                    type="text"
+                    class="form-control glass-morphism border rounded-3 py-2"
+                    formControlName="allergies"
+                    placeholder="Penicilina, Polen..."
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Botones -->
+            <div class="d-grid gap-2 mt-2">
+              <button type="submit" class="btn btn-primary-premium py-2" [disabled]="loading">
+                <span *ngIf="!loading">
+                  <i class="bi bi-person-plus-fill me-2"></i>Crear Cuenta
+                </span>
+                <span *ngIf="loading">
+                  <span class="spinner-border spinner-border-sm me-2"></span>
+                  Registrando...
+                </span>
+              </button>
+
+              <div class="text-center">
+                <p class="text-muted mb-0">
+                  ¿Ya tienes una cuenta?
+                  <a routerLink="/login" class="text-primary fw-bold text-decoration-none">
+                    Inicia Sesión
+                  </a>
+                </p>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
