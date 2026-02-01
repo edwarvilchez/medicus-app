@@ -2,6 +2,7 @@ import { Component, Output, EventEmitter } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../services/auth.service';
+import { LanguageService } from '../../../services/language.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -14,7 +15,14 @@ import Swal from 'sweetalert2';
 export class Navbar {
   @Output() toggleSidebar = new EventEmitter<void>();
 
-  constructor(public authService: AuthService) {}
+  constructor(
+    public authService: AuthService, 
+    public langService: LanguageService
+  ) {}
+
+  setLanguage(lang: 'es' | 'en') {
+    this.langService.setLanguage(lang);
+  }
 
   logout() {
     Swal.fire({

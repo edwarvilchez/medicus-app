@@ -10,11 +10,11 @@
           <i class="bi bi-heart-pulse-fill text-white fs-1"></i>
         </div>
         <h1 class="display-4 fw-bold mb-3">
-          Tu Socio en <span class="gradient-text">Salud Digital</span>
+          {{ langService.translate('landing.title') }}
+          <span class="gradient-text">{{ langService.translate('landing.subtitle') }}</span>
         </h1>
         <p class="fs-5 text-muted mb-5 lh-lg">
-          Gestiona tu clínica con la plataforma más avanzada. Optimiza citas, historiales clínicos y
-          comunicación con pacientes de forma segura y eficiente.
+          {{ langService.translate('landing.description') }}
         </p>
       </div>
 
@@ -25,9 +25,9 @@
             (click)="showSecurityLaws()"
           >
             <i class="bi bi-shield-check text-primary fs-3 mb-2 d-block"></i>
-            <h5 class="fw-bold mb-1">Seguridad Total</h5>
+            <h5 class="fw-bold mb-1">{{ langService.translate('landing.security') }}</h5>
             <p class="small text-muted mb-0">
-              Protección de datos bajo estándares internacionales.
+              {{ langService.translate('landing.securityDesc') }}
             </p>
           </div>
         </div>
@@ -37,8 +37,10 @@
             (click)="checkReminders()"
           >
             <i class="bi bi-whatsapp text-success fs-3 mb-2 d-block"></i>
-            <h5 class="fw-bold mb-1">Recordatorios</h5>
-            <p class="small text-muted mb-0">Automatiza avisos por WhatsApp a tus pacientes.</p>
+            <h5 class="fw-bold mb-1">{{ langService.translate('landing.reminders') }}</h5>
+            <p class="small text-muted mb-0">
+              {{ langService.translate('landing.remindersDesc') }}
+            </p>
           </div>
         </div>
       </div>
@@ -55,8 +57,8 @@
             </div>
             <h2 class="fw-bold mb-0 text-primary">MEDICUS</h2>
           </div>
-          <h3 class="h5 fw-bold mb-2">Iniciar Sesión</h3>
-          <p class="text-muted small">Ingresa tus credenciales para acceder</p>
+          <h3 class="h5 fw-bold mb-2">{{ langService.translate('landing.loginTitle') }}</h3>
+          <p class="text-muted small">{{ langService.translate('landing.loginDesc') }}</p>
         </div>
 
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
@@ -65,7 +67,9 @@
           </div>
 
           <div class="mb-4">
-            <label class="form-label small fw-bold text-uppercase">Email</label>
+            <label class="form-label small fw-bold text-uppercase">{{
+              langService.translate('auth.email')
+            }}</label>
             <div class="input-group glass-morphism rounded-3 border">
               <span class="input-group-text bg-transparent border-0"
                 ><i class="bi bi-envelope text-muted"></i
@@ -81,10 +85,12 @@
 
           <div class="mb-4">
             <div class="d-flex justify-content-between">
-              <label class="form-label small fw-bold text-uppercase">Contraseña</label>
-              <a routerLink="/forgot-password" class="small text-primary text-decoration-none"
-                >¿Olvidaste tu contraseña?</a
-              >
+              <label class="form-label small fw-bold text-uppercase">{{
+                langService.translate('auth.password')
+              }}</label>
+              <a routerLink="/forgot-password" class="small text-primary text-decoration-none">{{
+                langService.translate('landing.forgotPassword')
+              }}</a>
             </div>
             <div class="input-group glass-morphism rounded-3 border">
               <span class="input-group-text bg-transparent border-0"
@@ -112,18 +118,19 @@
             class="btn btn-primary-premium w-100 py-3 mb-4 mt-2 fs-5"
             [disabled]="loginForm.invalid || loading()"
           >
-            <span *ngIf="!loading()">Ingresar al Sistema</span>
+            <span *ngIf="!loading()">{{ langService.translate('landing.enterSystem') }}</span>
             <span *ngIf="loading()"
-              ><span class="spinner-border spinner-border-sm me-2"></span> Cargando...</span
+              ><span class="spinner-border spinner-border-sm me-2"></span>
+              {{ langService.translate('common.loading') }}</span
             >
           </button>
 
           <div class="text-center">
             <p class="small text-muted">
-              ¿No tienes cuenta?
-              <a routerLink="/register" class="text-primary fw-bold text-decoration-none"
-                >Regístrate aquí</a
-              >
+              {{ langService.translate('landing.noAccount') }}
+              <a routerLink="/register" class="text-primary fw-bold text-decoration-none">{{
+                langService.translate('landing.registerHere')
+              }}</a>
             </p>
           </div>
         </form>

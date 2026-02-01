@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { LanguageService } from '../../services/language.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -30,7 +31,10 @@ export class Payments implements OnInit {
     );
   });
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    public langService: LanguageService
+  ) {}
 
   ngOnInit() {
     this.loadPayments();
@@ -131,36 +135,36 @@ export class Payments implements OnInit {
 
   viewReceipt(payment: any) {
     Swal.fire({
-      title: 'Comprobante de Pago',
+      title: this.langService.translate('payments.receipt'),
       html: `
         <div class="text-start border p-3 rounded bg-light">
           <div class="d-flex justify-content-between mb-2">
-            <strong>Referencia:</strong> <span>#${payment.reference || 'N/A'}</span>
+            <strong>${this.langService.translate('payments.reference')}:</strong> <span>#${payment.reference || 'N/A'}</span>
           </div>
           <div class="d-flex justify-content-between mb-2">
-            <strong>Paciente:</strong> <span>${payment.Patient?.User?.firstName} ${payment.Patient?.User?.lastName}</span>
+            <strong>${this.langService.translate('payments.patient')}:</strong> <span>${payment.Patient?.User?.firstName} ${payment.Patient?.User?.lastName}</span>
           </div>
           <div class="d-flex justify-content-between mb-2">
-            <strong>Concepto:</strong> <span>${payment.concept}</span>
+            <strong>${this.langService.translate('payments.concept')}:</strong> <span>${payment.concept}</span>
           </div>
           <div class="d-flex justify-content-between mb-2">
-            <strong>Monto:</strong> <span class="fw-bold text-success">$${payment.amount.toFixed(2)}</span>
+            <strong>${this.langService.translate('payments.amount')}:</strong> <span class="fw-bold text-success">$${payment.amount.toFixed(2)}</span>
           </div>
           <div class="d-flex justify-content-between mb-2">
-            <strong>Fecha:</strong> <span>${new Date(payment.createdAt).toLocaleDateString()}</span>
+            <strong>${this.langService.translate('payments.fecha')}:</strong> <span>${new Date(payment.createdAt).toLocaleDateString()}</span>
           </div>
           <div class="d-flex justify-content-between">
-            <strong>Estado:</strong> 
+            <strong>${this.langService.translate('common.status')}:</strong> 
             <span class="badge ${payment.status === 'Paid' ? 'bg-success' : 'bg-warning'} text-white">
-              ${payment.status === 'Paid' ? 'Pagado' : 'Pendiente'}
+              ${payment.status === 'Paid' ? this.langService.translate('payments.paid') : this.langService.translate('payments.pending')}
             </span>
           </div>
         </div>
       `,
-      confirmButtonText: 'Cerrar',
+      confirmButtonText: this.langService.translate('common.cancel'),
       confirmButtonColor: '#0ea5e9',
       showCancelButton: true,
-      cancelButtonText: '<i class="bi bi-printer me-1"></i> Imprimir',
+      cancelButtonText: `<i class="bi bi-printer me-1"></i> ${this.langService.translate('common.printing')}`,
       cancelButtonColor: '#64748b'
     }).then(result => {
       if (result.dismiss === Swal.DismissReason.cancel) {

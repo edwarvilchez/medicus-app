@@ -48,6 +48,30 @@
             <i class="bi bi-chevron-down small text-muted"></i>
           </button>
         </div>
+        <div class="d-flex align-items-center bg-light rounded-pill px-2 py-1 me-2 border">
+          <button
+            [class]="
+              langService.lang() === 'es'
+                ? 'btn btn-xs btn-primary rounded-circle p-1 active-lang'
+                : 'btn btn-xs text-muted p-1'
+            "
+            (click)="setLanguage('es')"
+            style="width: 24px; height: 24px; font-size: 10px; font-weight: bold"
+          >
+            ES
+          </button>
+          <button
+            [class]="
+              langService.lang() === 'en'
+                ? 'btn btn-xs btn-primary rounded-circle p-1 active-lang'
+                : 'btn btn-xs text-muted p-1'
+            "
+            (click)="setLanguage('en')"
+            style="width: 24px; height: 24px; font-size: 10px; font-weight: bold"
+          >
+            EN
+          </button>
+        </div>
         <button class="btn btn-sm btn-outline-danger border-0 rounded-circle" (click)="logout()">
           <i class="bi bi-box-arrow-right fs-5"></i>
         </button>

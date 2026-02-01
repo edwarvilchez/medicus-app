@@ -1,11 +1,11 @@
 <div class="animate-fade-in">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-      <h2 class="mb-1">Control de Pagos</h2>
-      <p class="text-muted">Gestión de facturación y estados de cuenta</p>
+      <h2 class="mb-1">{{ langService.translate('payments.title') }}</h2>
+      <p class="text-muted">{{ langService.translate('payments.subtitle') }}</p>
     </div>
     <button class="btn btn-primary-premium" (click)="createNewPayment()">
-      <i class="bi bi-plus-circle me-2"></i> Nuevo Pago
+      <i class="bi bi-plus-circle me-2"></i> {{ langService.translate('payments.newPayment') }}
     </button>
   </div>
 
@@ -19,14 +19,14 @@
           <input
             type="text"
             class="form-control bg-transparent border-0 py-2 shadow-none"
-            placeholder="Buscar por referencia, paciente o concepto..."
+            [placeholder]="langService.translate('common.search')"
             (input)="updateSearch($event)"
           />
         </div>
       </div>
       <div class="col-md-3">
         <button class="btn btn-primary-premium w-100 py-2" (click)="exportReport()">
-          Exportar Reporte
+          {{ langService.translate('payments.export') }}
         </button>
       </div>
     </div>
@@ -37,13 +37,13 @@
       <table class="table table-hover align-middle mb-0">
         <thead class="bg-light">
           <tr>
-            <th class="ps-4 py-3">Referencia</th>
-            <th>Paciente</th>
-            <th>Concepto</th>
-            <th>Monto</th>
-            <th>Fecha</th>
-            <th>Estado</th>
-            <th class="text-end pe-4">Acciones</th>
+            <th class="ps-4 py-3">{{ langService.translate('payments.reference') }}</th>
+            <th>{{ langService.translate('payments.patient') }}</th>
+            <th>{{ langService.translate('payments.concept') }}</th>
+            <th>{{ langService.translate('payments.amount') }}</th>
+            <th>{{ langService.translate('payments.fecha') }}</th>
+            <th>{{ langService.translate('common.status') }}</th>
+            <th class="text-end pe-4">{{ langService.translate('common.actions') }}</th>
           </tr>
         </thead>
         <tbody>
@@ -61,7 +61,11 @@
                     ? 'bg-success bg-opacity-10 text-success'
                     : 'bg-warning bg-opacity-10 text-warning'
                 "
-                >{{ p.status }}</span
+                >{{
+                  p.status === 'Paid'
+                    ? langService.translate('payments.paid')
+                    : langService.translate('payments.pending')
+                }}</span
               >
             </td>
             <td class="text-end pe-4">
@@ -76,14 +80,16 @@
                 class="btn btn-sm btn-light border-0 text-success"
                 *ngIf="p.status === 'Pending'"
                 (click)="collectPayment(p.id)"
-                title="Cobrar"
+                [title]="langService.translate('payments.collect')"
               >
-                <i class="bi bi-wallet2 me-1"></i> Cobrar
+                <i class="bi bi-wallet2 me-1"></i> {{ langService.translate('payments.collect') }}
               </button>
             </td>
           </tr>
           <tr *ngIf="filteredPayments().length === 0">
-            <td colspan="7" class="text-center py-4 text-muted">No se encontraron pagos</td>
+            <td colspan="7" class="text-center py-4 text-muted">
+              {{ langService.translate('common.noResults') || 'No data found' }}
+            </td>
           </tr>
         </tbody>
       </table>

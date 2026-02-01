@@ -2,6 +2,20 @@
 
 Todas las modificaciones notables del proyecto serán documentadas en este archivo.
 
+## [1.3.1] - 2026-02-01
+
+### 🌎 Soporte Multi-idioma (i18n)
+
+#### Sistema de Traducción
+
+- ✅ **Motor Reactivo**: Implementado sistema de traducción basado en Angular Signals para un cambio de idioma instantáneo sin recarga de página.
+- ✅ **Idiomas Soportados**: Lanzamiento inicial con Español e Inglés (ES/EN).
+- ✅ **Interfaz de Usuario**: Añadido selector de idioma en la barra de navegación.
+- ✅ **Cobertura Inicial**: Traducción completa de los módulos de Login, Sidebar y Control de Pagos.
+- ✅ **Persistencia**: El idioma seleccionado se guarda en el almacenamiento local del navegador.
+
+---
+
 ## [1.3.0] - 2026-02-01
 
 ### 💰 Inteligencia Financiera y Gestión de Pagos
