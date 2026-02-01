@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { Navbar } from './components/shared/navbar/navbar';
 import { Sidebar } from './components/shared/sidebar/sidebar';
 import { filter } from 'rxjs/operators';
+import { LanguageService } from './services/language.service';
 
 @Component({
   selector: 'app-root',
@@ -15,8 +16,12 @@ import { filter } from 'rxjs/operators';
 export class App implements OnInit {
   protected readonly title = signal('Medicus');
   isSidebarOpen = false;
+  currentYear = new Date().getFullYear();
   
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    public langService: LanguageService
+  ) {}
 
   ngOnInit() {
     // Close sidebar on route change (mobile UX)

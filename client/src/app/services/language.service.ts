@@ -188,6 +188,10 @@ export class LanguageService {
         viewProfile: 'Ver Perfil',
         schedule: 'Agendar',
         available: 'Disponible'
+      },
+      footer: {
+        devLove: 'Desarrollado con ❤️ por Piridawly Team',
+        rights: 'Todos los derechos reservados'
       }
     },
     en: {
@@ -366,6 +370,10 @@ export class LanguageService {
         viewProfile: 'View Profile',
         schedule: 'Schedule',
         available: 'Available'
+      },
+      footer: {
+        devLove: 'Developed with ❤️ by Piridawly Team',
+        rights: 'All rights reserved'
       }
     }
   };

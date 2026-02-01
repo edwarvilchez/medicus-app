@@ -11,6 +11,35 @@
 
     <main class="main-content">
       <router-outlet></router-outlet>
+
+      <!-- Footer -->
+      <footer class="app-footer mt-auto py-4" *ngIf="!isAuthPage()">
+        <div class="container-fluid">
+          <div class="row align-items-center">
+            <div class="col-md-6 text-center text-md-start">
+              <p class="mb-0 text-muted">
+                &copy; {{ currentYear }} Medicus. {{ langService.translate('footer.rights') }}.
+              </p>
+              <small class="gradient-text fw-bold">{{
+                langService.translate('footer.devLove')
+              }}</small>
+            </div>
+            <div class="col-md-6 text-center text-md-end mt-3 mt-md-0">
+              <div class="social-links d-flex justify-content-center justify-content-md-end gap-3">
+                <a href="#" class="social-icon instagram" title="Instagram"
+                  ><i class="bi bi-instagram"></i
+                ></a>
+                <a href="#" class="social-icon facebook" title="Facebook"
+                  ><i class="bi bi-facebook"></i
+                ></a>
+                <a href="#" class="social-icon tiktok" title="TikTok"
+                  ><i class="bi bi-tiktok"></i
+                ></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
     </main>
   </div>
 </div>
