@@ -1,10 +1,13 @@
 <div
-  class="min-vh-100 d-flex align-items-start justify-content-center bg-light py-4"
-  style="background: radial-gradient(circle at top right, #e0f2fe 0%, #f8fafc 50%)"
+  class="min-vh-100 bg-light py-3 px-2"
+  style="
+    background: radial-gradient(circle at top right, #e0f2fe 0%, #f8fafc 50%);
+    overflow-y: auto;
+  "
 >
-  <div class="row w-100 max-width-1200 px-4 my-0">
+  <div class="row g-4 w-100 mx-auto" style="max-width: 1200px">
     <!-- Left Side: Hero content -->
-    <div class="col-lg-5 d-none d-lg-flex flex-column justify-content-center pe-5">
+    <div class="col-lg-4 offset-lg-1 d-none d-lg-flex flex-column justify-content-center pe-4">
       <div class="mb-4">
         <div class="bg-primary rounded-4 p-3 d-inline-block shadow-lg mb-4">
           <i class="bi bi-heart-pulse-fill text-white fs-1"></i>
@@ -22,7 +25,7 @@
             routerLink="/agendar-cita"
           >
             <div class="d-flex align-items-center gap-3">
-              <i class="bi bi-calendar-check text-primary fs-3"></i>
+              <i class="bi bi-calendar-check text-primary fs-4"></i>
               <div>
                 <h6 class="fw-bold mb-0">Agenda Fácil</h6>
                 <p class="small text-muted mb-0">Reserva tus citas médicas en segundos.</p>
@@ -33,7 +36,7 @@
         <div class="col-12 col-xl-10">
           <div class="glass-morphism p-3 rounded-4 shadow-sm">
             <div class="d-flex align-items-center gap-3">
-              <i class="bi bi-file-medical text-success fs-3"></i>
+              <i class="bi bi-file-medical text-success fs-4"></i>
               <div>
                 <h6 class="fw-bold mb-0">Historial Digital</h6>
                 <p class="small text-muted mb-0">
@@ -47,28 +50,27 @@
     </div>
 
     <!-- Right Side: Register Form -->
-    <div class="col-lg-7">
-      <div class="card-premium border-0 p-3 shadow-lg animate-fade-in">
-        <div class="text-center mb-3">
+    <div class="col-lg-6">
+      <div class="card-premium border-0 p-2 shadow-lg animate-fade-in">
+        <div class="text-center mb-2">
           <!-- Branding -->
           <div class="d-flex align-items-center justify-content-center gap-2 mb-1">
             <div class="bg-primary rounded-3 p-1.5 d-inline-flex">
               <i class="bi bi-heart-pulse-fill text-white" style="font-size: 1rem"></i>
             </div>
-            <h2 class="fw-bold mb-0 text-primary" style="font-size: 1.3rem">MEDICUS</h2>
+            <h2 class="fw-bold mb-0 text-primary" style="font-size: 1.2rem">MEDICUS</h2>
           </div>
-          <p class="fw-bold mb-0">Crear Cuenta</p>
-          <p class="text-muted x-small mb-0">Completa el formulario para registrarte</p>
+          <p class="fw-bold mb-0 small">Crear Cuenta</p>
         </div>
 
         <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
           <!-- Scrollable Fields Container -->
           <div
-            style="max-height: 62vh; overflow-y: auto; overflow-x: hidden; padding: 0.5rem 0.2rem"
-            class="custom-scrollbar px-1 mb-2"
+            style="max-height: 35vh; overflow-y: auto; overflow-x: hidden; padding: 0.1rem 0.2rem"
+            class="custom-scrollbar px-1 mb-1"
           >
             <!-- Username & Email -->
-            <div class="row g-2 mb-2">
+            <div class="row g-2 mb-1">
               <div class="col-md-6">
                 <label class="form-label small fw-bold mb-1">Usuario</label>
                 <input
@@ -105,7 +107,7 @@
             </div>
 
             <!-- Password & Confirm -->
-            <div class="row g-2 mb-2">
+            <div class="row g-2 mb-1">
               <div class="col-md-6">
                 <label class="form-label small fw-bold mb-1">Contraseña</label>
                 <input
@@ -145,7 +147,7 @@
             </div>
 
             <!-- First & Last Name -->
-            <div class="row g-2 mb-2">
+            <div class="row g-2 mb-1">
               <div class="col-md-6">
                 <label class="form-label small fw-bold mb-1">Nombre</label>
                 <input
@@ -184,7 +186,7 @@
             </div>
 
             <!-- Document & Phone -->
-            <div class="row g-2 mb-2">
+            <div class="row g-2 mb-1">
               <div class="col-md-6">
                 <label class="form-label small fw-bold mb-1">Cédula</label>
                 <input
@@ -224,7 +226,7 @@
             </div>
 
             <!-- Birth Date & Gender -->
-            <div class="row g-2 mb-2">
+            <div class="row g-2 mb-1">
               <div class="col-md-6">
                 <label class="form-label small fw-bold mb-1">Fecha Nacimiento</label>
                 <input
