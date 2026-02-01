@@ -84,11 +84,24 @@ export class LanguageService {
         registerHere: 'Regístrate aquí'
       },
       dashboard: {
-        welcome: '¡Bienvenido de nuevo!',
+        controlPanel: 'Panel de Control',
+        welcome: 'Bienvenido',
+        report: 'Reporte',
+        newAppointment: 'Nueva Cita',
+        activity: 'Actividad',
+        days7: '7 días',
+        days30: '30 días',
+        upcoming: 'Próximas Citas',
+        noUpcoming: 'No hay citas programadas',
+        viewPatients: 'Ver pacientes',
+        medicalCitas: 'Mis Próximas Citas Médicas',
+        myResults: 'Mis Resultados',
+        recentExams: 'Ver exámenes recientes',
         stats: {
-          totalPatients: 'Total Pacientes',
+          totalPatients: 'Pacientes Totales',
           appointments: 'Citas Hoy',
-          income: 'Ingresos Mensuales'
+          income: 'Ingresos Mes',
+          pending: 'Pendientes'
         }
       }
     },
@@ -166,11 +179,24 @@ export class LanguageService {
         registerHere: 'Register here'
       },
       dashboard: {
-        welcome: 'Welcome back!',
+        controlPanel: 'Control Panel',
+        welcome: 'Welcome',
+        report: 'Report',
+        newAppointment: 'New Appointment',
+        activity: 'Activity',
+        days7: '7 days',
+        days30: '30 days',
+        upcoming: 'Upcoming Appointments',
+        noUpcoming: 'No scheduled appointments',
+        viewPatients: 'View patients',
+        medicalCitas: 'My Upcoming Medical Appointments',
+        myResults: 'My Results',
+        recentExams: 'See recent exams',
         stats: {
           totalPatients: 'Total Patients',
           appointments: 'Today\'s Appointments',
-          income: 'Monthly Income'
+          income: 'Month Revenue',
+          pending: 'Pending'
         }
       }
     }

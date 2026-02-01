@@ -2,9 +2,9 @@
   <div class="col-12">
     <div class="d-flex justify-content-between align-items-center mb-1">
       <div>
-        <h3 class="mb-0">Panel de Control</h3>
+        <h3 class="mb-0">{{ langService.translate('dashboard.controlPanel') }}</h3>
         <p class="text-muted small mb-0">
-          Bienvenido,
+          {{ langService.translate('dashboard.welcome') }},
           <span class="fw-bold text-dark">
             {{ authService.currentUser()?.firstName }}
           </span>
@@ -15,10 +15,10 @@
           class="btn glass-morphism border-0 px-3 py-1 rounded-3 shadow-sm btn-sm"
           (click)="downloadDailyReport()"
         >
-          <i class="bi bi-download me-1"></i> Reporte
+          <i class="bi bi-download me-1"></i> {{ langService.translate('dashboard.report') }}
         </button>
         <button class="btn btn-primary-premium shadow-sm btn-sm" (click)="goToNewAppointment()">
-          <i class="bi bi-plus-lg me-1"></i> Nueva Cita
+          <i class="bi bi-plus-lg me-1"></i> {{ langService.translate('dashboard.newAppointment') }}
         </button>
       </div>
     </div>
@@ -33,7 +33,9 @@
       <div class="card-premium p-3 border-0 h-100">
         <div class="d-flex justify-content-between align-items-center">
           <div>
-            <p class="text-muted x-small fw-medium mb-0">Citas Hoy</p>
+            <p class="text-muted x-small fw-medium mb-0">
+              {{ langService.translate('dashboard.stats.appointments') }}
+            </p>
             <h4 class="mb-0">{{ stats().appointmentsToday }}</h4>
           </div>
           <div class="bg-primary bg-opacity-10 text-primary p-2 rounded-3">
@@ -47,7 +49,9 @@
       <div class="card-premium p-3 border-0 h-100">
         <div class="d-flex justify-content-between align-items-center">
           <div>
-            <p class="text-muted x-small fw-medium mb-0">Pacientes Totales</p>
+            <p class="text-muted x-small fw-medium mb-0">
+              {{ langService.translate('dashboard.stats.totalPatients') }}
+            </p>
             <h4 class="mb-0">{{ stats().totalPatients }}</h4>
           </div>
           <div class="bg-success bg-opacity-10 text-success p-2 rounded-3">
@@ -61,7 +65,9 @@
       <div class="card-premium p-3 border-0 h-100">
         <div class="d-flex justify-content-between align-items-center">
           <div>
-            <p class="text-muted x-small fw-medium mb-0">Ingresos Mes</p>
+            <p class="text-muted x-small fw-medium mb-0">
+              {{ langService.translate('dashboard.stats.income') }}
+            </p>
             <h4 class="mb-0">${{ stats().monthlyIncome | number: '1.2-2' }}</h4>
           </div>
           <div class="bg-warning bg-opacity-10 text-warning p-2 rounded-3">
@@ -75,7 +81,9 @@
       <div class="card-premium p-3 border-0 h-100">
         <div class="d-flex justify-content-between align-items-center">
           <div>
-            <p class="text-muted x-small fw-medium mb-0">Pendientes</p>
+            <p class="text-muted x-small fw-medium mb-0">
+              {{ langService.translate('dashboard.stats.pending') }}
+            </p>
             <h4 class="mb-0">{{ stats().pendingAppointments }}</h4>
           </div>
           <div class="bg-info bg-opacity-10 text-info p-2 rounded-3">
@@ -89,10 +97,10 @@
     <div class="col-md-7">
       <div class="card-premium h-100 p-3 border-0">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h6 class="mb-0">Actividad</h6>
+          <h6 class="mb-0">{{ langService.translate('dashboard.activity') }}</h6>
           <select class="form-select border-0 bg-light w-auto x-small py-0">
-            <option>7 días</option>
-            <option>30 días</option>
+            <option>{{ langService.translate('dashboard.days7') }}</option>
+            <option>{{ langService.translate('dashboard.days30') }}</option>
           </select>
         </div>
         <div class="chart-container" style="position: relative; height: 220px; width: 100%">
@@ -104,7 +112,7 @@
 
     <div class="col-md-5">
       <div class="card-premium h-100 p-3 border-0">
-        <h6 class="mb-3">Próximas Citas</h6>
+        <h6 class="mb-3">{{ langService.translate('dashboard.upcoming') }}</h6>
         <div class="overflow-auto custom-scrollbar" style="max-height: 240px">
           <div class="d-grid gap-2">
             <!-- Admin View of Appointments -->
@@ -149,7 +157,9 @@
             <!-- Empty state -->
             <div *ngIf="stats().upcomingAppointments?.length === 0" class="text-center py-4">
               <i class="bi bi-calendar-x text-muted fs-4 mb-2"></i>
-              <p class="text-muted x-small mb-0">No hay citas programadas</p>
+              <p class="text-muted x-small mb-0">
+                {{ langService.translate('dashboard.noUpcoming') }}
+              </p>
             </div>
           </div>
         </div>
@@ -163,7 +173,7 @@
   <ng-container *ngIf="authService.hasRole(['PATIENT'])">
     <div class="col-md-8">
       <div class="card-premium h-100 p-4 border-0">
-        <h5 class="mb-4 text-primary">Mis Próximas Citas Médicas</h5>
+        <h5 class="mb-4 text-primary">{{ langService.translate('dashboard.medicalCitas') }}</h5>
 
         <div *ngIf="stats().upcomingAppointments?.length > 0; else noAppointments">
           <div class="d-grid gap-3">
@@ -209,10 +219,11 @@
             <div class="bg-light rounded-circle p-4 d-inline-block mb-3">
               <i class="bi bi-calendar-heart text-muted fs-1"></i>
             </div>
-            <h5>No tienes citas programadas</h5>
-            <p class="text-muted mb-4">Agenda una nueva consulta para cuidar tu salud.</p>
+            <h5>{{ langService.translate('dashboard.noUpcoming') }}</h5>
+            <p class="text-muted mb-4">{{ langService.translate('dashboard.noUpcoming') }}</p>
             <button class="btn btn-primary-premium px-4" (click)="goToNewAppointment()">
-              <i class="bi bi-plus-lg me-2"></i> Agendar Cita
+              <i class="bi bi-plus-lg me-2"></i>
+              {{ langService.translate('dashboard.newAppointment') }}
             </button>
           </div>
         </ng-template>
@@ -229,15 +240,17 @@
           >
             <div class="d-flex justify-content-between align-items-center">
               <div>
-                <h4 class="fw-bold mb-1">Nueva Cita</h4>
+                <h4 class="fw-bold mb-1">
+                  {{ langService.translate('dashboard.newAppointment') }}
+                </h4>
                 <p class="text-white text-opacity-75 mb-3 small">
-                  Programa tu próxima visita médica fácilmente.
+                  {{ langService.translate('dashboard.noUpcoming') }}
                 </p>
                 <button
                   class="btn btn-light text-primary fw-medium rounded-pill px-4 shadow-sm"
                   (click)="goToNewAppointment()"
                 >
-                  Agendar Ahora
+                  {{ langService.translate('dashboard.welcome') }}
                 </button>
               </div>
               <i class="bi bi-calendar-plus fs-1 text-white text-opacity-25"></i>
@@ -247,7 +260,7 @@
 
         <div class="col-12">
           <div class="card-premium p-4 border-0">
-            <h6 class="fw-bold mb-3">Mis Resultados</h6>
+            <h6 class="fw-bold mb-3">{{ langService.translate('dashboard.myResults') }}</h6>
             <div
               class="d-flex align-items-center justify-content-between p-3 rounded-3 bg-light cursor-pointer hover-scale transition"
               [routerLink]="['/lab-results']"
@@ -257,8 +270,10 @@
                   <i class="bi bi-file-earmark-medical fs-5"></i>
                 </div>
                 <div>
-                  <p class="mb-0 fw-bold small">Laboratorio</p>
-                  <p class="text-muted small mb-0">Ver exámenes recientes</p>
+                  <p class="mb-0 fw-bold small">{{ langService.translate('sidebar.lab') }}</p>
+                  <p class="text-muted small mb-0">
+                    {{ langService.translate('dashboard.recentExams') }}
+                  </p>
                 </div>
               </div>
               <i class="bi bi-chevron-right text-muted small"></i>
