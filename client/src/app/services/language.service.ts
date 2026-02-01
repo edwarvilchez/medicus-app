@@ -83,7 +83,8 @@ export class LanguageService {
         forgotPassword: '¿Olvidaste tu contraseña?',
         enterSystem: 'Ingresar al Sistema',
         noAccount: '¿No tienes cuenta?',
-        registerHere: 'Regístrate aquí'
+        registerHere: 'Regístrate aquí',
+        publicBooking: 'Agendar Cita (Sin cuenta)'
       },
       dashboard: {
         controlPanel: 'Panel de Control',
@@ -265,7 +266,8 @@ export class LanguageService {
         forgotPassword: 'Forgot your password?',
         enterSystem: 'Log In',
         noAccount: "Don't have an account?",
-        registerHere: 'Register here'
+        registerHere: 'Register here',
+        publicBooking: 'Schedule Appointment (No account)'
       },
       dashboard: {
         controlPanel: 'Control Panel',
