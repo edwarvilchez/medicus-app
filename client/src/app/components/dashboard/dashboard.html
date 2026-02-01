@@ -208,7 +208,7 @@
 
               <!-- Status Badge -->
               <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">
-                Confirmada
+                {{ langService.translate('dashboard.confirmed') }}
               </span>
             </div>
           </div>
@@ -244,13 +244,13 @@
                   {{ langService.translate('dashboard.newAppointment') }}
                 </h4>
                 <p class="text-white text-opacity-75 mb-3 small">
-                  {{ langService.translate('dashboard.noUpcoming') }}
+                  {{ langService.translate('dashboard.newAptDesc') }}
                 </p>
                 <button
                   class="btn btn-light text-primary fw-medium rounded-pill px-4 shadow-sm"
                   (click)="goToNewAppointment()"
                 >
-                  {{ langService.translate('dashboard.welcome') }}
+                  {{ langService.translate('dashboard.bookNow') }}
                 </button>
               </div>
               <i class="bi bi-calendar-plus fs-1 text-white text-opacity-25"></i>

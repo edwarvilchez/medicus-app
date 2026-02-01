@@ -10,6 +10,7 @@ import { ChartConfiguration, ChartData, ChartType, Chart, registerables } from '
 Chart.register(...registerables);
 
 import { AuthService } from '../../services/auth.service';
+import { LanguageService } from '../../services/language.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -73,15 +74,17 @@ export class Dashboard implements OnInit {
   constructor(
     private statsService: StatsService,
     public authService: AuthService,
+    public langService: LanguageService,
     private router: Router
   ) {
     // Reaccionar cuando cambian los stats para actualizar el gráfico
     effect(() => {
       const data = this.stats().activityData;
+      // Re-trigger cuando cambie el idioma también
+      const locale = this.langService.locale(); 
       if (data && data.length > 0) {
         this.updateChartData(data);
       } else {
-        // Inicializar gráfico vacío con etiquetas de días
         this.updateChartData([]);
       }
     });
@@ -132,7 +135,7 @@ export class Dashboard implements OnInit {
     for (let i = 6; i >= 0; i--) {
       const d = new Date(today);
       d.setDate(d.getDate() - i);
-      const dayName = d.toLocaleDateString('es-ES', { weekday: 'short' });
+      const dayName = d.toLocaleDateString(this.langService.locale(), { weekday: 'short' });
       const dayKey = dayName.charAt(0).toUpperCase() + dayName.slice(1); // Capitalizar
       daysMap.set(dayKey, 0);
     }
@@ -141,7 +144,7 @@ export class Dashboard implements OnInit {
     if (activityData && activityData.length > 0) {
       activityData.forEach(item => {
         const date = new Date(item.date);
-        const dayName = date.toLocaleDateString('es-ES', { weekday: 'short' });
+        const dayName = date.toLocaleDateString(this.langService.locale(), { weekday: 'short' });
         const dayKey = dayName.charAt(0).toUpperCase() + dayName.slice(1);
         
         // Solo actualizar si la fecha cae en el rango de los últimos 7 días
@@ -157,7 +160,7 @@ export class Dashboard implements OnInit {
       datasets: [
         { 
           data: Array.from(daysMap.values()), 
-          label: 'Citas', 
+          label: this.langService.translate('dashboard.stats.appointments'), 
           backgroundColor: '#0ea5e9',
           hoverBackgroundColor: '#0284c7',
           borderColor: 'transparent',

@@ -8,6 +8,8 @@ export type Language = 'es' | 'en';
 export class LanguageService {
   private currentLang = signal<Language>('es');
   
+  public locale = computed(() => this.currentLang() === 'es' ? 'es-ES' : 'en-US');
+  
   // Diccionarios de traducción
   private translations: any = {
     es: {
@@ -97,6 +99,9 @@ export class LanguageService {
         medicalCitas: 'Mis Próximas Citas Médicas',
         myResults: 'Mis Resultados',
         recentExams: 'Ver exámenes recientes',
+        confirmed: 'Confirmada',
+        newAptDesc: 'Programa tu próxima visita médica fácilmente.',
+        bookNow: 'Agendar Ahora',
         stats: {
           totalPatients: 'Pacientes Totales',
           appointments: 'Citas Hoy',
@@ -192,6 +197,9 @@ export class LanguageService {
         medicalCitas: 'My Upcoming Medical Appointments',
         myResults: 'My Results',
         recentExams: 'See recent exams',
+        confirmed: 'Confirmed',
+        newAptDesc: 'Schedule your next medical visit easily.',
+        bookNow: 'Book Now',
         stats: {
           totalPatients: 'Total Patients',
           appointments: 'Today\'s Appointments',
