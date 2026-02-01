@@ -2,6 +2,18 @@
 
 Todas las modificaciones notables del proyecto serán documentadas en este archivo.
 
+## [1.2.3] - 2026-02-01
+
+### 🎉 Estabilidad y Ajustes de Layout
+
+#### Formulario de Registro (Optimización de Altura)
+
+- ✅ **Contenedor Scrollable Interno**: Implementación de un área de scroll interna para los campos del formulario (`max-height: 62vh`), garantizando que la cabecera (branding) y el botón de acción siempre sean visibles.
+- ✅ **Scrollbar Premium**: Añadidos estilos personalizados para una barra de desplazamiento delgada y elegante que coincide con la identidad visual de Medicus.
+- ✅ **Ajustes de Espaciado**: Refinamiento de paddings y márgenes para evitar el corte de contenido en pantallas con resolución limitada.
+
+---
+
 ## [1.2.2] - 2026-02-01
 
 ### 🎉 Refinamiento Visual y Legibilidad
