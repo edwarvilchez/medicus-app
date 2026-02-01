@@ -2,6 +2,27 @@
 
 Todas las modificaciones notables del proyecto serán documentadas en este archivo.
 
+## [1.2.1] - 2026-01-31
+
+### 🎉 Mejoras de UI/UX (Refinamiento Extremo)
+
+#### Rediseño del Registro
+
+- ✅ **Layout de 2 Columnas**: Implementación de sección Hero (izquierda) y Formulario (derecha) para paridad visual con el Login.
+- ✅ **Compactación Ultra**:
+  - Uso de `form-control-sm` y `form-select-sm` en todos los campos.
+  - Implementación de fuente `.x-small` para etiquetas de formulario.
+  - Reducción de gaps (`g-1`) y márgenes (`mb-1`) para máxima eficiencia de espacio.
+- ✅ **Alineación Inteligente**: Cambio a `align-items-start` para evitar recortes superiores en formularios largos.
+- ✅ **Navegación Fluida**: La sección "Agenda Fácil" ahora es un enlace interactivo hacia la página de agendamiento público.
+
+#### Mejoras Globales
+
+- ✅ **Habilitación de Scroll**: Ajustes en `styles.css` para permitir el desplazamiento natural en páginas con mucho contenido.
+- ✅ **Interactividad mejorada**: Nuevas clases de utilidad para efectos hover y transiciones animadas.
+
+---
+
 ## [1.2.0] - 2026-01-31
 
 ### 🎉 Nuevas Características

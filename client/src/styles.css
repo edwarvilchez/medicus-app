@@ -19,49 +19,55 @@
   --radius: 12px;
 }
 
+.x-small {
+  font-size: 0.7rem !important;
+}
+
 body {
   font-family: 'Outfit', sans-serif;
   background-color: var(--background);
   color: var(--text);
-  margin: 0 !important;
-  padding: 0 !important;
-  overflow: hidden !important;
-  height: 100vh !important;
-  max-height: 100vh !important;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  overflow-y: auto !important;
   -webkit-font-smoothing: antialiased;
 }
 
 /* Fixed viewport layout */
 html {
   height: 100%;
-  overflow: hidden !important;
 }
 
 html, body {
-  position: fixed;
   width: 100%;
   height: 100%;
 }
 
 app-root {
-  display: flex;
-  height: 100vh;
-  overflow: hidden;
-  position: fixed;
+  display: block;
+  min-height: 100vh;
   width: 100%;
-  top: 0;
-  left: 0;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.app-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
 }
 
 /* Main content area with scroll */
 .main-content {
   flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  height: 100%;
-  max-height: 100vh;
   padding: 1rem;
   background-color: #f8fafc;
+  min-height: 100vh;
 }
 
 /* Remove any default margins/paddings that could cause scroll */
@@ -69,11 +75,12 @@ app-root {
   box-sizing: border-box;
 }
 
-.min-vh-100,
 .vh-100 {
-  height: 100vh !important;
-  max-height: 100vh !important;
-  overflow: hidden !important;
+  height: 100vh;
+}
+
+.min-vh-100 {
+  min-height: 100vh;
 }
 
 /* Compact spacing for no-scroll layout */
@@ -156,6 +163,19 @@ h6 {
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.transition-all {
+  transition: all 0.3s ease;
+}
+
+.hover-scale:hover {
+  transform: translateY(-5px);
+  filter: brightness(1.05);
 }
 
 /* Animations */
