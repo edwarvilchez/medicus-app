@@ -2,19 +2,6 @@
 
 Todas las modificaciones notables del proyecto serán documentadas en este archivo.
 
-## [1.2.4] - 2026-02-01
-
-### 🎉 Optimización Extrema de Espacio
-
-#### Formulario de Registro (Ajuste Final de Pantalla)
-
-- ✅ **Reducción de Scroll Interno**: Ajustado a `35vh` para garantizar compatibilidad con laptops de baja resolución.
-- ✅ **Layout Centrado**: Reajuste de columnas (`col-lg-4` y `col-lg-6`) con offsets para un diseño más equilibrado y centrado.
-- ✅ **Remoción de Flexbox Forzado**: Eliminado `d-flex` en el contenedor principal para permitir un flujo de scroll natural en el navegador si es necesario.
-- ✅ **Micro-ajustes de Hero**: Reducción de títulos e iconos en la sección informativa izquierda.
-
----
-
 ## [1.2.3] - 2026-02-01
 
 ### 🎉 Estabilidad y Ajustes de Layout
