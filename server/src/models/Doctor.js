@@ -24,6 +24,14 @@ const Doctor = sequelize.define('Doctor', {
       model: 'Specialties', 
       key: 'id'
     }
+  },
+  userId: {
+    type: DataTypes.UUID,
+    allowNull: false,
+    references: {
+      model: 'Users',
+      key: 'id'
+    }
   }
 });
 

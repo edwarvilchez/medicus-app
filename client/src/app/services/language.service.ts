@@ -25,7 +25,8 @@ export class LanguageService {
         success: '¡Éxito!',
         error: 'Error',
         warning: 'Atención',
-        noResults: 'No se encontraron resultados'
+        noResults: 'No se encontraron resultados',
+        doctor: 'Doctor'
       },
       auth: {
         login: 'Iniciar Sesión',
@@ -49,9 +50,39 @@ export class LanguageService {
         pending: 'Pendiente',
         paid: 'Pagado'
       },
+      medical_history: {
+        title: 'Historial del Paciente',
+        subtitle: 'Registro detallado de consultas, tratamientos y evolución',
+        selectPatient: 'Selecciona un Paciente para ver su Historial',
+        id: 'ID',
+        phone: 'Teléfono',
+        gender: 'Género',
+        newRecord: 'Nuevo Informe Médico',
+        changePatient: 'Cambiar Paciente',
+        tabs: {
+          consultations: 'Consultas',
+          labs: 'Laboratorio',
+          treatments: 'Tratamientos'
+        },
+        diagnosis: 'Diagnóstico',
+        physicalExam: 'Examen Físico',
+        treatment: 'Tratamiento',
+        indications: 'Indicaciones',
+        medicalLeave: 'Suspensión Médica (Reposo)',
+        leaveDays: 'Días de Reposo',
+        startDate: 'Fecha de Inicio',
+        endDate: 'Fecha de Fin',
+        save: 'Guardar Informe en Historial',
+        noRecords: 'No hay registros médicos para este paciente.',
+        diagnosisPlaceholder: 'Escribe el diagnóstico principal...',
+        examPlaceholder: 'Detalles del examen físico...',
+        treatmentPlaceholder: 'Medicamentos y dosis...',
+        indicationsPlaceholder: 'Recomendaciones generales...'
+      },
       sidebar: {
         medicalManagement: 'GESTIÓN MÉDICA',
         appointments: 'Citas Médicas',
+        history: 'Historial Médico',
         patients: 'Pacientes',
         lab: 'Laboratorio',
         medicalStaff: 'PERSONAL MÉDICO',
@@ -190,10 +221,7 @@ export class LanguageService {
         schedule: 'Agendar',
         available: 'Disponible'
       },
-      footer: {
-        devLove: 'Desarrollado con ❤️ por Piridawly Team',
-        rights: 'Todos los derechos reservados'
-      }
+
     },
     en: {
       common: {
@@ -208,7 +236,8 @@ export class LanguageService {
         success: 'Success!',
         error: 'Error',
         warning: 'Warning',
-        noResults: 'No results found'
+        noResults: 'No results found',
+        doctor: 'Doctor'
       },
       auth: {
         login: 'Login',
@@ -232,9 +261,39 @@ export class LanguageService {
         pending: 'Pending',
         paid: 'Paid'
       },
+      medical_history: {
+        title: 'Patient History',
+        subtitle: 'Detailed record of consultations, treatments, and evolution',
+        selectPatient: 'Select a Patient to view their History',
+        id: 'ID',
+        phone: 'Phone',
+        gender: 'Gender',
+        newRecord: 'New Medical Record',
+        changePatient: 'Change Patient',
+        tabs: {
+          consultations: 'Consultations',
+          labs: 'Laboratory',
+          treatments: 'Treatments'
+        },
+        diagnosis: 'Diagnosis',
+        physicalExam: 'Physical Exam',
+        treatment: 'Treatment',
+        indications: 'Indications',
+        medicalLeave: 'Medical Leave',
+        leaveDays: 'Leave Days',
+        startDate: 'Start Date',
+        endDate: 'End Date',
+        save: 'Save Record to History',
+        noRecords: 'No medical records for this patient.',
+        diagnosisPlaceholder: 'Enter main diagnosis...',
+        examPlaceholder: 'Physical exam details...',
+        treatmentPlaceholder: 'Medications and dosage...',
+        indicationsPlaceholder: 'General recommendations...'
+      },
       sidebar: {
         medicalManagement: 'MEDICAL MANAGEMENT',
         appointments: 'Appointments',
+        history: 'Patient History',
         patients: 'Patients',
         lab: 'Laboratory',
         medicalStaff: 'MEDICAL STAFF',
@@ -373,10 +432,7 @@ export class LanguageService {
         schedule: 'Schedule',
         available: 'Available'
       },
-      footer: {
-        devLove: 'Developed with ❤️ by Piridawly Team',
-        rights: 'All rights reserved'
-      }
+
     }
   };
 

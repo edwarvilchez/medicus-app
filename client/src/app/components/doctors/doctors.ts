@@ -1,6 +1,6 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
@@ -74,8 +74,8 @@ import { LanguageService } from '../../services/language.service';
             </div>
 
             <div class="d-grid gap-1">
-              <button class="btn btn-light rounded-pill py-1 border-0 btn-sm">{{ langService.translate('doctors.viewProfile') }}</button>
-              <button class="btn btn-primary-premium rounded-pill py-1 btn-sm">{{ langService.translate('doctors.schedule') }}</button>
+              <button class="btn btn-light rounded-pill py-1 border-0 btn-sm" (click)="viewProfile(doctor)">{{ langService.translate('doctors.viewProfile') }}</button>
+              <button class="btn btn-primary-premium rounded-pill py-1 btn-sm" (click)="scheduleAppointment(doctor)">{{ langService.translate('doctors.schedule') }}</button>
             </div>
           </div>
         </div>
@@ -111,9 +111,11 @@ export class Doctors implements OnInit {
     });
   });
 
+
   constructor(
     private http: HttpClient,
-    public langService: LanguageService
+    public langService: LanguageService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -133,6 +135,53 @@ export class Doctors implements OnInit {
   loadSpecialties() {
     this.http.get<any[]>('http://localhost:5000/api/specialties', { headers: this.getHeaders() })
       .subscribe(data => this.specialties.set(data));
+  }
+
+  viewProfile(doctor: any) {
+    const specialtyName = doctor.Specialty?.name || 'Especialista';
+    const statusBadge = `<span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1">Disponible</span>`;
+    
+    Swal.fire({
+      title: `<span class="fs-4 fw-bold">Dr. ${doctor.User.firstName} ${doctor.User.lastName}</span>`,
+      html: `
+        <div class="text-center mb-4">
+          <img src="https://ui-avatars.com/api/?name=${doctor.User.firstName}+${doctor.User.lastName}&background=0ea5e9&color=fff" 
+               class="rounded-circle shadow-sm mb-3" width="100">
+          <p class="text-primary fw-bold mb-1">${specialtyName}</p>
+          <div class="mb-3">${statusBadge}</div>
+          
+          <div class="text-start bg-light p-3 rounded-3 small">
+            <div class="d-flex justify-content-between mb-2 border-bottom pb-2">
+              <span class="text-muted"><i class="bi bi-envelope me-2"></i>Email</span>
+              <span class="fw-bold text-dark">${doctor.email || doctor.User.email}</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2 border-bottom pb-2">
+              <span class="text-muted"><i class="bi bi-telephone me-2"></i>Teléfono</span>
+              <span class="fw-bold text-dark">${doctor.phone || 'No registrado'}</span>
+            </div>
+            <div class="d-flex justify-content-between mb-0">
+              <span class="text-muted"><i class="bi bi-card-heading me-2"></i>Licencia</span>
+              <span class="fw-bold text-dark">${doctor.licenseNumber}</span>
+            </div>
+          </div>
+        </div>
+      `,
+      showCloseButton: true,
+      showConfirmButton: true,
+      confirmButtonText: 'Agendar Cita',
+      confirmButtonColor: '#0ea5e9',
+      customClass: {
+        popup: 'rounded-4 border-0 shadow-lg'
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.scheduleAppointment(doctor);
+      }
+    });
+  }
+
+  scheduleAppointment(doctor: any) {
+    this.router.navigate(['/appointments'], { queryParams: { doctorId: doctor.id } });
   }
 
   createNewDoctor() {

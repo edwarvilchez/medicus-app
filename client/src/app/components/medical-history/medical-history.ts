@@ -6,6 +6,8 @@ import { MedicalService } from '../../services/medical.service';
 import { HttpClient } from '@angular/common/http';
 import Swal from 'sweetalert2';
 
+import { LanguageService } from '../../services/language.service';
+
 @Component({
   selector: 'app-medical-history',
   standalone: true,
@@ -28,15 +30,56 @@ export class MedicalHistory implements OnInit {
     private medicalService: MedicalService,
     private http: HttpClient,
     private fb: FormBuilder,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    public langService: LanguageService
   ) {
     this.recordForm = this.fb.group({
       diagnosis: ['', Validators.required],
       treatment: [''],
       indications: [''],
       physicalExam: [''],
+      medicalLeaveDays: [0],
+      medicalLeaveStartDate: [''],
+      medicalLeaveEndDate: [{value: '', disabled: true}],
       patientId: [''],
       doctorId: ['']
+    });
+
+    // Auto-calculate End Date
+    this.recordForm.valueChanges.subscribe(val => {
+        const days = Number(val.medicalLeaveDays);
+        const dateStr = val.medicalLeaveStartDate;
+
+        if (days > 0 && dateStr) {
+            // Create date using local time components to avoid UTC shifts
+            const parts = dateStr.split('-');
+            const year = parseInt(parts[0], 10);
+            const month = parseInt(parts[1], 10) - 1; // Months are 0-indexed
+            const day = parseInt(parts[2], 10);
+
+            const resultDate = new Date(year, month, day);
+            
+            // Add days - 1 (inclusive logic: 1 day starts and ends same day)
+            resultDate.setDate(resultDate.getDate() + (days - 1));
+            
+            // Get local ISO string YYYY-MM-DD
+            const y = resultDate.getFullYear();
+            const m = String(resultDate.getMonth() + 1).padStart(2, '0');
+            const d = String(resultDate.getDate()).padStart(2, '0');
+            const finalDate = `${y}-${m}-${d}`;
+            
+            if (this.recordForm.get('medicalLeaveEndDate')?.value !== finalDate) {
+                this.recordForm.patchValue({
+                    medicalLeaveEndDate: finalDate
+                }, { emitEvent: false });
+            }
+        } else {
+             if (this.recordForm.get('medicalLeaveEndDate')?.value !== '') {
+                this.recordForm.patchValue({
+                    medicalLeaveEndDate: ''
+                }, { emitEvent: false });
+             }
+        }
     });
   }
 
@@ -57,13 +100,32 @@ export class MedicalHistory implements OnInit {
     this.patientId.set(id);
     const p = this.patients().find(x => x.id === id);
     if(p) this.patient.set(p);
+    
+    // Update URL without reloading
+    const url = new URL(window.location.href);
+    url.searchParams.set('id', id);
+    window.history.pushState({}, '', url);
+
     this.loadHistory();
   }
 
   loadHistory() {
     if(!this.patientId()) return;
-    this.medicalService.getPatientHistory(this.patientId()).subscribe(data => this.records.set(data));
-    this.medicalService.getPatientLabs(this.patientId()).subscribe(data => this.labs.set(data));
+    this.medicalService.getPatientHistory(this.patientId()).subscribe({
+        next: (data) => {
+            console.log('Records loaded:', data);
+            this.records.set(data);
+        },
+        error: (err) => {
+            console.error('Error loading history:', err);
+            Swal.fire('Error', 'No se pudo cargar el historial médico.', 'error');
+        }
+    });
+    
+    this.medicalService.getPatientLabs(this.patientId()).subscribe({
+        next: (data) => this.labs.set(data),
+        error: (err) => console.error('Error loading labs:', err)
+    });
   }
 
   openRecordModal() {
@@ -77,15 +139,141 @@ export class MedicalHistory implements OnInit {
 
   submitRecord() {
     if(this.recordForm.valid) {
-        this.medicalService.createRecord(this.recordForm.value).subscribe({
+        const formData = { ...this.recordForm.getRawValue() };
+        
+        // Handle empty date string
+        if (!formData.medicalLeaveStartDate) {
+            formData.medicalLeaveStartDate = null;
+            formData.medicalLeaveEndDate = null;
+        }
+
+        this.medicalService.createRecord(formData).subscribe({
             next: () => {
                 this.loadHistory();
                 this.showRecordModal.set(false);
-                this.recordForm.reset();
-                Swal.fire('Guardado', 'El informe médico ha sido integrado al historial.', 'success');
+                this.recordForm.reset({
+                  medicalLeaveDays: 0,
+                  patientId: this.patientId(),
+                  doctorId: this.recordForm.get('doctorId')?.value
+                });
+                Swal.fire(
+                  this.langService.translate('common.success'), 
+                  this.langService.translate('medical_history.save'), 
+                  'success'
+                );
             },
-            error: () => Swal.fire('Error', 'No se pudo guardar el registro.', 'error')
+            error: (err) => {
+                console.error(err);
+                const errorMsg = err.error?.error || 'No se pudo guardar el registro.';
+                Swal.fire(
+                  this.langService.translate('common.error'), 
+                  errorMsg, 
+                  'error'
+                );
+            }
         });
     }
+  }
+
+  printRecord(rec: any) {
+    const printWindow = window.open('', '', 'height=600,width=800');
+    if (!printWindow) return;
+
+    const patientName = `${this.patient()?.User?.firstName} ${this.patient()?.User?.lastName}`;
+    const doctorName = `Dr. ${rec.Doctor?.User?.firstName} ${rec.Doctor?.User?.lastName}`;
+    const date = new Date(rec.createdAt).toLocaleDateString();
+
+    let leaveHtml = '';
+    if (rec.medicalLeaveDays > 0) {
+        const startDate = new Date(rec.medicalLeaveStartDate).toLocaleDateString();
+        // Use backend end date OR calculate roughly if missing for legacy records
+        let endDate = '';
+        if (rec.medicalLeaveEndDate) {
+             endDate = new Date(rec.medicalLeaveEndDate).toLocaleDateString();
+        } else {
+             // Fallback calculation for display
+             const d = new Date(rec.medicalLeaveStartDate);
+             d.setDate(d.getDate() + (rec.medicalLeaveDays - 1));
+             endDate = d.toLocaleDateString();
+        }
+
+        leaveHtml = `
+      <div class="section leave">
+        <h3>Suspensión Médica (Reposo)</h3>
+        <p><strong>Días:</strong> ${rec.medicalLeaveDays}</p>
+        <p><strong>Desde:</strong> ${startDate}</p>
+        <p><strong>Hasta:</strong> ${endDate}</p>
+      </div>`;
+    }
+
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Informe Médico - ${patientName}</title>
+          <style>
+            body { font-family: 'Helvetica', sans-serif; padding: 40px; color: #333; line-height: 1.6; }
+            .header { text-align: center; border-bottom: 2px solid #0ea5e9; padding-bottom: 20px; margin-bottom: 30px; }
+            .logo { font-size: 24px; font-weight: bold; color: #0ea5e9; }
+            .meta { display: flex; justify-content: space-between; margin-bottom: 30px; font-size: 14px; }
+            .section { margin-bottom: 25px; }
+            h3 { color: #0ea5e9; font-size: 16px; border-bottom: 1px solid #eee; padding-bottom: 5px; margin-bottom: 10px; }
+            p { margin: 5px 0; }
+            .leave { background: #fffbeb; padding: 15px; border-radius: 8px; border: 1px solid #fcd34d; }
+            .footer { margin-top: 50px; text-align: center; font-size: 12px; color: #999; border-top: 1px solid #eee; padding-top: 20px; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div class="logo">MEDICUS</div>
+            <div>Informe Médico Clínico</div>
+          </div>
+          
+          <div class="meta">
+            <div>
+              <strong>Paciente:</strong> ${patientName}<br>
+              <strong>ID:</strong> ${this.patient()?.documentId}
+            </div>
+            <div style="text-align: right;">
+              <strong>Fecha:</strong> ${date}<br>
+              <strong>Médico Tratante:</strong> ${doctorName}
+            </div>
+          </div>
+
+          <div class="section">
+            <h3>Diagnóstico</h3>
+            <p>${rec.diagnosis}</p>
+          </div>
+
+          ${rec.physicalExam ? `
+          <div class="section">
+            <h3>Examen Físico</h3>
+            <p>${rec.physicalExam}</p>
+          </div>` : ''}
+
+          ${rec.treatment ? `
+          <div class="section">
+            <h3>Tratamiento</h3>
+            <p>${rec.treatment}</p>
+          </div>` : ''}
+
+          ${rec.indications ? `
+          <div class="section">
+            <h3>Indicaciones</h3>
+            <p>${rec.indications}</p>
+          </div>` : ''}
+
+          ${leaveHtml}
+
+          <div class="footer">
+            <p>Generado electrónicamente por Medicus Platform</p>
+            <p>${new Date().toLocaleString()}</p>
+          </div>
+        </body>
+      </html>
+    `);
+
+    printWindow.document.close();
+    printWindow.focus();
+    // setTimeout(() => printWindow.print(), 500); // Optional: auto print
   }
 }

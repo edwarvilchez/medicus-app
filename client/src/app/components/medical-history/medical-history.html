@@ -1,15 +1,15 @@
 <div class="animate-fade-in">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-      <h2 class="mb-1">Historial del Paciente</h2>
-      <p class="text-muted">Registro detallado de consultas, tratamientos y evolución</p>
+      <h2 class="mb-1">{{ langService.translate('medical_history.title') }}</h2>
+      <p class="text-muted">{{ langService.translate('medical_history.subtitle') }}</p>
     </div>
   </div>
 
   <div class="row g-4 mb-4" *ngIf="!patientId()">
     <div class="col-12">
       <div class="card-premium p-4 border-0 text-center">
-        <h5 class="mb-3">Selecciona un Paciente para ver su Historial</h5>
+        <h5 class="mb-3">{{ langService.translate('medical_history.selectPatient') }}</h5>
         <div class="row g-2 justify-content-center">
           <div class="col-md-3" *ngFor="let p of patients()">
             <button class="btn glass-morphism w-100 p-3 rounded-4" (click)="selectPatient(p.id)">
@@ -44,27 +44,31 @@
           />
           <h4 class="mb-1">{{ patient()?.User?.firstName }} {{ patient()?.User?.lastName }}</h4>
           <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2"
-            >ID: {{ patient()?.documentId }}</span
+            >{{ langService.translate('medical_history.id') }}: {{ patient()?.documentId }}</span
           >
         </div>
 
         <div class="border-top pt-4">
           <div class="d-flex justify-content-between mb-2">
-            <span class="text-muted small fw-bold text-uppercase">Teléfono</span>
+            <span class="text-muted small fw-bold text-uppercase">{{
+              langService.translate('medical_history.phone')
+            }}</span>
             <span class="fw-bold">{{ patient()?.phone }}</span>
           </div>
           <div class="d-flex justify-content-between mb-2">
-            <span class="text-muted small fw-bold text-uppercase">Género</span>
+            <span class="text-muted small fw-bold text-uppercase">{{
+              langService.translate('medical_history.gender')
+            }}</span>
             <span class="fw-bold">{{ patient()?.gender }}</span>
           </div>
         </div>
 
         <div class="d-grid gap-2 mt-4">
           <button class="btn btn-primary-premium" (click)="openRecordModal()">
-            Nuevo Informe Médico
+            {{ langService.translate('medical_history.newRecord') }}
           </button>
           <button class="btn glass-morphism border" (click)="patientId.set('')">
-            Cambiar Paciente
+            {{ langService.translate('medical_history.changePatient') }}
           </button>
         </div>
       </div>
@@ -74,17 +78,17 @@
       <ul class="nav nav-pills glass-morphism p-2 rounded-4 mb-4" id="pills-tab" role="tablist">
         <li class="nav-item flex-grow-1" role="presentation">
           <button class="nav-link active w-100 rounded-3 py-2 fw-medium" data-bs-toggle="pill">
-            Consultas
+            {{ langService.translate('medical_history.tabs.consultations') }}
           </button>
         </li>
         <li class="nav-item flex-grow-1" role="presentation">
           <button class="nav-link w-100 rounded-3 py-2 fw-medium" data-bs-toggle="pill">
-            Laboratorio
+            {{ langService.translate('medical_history.tabs.labs') }}
           </button>
         </li>
         <li class="nav-item flex-grow-1" role="presentation">
           <button class="nav-link w-100 rounded-3 py-2 fw-medium" data-bs-toggle="pill">
-            Tratamientos
+            {{ langService.translate('medical_history.tabs.treatments') }}
           </button>
         </li>
       </ul>
@@ -101,28 +105,56 @@
                 {{ rec.diagnosis }} - Dr. {{ rec.Doctor?.User?.lastName }}
               </h5>
             </div>
-            <button class="btn btn-light btn-sm rounded-circle">
+            <button class="btn btn-light btn-sm rounded-circle" (click)="printRecord(rec)">
               <i class="bi bi-printer"></i>
             </button>
           </div>
           <div class="bg-light p-3 rounded-4 mb-3" *ngIf="rec.physicalExam">
-            <h6 class="small fw-bold text-uppercase text-muted mb-2">Examen Físico</h6>
+            <h6 class="small fw-bold text-uppercase text-muted mb-2">
+              {{ langService.translate('medical_history.physicalExam') }}
+            </h6>
             <p class="mb-0">{{ rec.physicalExam }}</p>
           </div>
           <div class="row g-3">
             <div class="col-md-6" *ngIf="rec.treatment">
-              <h6 class="small fw-bold text-uppercase text-muted mb-2">Tratamiento</h6>
-              <p class="small mb-0">{{ rec.treatment }}</p>
+              <h6 class="small fw-bold text-uppercase text-muted mb-2">
+                {{ langService.translate('medical_history.treatment') }}
+              </h6>
+              <p class="small mb-0 text-break">{{ rec.treatment }}</p>
             </div>
             <div class="col-md-6" *ngIf="rec.indications">
-              <h6 class="small fw-bold text-uppercase text-muted mb-2">Indicaciones</h6>
-              <p class="small mb-0">{{ rec.indications }}</p>
+              <h6 class="small fw-bold text-uppercase text-muted mb-2">
+                {{ langService.translate('medical_history.indications') }}
+              </h6>
+              <p class="small mb-0 text-break">{{ rec.indications }}</p>
+            </div>
+            <div class="col-12 mt-3" *ngIf="rec.medicalLeaveDays > 0">
+              <div
+                class="p-2 bg-warning bg-opacity-10 border border-warning border-opacity-25 rounded-3 d-inline-flex align-items-center"
+              >
+                <i class="bi bi-file-medical text-warning me-2"></i>
+                <div>
+                  <span class="d-block small fw-bold text-warning-emphasis">{{
+                    langService.translate('medical_history.medicalLeave')
+                  }}</span>
+                  <span class="x-small text-muted">
+                    {{ rec.medicalLeaveDays }}
+                    {{ langService.translate('medical_history.leaveDays') }}<br />
+                    <span class="text-secondary">
+                      {{ rec.medicalLeaveStartDate | date: 'dd/MM/yyyy' }}
+                      <span *ngIf="rec.medicalLeaveEndDate">
+                        - {{ rec.medicalLeaveEndDate | date: 'dd/MM/yyyy' }}</span
+                      >
+                    </span>
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
         <div class="text-center py-5" *ngIf="records().length === 0">
-          <p class="text-muted">No hay registros médicos para este paciente.</p>
+          <p class="text-muted">{{ langService.translate('medical_history.noRecords') }}</p>
         </div>
       </div>
     </div>
@@ -139,7 +171,9 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content border-0 card-premium">
         <div class="modal-header border-0 pb-0">
-          <h5 class="modal-title fw-bold">Nuevo Informe Médico</h5>
+          <h5 class="modal-title fw-bold">
+            {{ langService.translate('medical_history.newRecord') }}
+          </h5>
           <button
             type="button"
             class="btn-close shadow-none"
@@ -150,40 +184,92 @@
           <form [formGroup]="recordForm" (ngSubmit)="submitRecord()">
             <div class="row">
               <div class="col-md-12 mb-3">
-                <label class="form-label small fw-bold text-uppercase">Diagnóstico</label>
+                <label class="form-label small fw-bold text-uppercase">{{
+                  langService.translate('medical_history.diagnosis')
+                }}</label>
                 <textarea
                   formControlName="diagnosis"
                   class="form-control glass-morphism border rounded-3"
                   rows="2"
-                  placeholder="Escribe el diagnóstico principal..."
+                  [placeholder]="langService.translate('medical_history.diagnosisPlaceholder')"
                 ></textarea>
               </div>
               <div class="col-md-12 mb-3">
-                <label class="form-label small fw-bold text-uppercase">Examen Físico</label>
+                <label class="form-label small fw-bold text-uppercase">{{
+                  langService.translate('medical_history.physicalExam')
+                }}</label>
                 <textarea
                   formControlName="physicalExam"
                   class="form-control glass-morphism border rounded-3"
                   rows="2"
-                  placeholder="Detalles del examen físico..."
+                  [placeholder]="langService.translate('medical_history.examPlaceholder')"
                 ></textarea>
               </div>
               <div class="col-md-6 mb-3">
-                <label class="form-label small fw-bold text-uppercase">Tratamiento</label>
+                <label class="form-label small fw-bold text-uppercase">{{
+                  langService.translate('medical_history.treatment')
+                }}</label>
                 <textarea
                   formControlName="treatment"
                   class="form-control glass-morphism border rounded-3"
                   rows="3"
-                  placeholder="Medicamentos y dosis..."
+                  [placeholder]="langService.translate('medical_history.treatmentPlaceholder')"
                 ></textarea>
               </div>
               <div class="col-md-6 mb-3">
-                <label class="form-label small fw-bold text-uppercase">Indicaciones</label>
+                <label class="form-label small fw-bold text-uppercase">{{
+                  langService.translate('medical_history.indications')
+                }}</label>
                 <textarea
                   formControlName="indications"
                   class="form-control glass-morphism border rounded-3"
                   rows="3"
-                  placeholder="Recomendaciones generales..."
+                  [placeholder]="langService.translate('medical_history.indicationsPlaceholder')"
                 ></textarea>
+              </div>
+
+              <!-- Medical Leave Section -->
+              <div class="col-12 mt-3">
+                <div class="p-3 bg-light rounded-3 border">
+                  <h6 class="small fw-bold text-uppercase text-primary mb-3">
+                    <i class="bi bi-calendar-range me-2"></i
+                    >{{ langService.translate('medical_history.medicalLeave') }}
+                  </h6>
+                  <div class="row g-3">
+                    <div class="col-md-4">
+                      <label class="form-label x-small text-muted mb-1">{{
+                        langService.translate('medical_history.leaveDays')
+                      }}</label>
+                      <input
+                        type="number"
+                        formControlName="medicalLeaveDays"
+                        class="form-control glass-morphism border rounded-3"
+                        min="0"
+                        placeholder="Ej: 3"
+                      />
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label x-small text-muted mb-1">{{
+                        langService.translate('medical_history.startDate')
+                      }}</label>
+                      <input
+                        type="date"
+                        formControlName="medicalLeaveStartDate"
+                        class="form-control glass-morphism border rounded-3"
+                      />
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label x-small text-muted mb-1">{{
+                        langService.translate('medical_history.endDate')
+                      }}</label>
+                      <input
+                        type="date"
+                        formControlName="medicalLeaveEndDate"
+                        class="form-control glass-morphism border rounded-3 bg-light"
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
             <button
@@ -191,7 +277,7 @@
               class="btn btn-primary-premium w-100 py-3 mt-3"
               [disabled]="recordForm.invalid"
             >
-              Guardar Informe en Historial
+              {{ langService.translate('medical_history.save') }}
             </button>
           </form>
         </div>

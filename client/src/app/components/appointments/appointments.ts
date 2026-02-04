@@ -1,9 +1,9 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AppointmentService } from '../../services/appointment.service';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import Swal from 'sweetalert2';
 import { LanguageService } from '../../services/language.service';
 
@@ -18,17 +18,59 @@ export class Appointments implements OnInit {
   appointments = signal<any[]>([]);
   patients = signal<any[]>([]);
   doctors = signal<any[]>([]);
+  specialties = signal<any[]>([]);
+  selectedSpecialty = signal<string | number>('all');
+  dateFilter = signal<'day' | 'week' | 'month'>('month');
   
   appointmentForm: FormGroup;
   showModal = signal(false);
   whatsappSending = signal(false);
   timeSlots: string[] = [];
 
+  filteredAppointments = computed(() => {
+    const specialtyId = this.selectedSpecialty();
+    const filter = this.dateFilter();
+    let result = this.appointments();
+
+    // 1. Filter by Specialty
+    if (specialtyId !== 'all') {
+      result = result.filter(appt => 
+        appt.Doctor?.specialtyId == specialtyId || appt.Doctor?.Specialty?.id == specialtyId
+      );
+    }
+
+    // 2. Filter by Date
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    result = result.filter(appt => {
+      const apptDate = new Date(appt.date);
+      apptDate.setHours(0, 0, 0, 0);
+
+      if (filter === 'day') {
+        return apptDate.getTime() === today.getTime();
+      } else if (filter === 'week') {
+        const startOfWeek = new Date(today);
+        startOfWeek.setDate(today.getDate() - today.getDay()); // Sunday
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6); // Saturday
+        return apptDate >= startOfWeek && apptDate <= endOfWeek;
+      } else if (filter === 'month') {
+        return apptDate.getMonth() === today.getMonth() && apptDate.getFullYear() === today.getFullYear();
+      }
+      return true;
+    });
+
+    return result;
+  });
+
+
   constructor(
     private appointmentService: AppointmentService,
     private http: HttpClient,
     private fb: FormBuilder,
-    public langService: LanguageService
+    public langService: LanguageService,
+    private route: ActivatedRoute
   ) {
     this.appointmentForm = this.fb.group({
       patientId: ['', Validators.required],
@@ -45,6 +87,16 @@ export class Appointments implements OnInit {
   ngOnInit() {
     this.loadAppointments();
     this.loadDropdownData();
+
+    // Check for doctorId in query params
+    this.route.queryParams.subscribe(params => {
+      if (params['doctorId']) {
+        // Wait for doctors to load if necessary, but for now just set logic
+        // We might need to wait for loadDropdownData to complete, but reactive forms don't strictly require options to be present to set value
+        this.appointmentForm.patchValue({ doctorId: Number(params['doctorId']) });
+        this.openNewAppointmentModal();
+      }
+    });
   }
   
   generateTimeSlots() {
@@ -70,10 +122,23 @@ export class Appointments implements OnInit {
       error: (err) => console.error('Error loading appointments:', err)
     });
   }
+  
+  getHeaders() {
+    return new HttpHeaders({ 'Authorization': `Bearer ${localStorage.getItem('token')}` });
+  }
 
   loadDropdownData() {
-    this.http.get<any[]>('http://localhost:5000/api/patients').subscribe(data => this.patients.set(data));
-    this.http.get<any[]>('http://localhost:5000/api/doctors').subscribe(data => this.doctors.set(data));
+    this.http.get<any[]>('http://localhost:5000/api/patients', { headers: this.getHeaders() }).subscribe(data => this.patients.set(data));
+    this.http.get<any[]>('http://localhost:5000/api/doctors', { headers: this.getHeaders() }).subscribe(data => this.doctors.set(data));
+    this.http.get<any[]>('http://localhost:5000/api/specialties', { headers: this.getHeaders() }).subscribe(data => this.specialties.set(data));
+  }
+
+  setSpecialtyFilter(id: string | number) {
+    this.selectedSpecialty.set(id);
+  }
+
+  setDateFilter(filter: 'day' | 'week' | 'month') {
+    this.dateFilter.set(filter);
   }
 
   openNewAppointmentModal() {

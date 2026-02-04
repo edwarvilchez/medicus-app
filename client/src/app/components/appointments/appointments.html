@@ -16,19 +16,18 @@
         <h6 class="fw-bold mb-3">
           {{ langService.translate('appointments_list.filterSpecialty') }}
         </h6>
-        <div class="d-grid gap-2 mb-4">
-          <button class="btn btn-light text-start active px-3">
-            {{ langService.translate('appointments_list.all') }}
-          </button>
-          <button class="btn btn-light text-start px-3">
-            {{ langService.translate('specialties.cardiology') }}
-          </button>
-          <button class="btn btn-light text-start px-3">
-            {{ langService.translate('specialties.pediatrics') }}
-          </button>
-          <button class="btn btn-light text-start px-3">
-            {{ langService.translate('specialties.gynecology') }}
-          </button>
+        <div class="mb-4">
+          <select
+            class="form-select glass-morphism border rounded-3 py-2 shadow-sm"
+            [ngModel]="selectedSpecialty()"
+            (ngModelChange)="setSpecialtyFilter($event)"
+            [ngModelOptions]="{ standalone: true }"
+          >
+            <option value="all">{{ langService.translate('appointments_list.all') }}</option>
+            <option *ngFor="let s of specialties()" [value]="s.id">
+              {{ s.name }}
+            </option>
+          </select>
         </div>
 
         <h6 class="fw-bold mb-3">
@@ -53,22 +52,34 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
           <h5 class="fw-bold mb-0">{{ langService.translate('appointments_list.scheduled') }}</h5>
           <div class="btn-group glass-morphism border rounded-3 overflow-hidden">
-            <button class="btn btn-light border-0">
+            <button
+              class="btn btn-light border-0"
+              [class.active]="dateFilter() === 'day'"
+              (click)="setDateFilter('day')"
+            >
               {{ langService.translate('appointments_list.tabs.day') }}
             </button>
-            <button class="btn btn-light border-0">
+            <button
+              class="btn btn-light border-0"
+              [class.active]="dateFilter() === 'week'"
+              (click)="setDateFilter('week')"
+            >
               {{ langService.translate('appointments_list.tabs.week') }}
             </button>
-            <button class="btn btn-light border-0">
+            <button
+              class="btn btn-light border-0"
+              [class.active]="dateFilter() === 'month'"
+              (click)="setDateFilter('month')"
+            >
               {{ langService.translate('appointments_list.tabs.month') }}
             </button>
           </div>
         </div>
 
-        <div class="timeline" *ngIf="appointments().length > 0; else noAppointments">
+        <div class="timeline" *ngIf="filteredAppointments().length > 0; else noAppointments">
           <div
             class="appointment-row d-flex gap-3 py-3 border-bottom animate-fade-in"
-            *ngFor="let appt of appointments()"
+            *ngFor="let appt of filteredAppointments()"
           >
             <div class="time fw-bold text-primary text-end" style="width: 100px">
               {{ appt.date | date: 'shortTime' }}
@@ -86,8 +97,9 @@
                     {{ appt.Patient?.User?.lastName }}
                   </p>
                   <p class="small text-muted mb-0">
-                    <i class="bi bi-person-badge me-1"></i> Doctor:
-                    {{ appt.Doctor?.User?.firstName }} {{ appt.Doctor?.User?.lastName }}
+                    <i class="bi bi-person-badge me-1"></i>
+                    {{ langService.translate('common.doctor') }}: {{ appt.Doctor?.User?.firstName }}
+                    {{ appt.Doctor?.User?.lastName }}
                   </p>
                 </div>
                 <div class="text-end">

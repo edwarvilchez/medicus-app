@@ -19,6 +19,32 @@ const MedicalRecord = sequelize.define('MedicalRecord', {
   },
   physicalExam: {
     type: DataTypes.TEXT
+  },
+  medicalLeaveDays: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0
+  },
+  medicalLeaveStartDate: {
+    type: DataTypes.DATEONLY
+  },
+  medicalLeaveEndDate: {
+    type: DataTypes.DATEONLY
+  },
+  patientId: {
+    type: DataTypes.UUID,
+    allowNull: false,
+    references: {
+      model: 'Patients',
+      key: 'id'
+    }
+  },
+  doctorId: {
+    type: DataTypes.UUID,
+    allowNull: false,
+    references: {
+      model: 'Doctors',
+      key: 'id'
+    }
   }
 });
 

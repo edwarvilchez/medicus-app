@@ -243,55 +243,6 @@ h6 {
   margin-top: 1rem !important;
 }
 
-/* Footer & Social Links */
-.app-footer {
-  border-top: 1px solid var(--border);
-  background-color: var(--surface);
-  margin-top: 2rem !important;
-}
-
-.social-icon {
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: white; /* Changed from var(--background) to white for better contrast */
-  color: var(--secondary);
-  font-size: 1.1rem;
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  text-decoration: none;
-  border: 1.5px solid var(--primary); /* Added primary border */
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-.social-icon:hover {
-  transform: translateY(-5px) rotate(8deg);
-  color: white;
-  box-shadow: var(--shadow-lg);
-}
-
-.social-icon.instagram:hover {
-  background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285aeb 90%);
-}
-
-.social-icon.facebook:hover {
-  background: #1877f2;
-}
-
-.social-icon.tiktok:hover {
-  background: #000000;
-}
-
-.app-footer-auth {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
-  width: 100%;
-  z-index: 10;
-  position: relative;
-}
 
 .animate-bounce-subtle {
   transition: all 0.3s ease;

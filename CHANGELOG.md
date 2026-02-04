@@ -2,6 +2,18 @@
 
 Todas las modificaciones notables del proyecto serán documentadas en este archivo.
 
+## [1.6.0] - 2026-02-01
+
+### 🔐 Refinamiento UI y Navegación Global
+
+- ✅ **Optimización de Autenticación**: Rediseño de las páginas de Login y Registro para una mejor experiencia de usuario.
+- ✅ **Footer Inteligente**: Implementación de un pie de página consistente y funcional en todos los módulos públicos.
+- ✅ **Visibilidad de Redes**: Mejora estética y funcional de los iconos de redes sociales y puntos de contacto.
+- ✅ **Agendamiento Público Directo**: Integración de acceso rápido a citas desde la pantalla de inicio.
+- ✅ **Navegación Fluida**: Implementación de mecanismos globales para regresar al login de forma intuitiva.
+
+---
+
 ## [1.5.1] - 2026-02-01
 
 ### 📐 Optimización de Interfaz (No-Scroll)

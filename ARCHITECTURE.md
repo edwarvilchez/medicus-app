@@ -162,7 +162,16 @@ Módulo avanzado para el control de ingresos y facturación de la clínica.
 - **Exportación de Reportes**: Generación de archivos CSV para auditorías externas.
 - **Recibos Digitales**: Visualización de comprobantes con opción de impresión directa.
 
-### **6. Globalización y Flexibilidad (i18n & Multicurrency)**
+### **6. Historial Médico Inteligente (Version 1.7.0)**
+
+Módulo de registro clínico evolucionado para garantizar precisión y facilidad de uso.
+
+- **Resolución Automática de Identidad**: El sistema detecta y vincula automáticamente el perfil del doctor (`doctorId`) basado en el usuario logueado, eliminando errores de asignación.
+- **Cálculo de Reposos Médicos**: Lógica inteligente que calcula automáticamente la **Fecha de Fin** de un reposo basándose en la fecha de inicio y la cantidad de días indicados, manejando correctamente las zonas horarias locales.
+- **Impresión Detallada**: Los informes impresos ahora incluyen el desglose completo del reposo (Días, Desde, Hasta) para mayor claridad del paciente.
+- **Integridad de Datos**: Esquema de base de datos reforzado con claves foráneas explícitas y tipos de datos precisos (`DATEONLY` para fechas de reposo).
+
+### **7. Globalización y Flexibilidad (i18n & Multicurrency)**
 
 El sistema ha sido diseñado para operar en entornos internacionales y mercados dinámicos.
 
@@ -239,4 +248,4 @@ El sistema ha sido arquitectado bajo pilares de seguridad robustos, alineándose
 
 ---
 
-_Documentación actualizada por Antigravity Agent - Febrero 2026 (v1.4.2)_
+_Documentación actualizada por Antigravity Agent - Febrero 2026 (v1.6.0)_
