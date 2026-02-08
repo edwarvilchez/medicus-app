@@ -86,7 +86,7 @@
               </button>
               <button
                 class="btn btn-sm btn-light border-0 text-success"
-                *ngIf="p.status === 'Pending'"
+                *ngIf="p.status === 'Pending' && !authService.hasRole(['PATIENT'])"
                 (click)="collectPayment(p.id)"
                 [title]="langService.translate('payments.collect')"
               >

@@ -110,6 +110,17 @@
                     <i class="bi bi-whatsapp"></i>
                     {{ langService.translate('dashboard.reminderSent') }}
                   </div>
+
+                  <!-- Botón de Videollamada -->
+                  <button
+                    *ngIf="canStartVideoCall(appt)"
+                    class="btn btn-sm btn-primary mt-2 d-flex align-items-center gap-2"
+                    (click)="startVideoCall(appt)"
+                    title="Iniciar videoconsulta"
+                  >
+                    <i class="bi bi-camera-video-fill"></i>
+                    <span>Videollamada</span>
+                  </button>
                 </div>
               </div>
             </div>

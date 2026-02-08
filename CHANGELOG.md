@@ -2,6 +2,23 @@
 
 Todas las modificaciones notables del proyecto serán documentadas en este archivo.
 
+## [1.6.1] - 2026-02-08
+
+### 📹 Módulo de Videoconsultas (Beta)
+
+#### Nueva Funcionalidad
+
+- ✅ **Inicio de Implementación**: Estructura base para el sistema de videollamadas con WebRTC.
+- ✅ **Modelos de Datos**: Creación de tablas y relaciones para gestionar sesiones de videoconsulta.
+- ✅ **Controladores Backend**: Endpoints iniciales para la creación y gestión de salas.
+- ✅ **Integración Frontend**: Nuevos componentes para la interfaz de videollamada.
+
+### 📄 Documentación
+
+- ✅ **Brief Inicial**: Creación de `BRIEF_INICIAL.md` con el resumen ejecutivo, alcance y estado actual del proyecto.
+
+---
+
 ## [1.6.0] - 2026-02-01
 
 ### 🔐 Refinamiento UI y Navegación Global

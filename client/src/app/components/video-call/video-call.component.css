@@ -1,0 +1,325 @@
+.video-call-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+  z-index: 9999;
+  overflow: hidden;
+}
+
+/* ==================== Video Remoto ==================== */
+.remote-video-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+}
+
+.remote-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ==================== Overlays ==================== */
+.waiting-overlay,
+.error-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: white;
+  z-index: 10;
+}
+
+.waiting-overlay h4 {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.error-overlay {
+  background: rgba(0, 0, 0, 0.8);
+  padding: 2rem;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+/* ==================== Video Local (PiP) ==================== */
+.local-video-wrapper {
+  position: absolute;
+  bottom: 100px;
+  right: 20px;
+  width: 280px;
+  height: 200px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  z-index: 20;
+}
+
+.local-video-wrapper:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8);
+}
+
+.local-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video-off-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 2.5rem;
+}
+
+.video-off-overlay span {
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+/* ==================== Etiquetas de Participantes ==================== */
+.participant-label {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  backdrop-filter: blur(10px);
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  pointer-events: none; /* Permitir clicks a través */
+}
+
+.local-label {
+  bottom: 10px;
+  left: 10px;
+  font-size: 0.85rem;
+  padding: 4px 10px;
+  max-width: 90%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.remote-label {
+  bottom: 40px;
+  left: 40px;
+  font-size: 1.1rem;
+  padding: 10px 20px;
+  border-radius: 30px; /* Estilo píldora más moderno */
+  background: rgba(0, 0, 0, 0.7);
+}
+
+
+/* ==================== Información de la Llamada ==================== */
+.call-info {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 20;
+}
+
+.info-card {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(15px);
+  padding: 15px 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  min-width: 200px;
+}
+
+.participant-info {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 8px;
+}
+
+/* ==================== Controles ==================== */
+.controls {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 15px;
+  z-index: 30; /* Aumentado para estar sobre etiquetas */
+}
+
+.btn-control {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  font-size: 1.5rem;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-control:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.1);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.btn-control.active {
+  background: rgba(74, 144, 226, 0.8);
+  border-color: #4a90e2;
+}
+
+.btn-control.muted,
+.btn-control.video-off {
+  background: rgba(220, 53, 69, 0.8);
+  border-color: #dc3545;
+}
+
+.btn-end-call {
+  width: auto;
+  min-width: 60px;
+  height: 60px;
+  border-radius: 30px;
+  font-size: 1.3rem;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.btn-end-call:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 20px rgba(220, 53, 69, 0.5);
+}
+
+/* ==================== Indicador de Rol ==================== */
+.role-indicator {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 20;
+}
+
+.role-indicator .badge {
+  font-size: 0.9rem;
+  padding: 8px 15px;
+  backdrop-filter: blur(10px);
+}
+
+/* ==================== Animaciones ==================== */
+.blink {
+  animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+  0%, 50%, 100% { opacity: 1; }
+  25%, 75% { opacity: 0.3; }
+}
+
+/* ==================== Responsive ==================== */
+@media (max-width: 768px) {
+  .local-video-wrapper {
+    width: 120px;
+    height: 90px;
+    bottom: 120px;
+    right: 10px;
+  }
+
+  .controls {
+    bottom: 20px;
+    gap: 10px;
+  }
+
+  .btn-control {
+    width: 50px;
+    height: 50px;
+    font-size: 1.2rem;
+  }
+
+  .btn-end-call {
+    height: 50px;
+    min-width: 50px;
+    padding: 0 15px;
+  }
+
+  .call-info {
+    top: 10px;
+    left: 10px;
+  }
+
+  .info-card {
+    padding: 10px 15px;
+    font-size: 0.85rem;
+  }
+
+  .role-indicator {
+    top: 10px;
+    right: 10px;
+  }
+
+  .remote-label {
+    top: 90px;
+    bottom: auto; /* Anular bottom */
+    left: 20px;
+    font-size: 0.95rem;
+    padding: 6px 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .local-video-wrapper {
+    width: 100px;
+    height: 75px;
+  }
+
+  .btn-control {
+    width: 45px;
+    height: 45px;
+    font-size: 1rem;
+  }
+
+  .btn-end-call {
+    height: 45px;
+  }
+}
+
+/* ==================== Accesibilidad ==================== */
+.btn-control:focus,
+.btn-end-call:focus {
+  outline: 3px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+}
+
+/* ==================== Loading States ==================== */
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}

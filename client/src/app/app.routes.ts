@@ -31,23 +31,53 @@ export const routes: Routes = [
     component: Dashboard,
     canActivate: [authGuard]
   },
-  { path: 'patients', component: Patients, canActivate: [authGuard] },
+  { 
+    path: 'patients', 
+    component: Patients, 
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['SUPERADMIN', 'ADMINISTRATIVE', 'DOCTOR', 'NURSE'] }
+  },
   { path: 'appointments', component: Appointments, canActivate: [authGuard] },
-  { path: 'doctors', component: Doctors, canActivate: [authGuard] },
-  { path: 'nurses', component: Nurses, canActivate: [authGuard] },
+  { 
+    path: 'doctors', 
+    component: Doctors, 
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['SUPERADMIN', 'ADMINISTRATIVE'] }
+  },
+  { 
+    path: 'nurses', 
+    component: Nurses, 
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['SUPERADMIN', 'ADMINISTRATIVE'] }
+  },
   { 
     path: 'staff', 
     component: Staff, 
     canActivate: [authGuard, roleGuard], 
     data: { roles: ['SUPERADMIN'] } 
   },
-  { path: 'history', component: MedicalHistory, canActivate: [authGuard] },
-  { path: 'lab-results', loadComponent: () => import('./components/lab-results/lab-results').then(m => m.LabResults), canActivate: [authGuard] },
+  { 
+    path: 'history', 
+    component: MedicalHistory, 
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['SUPERADMIN', 'DOCTOR', 'NURSE'] }
+  },
+  { 
+    path: 'lab-results', 
+    loadComponent: () => import('./components/lab-results/lab-results').then(m => m.LabResults), 
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['SUPERADMIN', 'DOCTOR', 'NURSE'] }
+  },
+  { 
+    path: 'video-call/:id', 
+    loadComponent: () => import('./components/video-call/video-call.component').then(m => m.VideoCallComponent), 
+    canActivate: [authGuard] 
+  },
   { 
     path: 'payments', 
     component: Payments, 
     canActivate: [authGuard, roleGuard], 
-    data: { roles: ['SUPERADMIN', 'ADMINISTRATIVE'] } 
+    data: { roles: ['SUPERADMIN', 'ADMINISTRATIVE', 'PATIENT'] } 
   },
   { path: '**', redirectTo: 'dashboard' }
 ];

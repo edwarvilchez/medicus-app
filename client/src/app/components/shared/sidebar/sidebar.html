@@ -27,6 +27,7 @@
     </a>
 
     <a
+      *ngIf="!authService.hasRole(['PATIENT'])"
       routerLink="/history"
       routerLinkActive="active"
       class="list-group-item list-group-item-action border-0 rounded-3 py-2 d-flex align-items-center gap-3"
@@ -36,6 +37,7 @@
     </a>
 
     <a
+      *ngIf="!authService.hasRole(['PATIENT'])"
       routerLink="/patients"
       routerLinkActive="active"
       class="list-group-item list-group-item-action border-0 rounded-3 py-2 d-flex align-items-center gap-3"
@@ -45,6 +47,7 @@
     </a>
 
     <a
+      *ngIf="!authService.hasRole(['PATIENT'])"
       routerLink="/lab-results"
       routerLinkActive="active"
       class="list-group-item list-group-item-action border-0 rounded-3 py-2 d-flex align-items-center gap-3"
@@ -53,11 +56,16 @@
       <span class="fw-medium">{{ langService.translate('sidebar.lab') }}</span>
     </a>
 
-    <div class="text-uppercase small fw-bold text-muted px-3 mt-3 mb-1" style="letter-spacing: 1px">
+    <div
+      *ngIf="!authService.hasRole(['PATIENT'])"
+      class="text-uppercase small fw-bold text-muted px-3 mt-3 mb-1"
+      style="letter-spacing: 1px"
+    >
       {{ langService.translate('sidebar.medicalStaff') }}
     </div>
 
     <a
+      *ngIf="!authService.hasRole(['PATIENT'])"
       routerLink="/doctors"
       routerLinkActive="active"
       class="list-group-item list-group-item-action border-0 rounded-3 py-2 d-flex align-items-center gap-3"
@@ -67,6 +75,7 @@
     </a>
 
     <a
+      *ngIf="!authService.hasRole(['PATIENT'])"
       routerLink="/nurses"
       routerLinkActive="active"
       class="list-group-item list-group-item-action border-0 rounded-3 py-2 d-flex align-items-center gap-3"
@@ -80,6 +89,7 @@
     </div>
 
     <a
+      *ngIf="!authService.hasRole(['PATIENT'])"
       routerLink="/staff"
       routerLinkActive="active"
       class="list-group-item list-group-item-action border-0 rounded-3 py-2 d-flex align-items-center gap-3"
@@ -89,7 +99,7 @@
     </a>
 
     <a
-      *ngIf="authService.hasRole(['SUPERADMIN', 'ADMINISTRATIVE'])"
+      *ngIf="authService.hasRole(['SUPERADMIN', 'ADMINISTRATIVE', 'PATIENT'])"
       routerLink="/payments"
       routerLinkActive="active"
       class="list-group-item list-group-item-action border-0 rounded-3 py-2 d-flex align-items-center gap-3"

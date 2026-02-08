@@ -45,7 +45,28 @@ exports.createAppointment = async (req, res) => {
 
 exports.getAppointments = async (req, res) => {
   try {
+    const userRole = req.user.role ? req.user.role.toUpperCase() : '';
+    const userId = req.user.id;
+    
+    console.log(`[DEBUG] getAppointments - Role: ${userRole}, UserID: ${userId}`);
+
+    let whereClause = {};
+
+    if (userRole === 'PATIENT') {
+        const patient = await Patient.findOne({ where: { userId } });
+        
+        console.log(`[DEBUG] getAppointments - Found patient: ${patient ? patient.id : 'NONE'}`);
+
+        if (!patient) return res.json([]);
+        whereClause = { patientId: patient.id };
+    } else if (userRole === 'DOCTOR') {
+        const doctor = await Doctor.findOne({ where: { userId } });
+        if (!doctor) return res.json([]);
+        whereClause = { doctorId: doctor.id };
+    }
+
     const appointments = await Appointment.findAll({
+      where: whereClause,
       include: [
         { model: Patient, include: [User] },
         { model: Doctor, include: [User] }
@@ -54,6 +75,7 @@ exports.getAppointments = async (req, res) => {
     });
     res.json(appointments);
   } catch (error) {
+    console.error('[ERROR] getAppointments:', error);
     res.status(500).json({ error: error.message });
   }
 };

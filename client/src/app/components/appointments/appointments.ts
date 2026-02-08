@@ -1,8 +1,9 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, ActivatedRoute } from '@angular/router';
+import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AppointmentService } from '../../services/appointment.service';
+import { VideoConsultationService } from '../../services/video-consultation.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import Swal from 'sweetalert2';
 import { LanguageService } from '../../services/language.service';
@@ -67,10 +68,12 @@ export class Appointments implements OnInit {
 
   constructor(
     private appointmentService: AppointmentService,
+    private videoConsultationService: VideoConsultationService,
     private http: HttpClient,
     private fb: FormBuilder,
     public langService: LanguageService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {
     this.appointmentForm = this.fb.group({
       patientId: ['', Validators.required],
@@ -260,5 +263,74 @@ export class Appointments implements OnInit {
       case 'Cancelled': return 'bg-danger';
       default: return 'bg-primary';
     }
+  }
+
+  async startVideoCall(appointment: any) {
+    try {
+      // Verificar que la cita esté confirmada
+      if (appointment.status !== 'Confirmed') {
+        await Swal.fire({
+          icon: 'warning',
+          title: 'Cita no confirmada',
+          text: 'Solo puedes iniciar videollamadas con citas confirmadas',
+          confirmButtonColor: '#4a90e2'
+        });
+        return;
+      }
+
+      // Mostrar loading
+      Swal.fire({
+        title: 'Iniciando videoconsulta...',
+        text: 'Por favor espera',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
+      // Crear o obtener videoconsulta
+      this.videoConsultationService.createVideoConsultation(
+        appointment.id
+      ).subscribe({
+        next: (response) => {
+          Swal.close();
+          const consultationId = response.videoConsultation.id;
+          
+          // Navegar al componente de videollamada
+          this.router.navigate(['/video-call', consultationId]);
+        },
+        error: (err) => {
+          console.error('Error creando videoconsulta:', err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo iniciar la videoconsulta. Intenta de nuevo.',
+            confirmButtonColor: '#ef4444'
+          });
+        }
+      });
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+
+  canStartVideoCall(appointment: any): boolean {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const isDoctor = user.role === 'DOCTOR' || user.roleId === 2;
+    const isPatient = user.role === 'PATIENT' || user.roleId === 3; // Asumiendo rol 3 es paciente
+    
+    // La cita debe estar confirmada
+    const isConfirmed = appointment.status === 'Confirmed';
+    
+    // La cita debe ser hoy o en el futuro cercano (dentro de 1 hora antes)
+    const appointmentDate = new Date(appointment.date);
+    const now = new Date();
+    const oneHourBefore = new Date(appointmentDate.getTime() - 60 * 60 * 1000);
+    // Permitir hasta 2 horas después de la hora programada
+    const twoHoursAfter = new Date(appointmentDate.getTime() + 2 * 60 * 60 * 1000);
+    
+    const isTimeValid = now >= oneHourBefore;
+    
+    return (isDoctor || isPatient) && isConfirmed && isTimeValid;
   }
 }

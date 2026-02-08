@@ -10,6 +10,7 @@ const Appointment = require('./Appointment');
 const MedicalRecord = require('./MedicalRecord');
 const LabResult = require('./LabResult');
 const Payment = require('./Payment');
+const VideoConsultation = require('./VideoConsultation');
 
 // User - Role
 Role.hasMany(User, { foreignKey: 'roleId' });
@@ -60,6 +61,16 @@ Appointment.belongsTo(Doctor, { foreignKey: 'doctorId' });
 Patient.hasMany(Appointment, { foreignKey: 'patientId' });
 Appointment.belongsTo(Patient, { foreignKey: 'patientId' });
 
+// VideoConsultation Associations
+User.hasMany(VideoConsultation, { as: 'doctorConsultations', foreignKey: 'doctorId' });
+User.hasMany(VideoConsultation, { as: 'patientConsultations', foreignKey: 'patientId' });
+
+VideoConsultation.belongsTo(User, { as: 'doctor', foreignKey: 'doctorId' });
+VideoConsultation.belongsTo(User, { as: 'patient', foreignKey: 'patientId' });
+VideoConsultation.belongsTo(Appointment, { foreignKey: 'appointmentId' });
+
+Appointment.hasOne(VideoConsultation, { foreignKey: 'appointmentId' });
+
 module.exports = {
   User,
   Role,
@@ -72,5 +83,6 @@ module.exports = {
   Appointment,
   MedicalRecord,
   LabResult,
-  Payment
+  Payment,
+  VideoConsultation
 };
