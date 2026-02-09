@@ -6,7 +6,7 @@
         <p class="text-muted small mb-0">
           {{ langService.translate('dashboard.welcome') }},
           <span class="fw-bold text-dark">
-            {{ authService.currentUser()?.firstName }}
+            {{ getUserTitle() }} {{ authService.currentUser()?.firstName }}
           </span>
         </p>
       </div>
@@ -28,82 +28,115 @@
   <!-- VISTA PARA PERSONAL (ADMIN / DOCTOR) -->
   <!-- ======================== -->
   <ng-container *ngIf="!authService.hasRole(['PATIENT'])">
-    <!-- Stats Cards -->
-    <div class="col-md-3">
-      <div class="card-premium p-3 border-0 h-100">
+    <!-- Stats Cards Row 1 -->
+    <div class="col-md-2 col-6">
+      <div class="card-premium p-2 border-0 h-100">
         <div class="d-flex justify-content-between align-items-center">
           <div>
             <p class="text-muted x-small fw-medium mb-0">
               {{ langService.translate('dashboard.stats.appointments') }}
             </p>
-            <h4 class="mb-0">{{ stats().appointmentsToday }}</h4>
+            <h5 class="mb-0">{{ stats().appointmentsToday }}</h5>
           </div>
           <div class="bg-primary bg-opacity-10 text-primary p-2 rounded-3">
-            <i class="bi bi-calendar-check fs-5"></i>
+            <i class="bi bi-calendar-check fs-6"></i>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="col-md-3">
-      <div class="card-premium p-3 border-0 h-100">
+    <div class="col-md-2 col-6">
+      <div class="card-premium p-2 border-0 h-100">
         <div class="d-flex justify-content-between align-items-center">
           <div>
             <p class="text-muted x-small fw-medium mb-0">
               {{ langService.translate('dashboard.stats.totalPatients') }}
             </p>
-            <h4 class="mb-0">{{ stats().totalPatients }}</h4>
+            <h5 class="mb-0">{{ stats().totalPatients }}</h5>
           </div>
           <div class="bg-success bg-opacity-10 text-success p-2 rounded-3">
-            <i class="bi bi-person-plus fs-5"></i>
+            <i class="bi bi-person-plus fs-6"></i>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="col-md-3">
-      <div class="card-premium p-3 border-0 h-100">
+    <div class="col-md-2 col-6" *ngIf="!authService.hasRole(['NURSE'])">
+      <div class="card-premium p-2 border-0 h-100">
         <div class="d-flex justify-content-between align-items-center">
           <div>
             <p class="text-muted x-small fw-medium mb-0">
               {{ langService.translate('dashboard.stats.income') }}
             </p>
-            <h4 class="mb-0">${{ stats().monthlyIncome | number: '1.2-2' }}</h4>
+            <h5 class="mb-0">${{ stats().monthlyIncome | number: '1.0-0' }}</h5>
           </div>
           <div class="bg-warning bg-opacity-10 text-warning p-2 rounded-3">
-            <i class="bi bi-currency-dollar fs-5"></i>
+            <i class="bi bi-currency-dollar fs-6"></i>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="col-md-3">
-      <div class="card-premium p-3 border-0 h-100">
+    <div class="col-md-2 col-6">
+      <div class="card-premium p-2 border-0 h-100">
         <div class="d-flex justify-content-between align-items-center">
           <div>
             <p class="text-muted x-small fw-medium mb-0">
               {{ langService.translate('dashboard.stats.pending') }}
             </p>
-            <h4 class="mb-0">{{ stats().pendingAppointments }}</h4>
+            <h5 class="mb-0">{{ stats().pendingAppointments }}</h5>
           </div>
           <div class="bg-info bg-opacity-10 text-info p-2 rounded-3">
-            <i class="bi bi-clock-history fs-5"></i>
+            <i class="bi bi-clock-history fs-6"></i>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Charts/Main Content Area -->
-    <div class="col-md-7">
+    <div class="col-md-2 col-6">
+      <div class="card-premium p-2 border-0 h-100">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <p class="text-muted x-small fw-medium mb-0">
+              {{ langService.translate('dashboard.stats.inPerson') }}
+            </p>
+            <h5 class="mb-0">{{ stats().inPersonCount }}</h5>
+          </div>
+          <div class="bg-primary bg-opacity-10 text-primary p-2 rounded-3">
+            <i class="bi bi-person-workspace fs-6"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-2 col-6">
+      <div class="card-premium p-2 border-0 h-100">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <p class="text-muted x-small fw-medium mb-0">
+              {{ langService.translate('dashboard.stats.videoCalls') }}
+            </p>
+            <h5 class="mb-0">{{ stats().videoCount }}</h5>
+          </div>
+          <div class="bg-info bg-opacity-10 text-info p-2 rounded-3">
+            <i class="bi bi-camera-video fs-6"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Area -->
+    <div class="col-md-8">
       <div class="card-premium h-100 p-3 border-0">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h6 class="mb-0">{{ langService.translate('dashboard.activity') }}</h6>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="mb-0 x-small fw-bold text-uppercase">
+            {{ langService.translate('dashboard.activity') }}
+          </h6>
           <select class="form-select border-0 bg-light w-auto x-small py-0">
             <option>{{ langService.translate('dashboard.days7') }}</option>
-            <option>{{ langService.translate('dashboard.days30') }}</option>
           </select>
         </div>
-        <div class="chart-container" style="position: relative; height: 220px; width: 100%">
+        <div class="chart-container" style="position: relative; height: 180px; width: 100%">
           <canvas baseChart [data]="barChartData" [options]="barChartOptions" [type]="barChartType">
           </canvas>
         </div>
@@ -165,12 +198,137 @@
         </div>
       </div>
     </div>
+
+    <!-- SECCIÓN DE RENDIMIENTO POR ESPECIALIDAD -->
+    <div class="col-md-5">
+      <div class="card-premium p-3 border-0 h-100 text-center">
+        <h6 class="fw-bold mb-2 x-small text-uppercase">
+          <i class="bi bi-stethoscope text-primary me-1"></i>
+          {{ langService.translate('dashboard.stats.specialtyBreakdown') }}
+        </h6>
+        <div class="chart-container" style="position: relative; height: 160px; width: 100%">
+          <canvas baseChart [data]="pieChartData" [options]="pieChartOptions" [type]="pieChartType">
+          </canvas>
+        </div>
+        <div
+          *ngIf="stats().specialtyStats?.length === 0"
+          class="text-center py-2 text-muted x-small"
+        >
+          No hay datos
+        </div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN DE ANÁLISIS DE INGRESOS COMPACTA -->
+    <div
+      class="col-md-7"
+      *ngIf="authService.hasRole(['SUPERADMIN', 'ADMINISTRATIVE', 'RECEPTIONIST', 'DOCTOR'])"
+    >
+      <div class="card-premium p-3 border-0 h-100">
+        <h6 class="fw-bold mb-2 x-small text-uppercase d-flex align-items-center gap-2">
+          <i class="bi bi-graph-up-arrow text-success"></i>
+          {{ langService.translate('dashboard.stats.incomeAnalysis') }}
+        </h6>
+
+        <div class="row g-2 mt-0">
+          <!-- DIARIO -->
+          <div class="col-4">
+            <div class="p-2 rounded-3 bg-light border-start border-4 border-primary">
+              <span class="fw-bold x-small text-muted d-block">{{
+                langService.translate('dashboard.stats.daily')
+              }}</span>
+              <div class="d-flex justify-content-between x-small mt-1 px-1">
+                <span>USD</span
+                ><span class="fw-bold">{{ stats().incomeDetails.day.USD | number: '1.0-0' }}</span>
+              </div>
+              <div class="d-flex justify-content-between x-small px-1">
+                <span>Bs.</span
+                ><span class="fw-bold text-success">{{
+                  stats().incomeDetails.day.Bs | number: '1.0-0'
+                }}</span>
+              </div>
+            </div>
+          </div>
+          <!-- SEMANAL -->
+          <div class="col-4">
+            <div class="p-2 rounded-3 bg-light border-start border-4 border-info">
+              <span class="fw-bold x-small text-muted d-block">{{
+                langService.translate('dashboard.stats.weekly')
+              }}</span>
+              <div class="d-flex justify-content-between x-small mt-1 px-1">
+                <span>USD</span
+                ><span class="fw-bold">{{ stats().incomeDetails.week.USD | number: '1.0-0' }}</span>
+              </div>
+              <div class="d-flex justify-content-between x-small px-1">
+                <span>Bs.</span
+                ><span class="fw-bold text-success">{{
+                  stats().incomeDetails.week.Bs | number: '1.0-0'
+                }}</span>
+              </div>
+            </div>
+          </div>
+          <!-- MENSUAL -->
+          <div class="col-4">
+            <div
+              class="p-2 rounded-3 bg-primary bg-opacity-10 border-start border-4 border-primary-emphasis"
+            >
+              <span class="fw-bold x-small text-primary d-block">{{
+                langService.translate('dashboard.stats.monthly')
+              }}</span>
+              <div class="d-flex justify-content-between x-small mt-1 px-1">
+                <span>USD</span
+                ><span class="fw-bold">{{
+                  stats().incomeDetails.month.USD | number: '1.0-0'
+                }}</span>
+              </div>
+              <div class="d-flex justify-content-between x-small px-1">
+                <span>Bs.</span
+                ><span class="fw-bold text-success">{{
+                  stats().incomeDetails.month.Bs | number: '1.0-0'
+                }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </ng-container>
 
   <!-- ======================== -->
   <!-- VISTA PARA PACIENTE (SIMPLIFICADA) -->
   <!-- ======================== -->
   <ng-container *ngIf="authService.hasRole(['PATIENT'])">
+    <div class="col-md-6">
+      <div class="card-premium p-3 border-0 bg-primary bg-opacity-10">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <p class="text-primary-emphasis x-small fw-bold text-uppercase mb-1">
+              {{ langService.translate('dashboard.stats.inPerson') }}
+            </p>
+            <h3 class="mb-0 text-primary">{{ stats().inPersonCount }}</h3>
+          </div>
+          <div class="bg-primary bg-opacity-20 text-primary p-3 rounded-circle">
+            <i class="bi bi-person-workspace fs-4"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card-premium p-3 border-0 bg-info bg-opacity-10">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <p class="text-info-emphasis x-small fw-bold text-uppercase mb-1">
+              {{ langService.translate('dashboard.stats.videoCalls') }}
+            </p>
+            <h3 class="mb-0 text-info">{{ stats().videoCount }}</h3>
+          </div>
+          <div class="bg-info bg-opacity-20 text-info p-3 rounded-circle">
+            <i class="bi bi-camera-video fs-4"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="col-md-8">
       <div class="card-premium h-100 p-4 border-0">
         <h5 class="mb-4 text-primary">{{ langService.translate('dashboard.medicalCitas') }}</h5>
@@ -278,6 +436,40 @@
               </div>
               <i class="bi bi-chevron-right text-muted small"></i>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- SECCIÓN DE RENDIMIENTO POR ESPECIALIDAD (PACIENTE) -->
+    <div class="col-12 mt-4">
+      <div class="card-premium p-4 border-0">
+        <h6 class="fw-bold mb-3 d-flex align-items-center gap-2">
+          <i class="bi bi-stethoscope text-primary"></i>
+          {{ langService.translate('dashboard.stats.specialtyBreakdown') }}
+        </h6>
+        <div class="row g-3">
+          <div *ngFor="let s of stats().specialtyStats" class="col-md-3">
+            <div class="p-3 rounded-4 bg-light border shadow-sm">
+              <div class="small fw-bold text-dark mb-2">{{ s.name }}</div>
+              <div class="d-flex justify-content-between x-small">
+                <span class="text-muted">{{
+                  langService.translate('dashboard.stats.toAttend')
+                }}</span>
+                <span class="fw-bold text-warning">{{ s.pending }}</span>
+              </div>
+              <div class="d-flex justify-content-between x-small mt-1">
+                <span class="text-muted">{{
+                  langService.translate('dashboard.stats.attended')
+                }}</span>
+                <span class="fw-bold text-success">{{ s.completed }}</span>
+              </div>
+            </div>
+          </div>
+          <div
+            *ngIf="stats().specialtyStats?.length === 0"
+            class="col-12 text-center py-3 text-muted x-small"
+          >
+            No hay datos de especialidades disponibles
           </div>
         </div>
       </div>

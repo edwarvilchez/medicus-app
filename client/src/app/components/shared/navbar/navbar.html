@@ -21,33 +21,13 @@
     <div class="collapse navbar-collapse" id="navbarText">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-4">
         <li class="nav-item">
-          <a class="nav-link px-3 fw-medium text-dark active" routerLink="/dashboard">Dashboard</a>
+          <a class="nav-link px-3 fw-medium text-dark active" routerLink="/dashboard">{{
+            langService.translate('common.dashboard')
+          }}</a>
         </li>
       </ul>
 
       <div class="d-flex align-items-center gap-3">
-        <div class="dropdown">
-          <button
-            class="btn border-0 d-flex align-items-center gap-2 p-1 px-3 glass-morphism rounded-pill shadow-sm"
-            type="button"
-            id="userMenu"
-          >
-            <img
-              [src]="
-                'https://ui-avatars.com/api/?name=' +
-                (authService.currentUser()?.firstName || 'User') +
-                '&background=0ea5e9&color=fff'
-              "
-              class="rounded-circle"
-              width="32"
-              alt="avatar"
-            />
-            <span class="fw-semibold small d-none d-md-inline">{{
-              authService.currentUser()?.firstName
-            }}</span>
-            <i class="bi bi-chevron-down small text-muted"></i>
-          </button>
-        </div>
         <!-- Settings Group -->
         <div
           class="d-flex align-items-center bg-light border rounded-pill px-2 py-1 gap-2 shadow-sm me-2"
@@ -108,9 +88,75 @@
             </button>
           </div>
         </div>
-        <button class="btn btn-sm btn-outline-danger border-0 rounded-circle" (click)="logout()">
-          <i class="bi bi-box-arrow-right fs-5"></i>
-        </button>
+
+        <!-- User Dropdown Menu -->
+        <div class="dropdown user-dropdown-container position-relative">
+          <button
+            class="btn border-0 d-flex align-items-center gap-2 p-1 px-3 glass-morphism rounded-pill shadow-sm"
+            type="button"
+            (click)="toggleUserMenu()"
+            [class.active]="isUserMenuOpen"
+          >
+            <div
+              class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white small"
+              style="width: 32px; height: 32px; background-color: #0ea5e9"
+            >
+              {{ (authService.currentUser()?.firstName || 'U').charAt(0)
+              }}{{ (authService.currentUser()?.lastName || '').charAt(0) }}
+            </div>
+            <span class="fw-semibold small d-none d-md-inline text-dark">{{
+              authService.currentUser()?.firstName
+            }}</span>
+            <i
+              class="bi bi-chevron-down small text-muted transition"
+              [class.rotate-180]="isUserMenuOpen"
+            ></i>
+          </button>
+
+          <ul
+            class="dropdown-menu dropdown-menu-end border-0 shadow-lg p-2 rounded-4 mt-2"
+            style="min-width: 220px; right: 0; top: 100%; z-index: 1050"
+            [class.show]="isUserMenuOpen"
+          >
+            <!-- Header -->
+            <li class="px-3 py-2 border-bottom mb-2">
+              <p class="mb-0 fw-bold text-dark">
+                {{ authService.currentUser()?.firstName }} {{ authService.currentUser()?.lastName }}
+              </p>
+              <p class="text-muted x-small mb-0 text-uppercase">
+                {{ langService.translate('roles.' + authService.currentUser()?.role) }}
+              </p>
+            </li>
+            <!-- Actions -->
+            <li>
+              <button
+                class="dropdown-item rounded-3 py-2 d-flex align-items-center gap-2 small"
+                (click)="openProfileModal(); isUserMenuOpen = false"
+              >
+                <i class="bi bi-person-gear text-primary"></i>
+                {{ langService.translate('navbar.updateInfo') }}
+              </button>
+            </li>
+            <li>
+              <button
+                class="dropdown-item rounded-3 py-2 d-flex align-items-center gap-2 small"
+                (click)="openChangePasswordModal(); isUserMenuOpen = false"
+              >
+                <i class="bi bi-shield-lock text-primary"></i>
+                {{ langService.translate('navbar.changePassword') }}
+              </button>
+            </li>
+            <li><hr class="dropdown-divider my-2" /></li>
+            <li>
+              <button
+                class="dropdown-item rounded-3 py-2 d-flex align-items-center gap-2 small text-danger"
+                (click)="logout(); isUserMenuOpen = false"
+              >
+                <i class="bi bi-box-arrow-right"></i> {{ langService.translate('navbar.logout') }}
+              </button>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>

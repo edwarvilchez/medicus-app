@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { LanguageService } from '../../services/language.service';
 import { CurrencyService } from '../../services/currency.service';
 import { AuthService } from '../../services/auth.service';
+import { ExportService } from '../../services/export.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -26,18 +27,39 @@ export class Payments implements OnInit {
   filteredPayments = computed(() => {
     const term = this.searchTerm().toLowerCase();
     return this.payments().filter(p => 
-      p.reference?.toLowerCase().includes(term) || 
-      p.Patient?.User?.firstName.toLowerCase().includes(term) ||
-      p.Patient?.User?.lastName.toLowerCase().includes(term) ||
-      p.concept.toLowerCase().includes(term)
+      (p.reference?.toLowerCase()?.includes(term) || false) || 
+      (p.Patient?.User?.firstName?.toLowerCase()?.includes(term) || false) ||
+      (p.Patient?.User?.lastName?.toLowerCase()?.includes(term) || false) ||
+      (p.concept?.toLowerCase()?.includes(term) || false) ||
+      (p.Appointment?.reason?.toLowerCase()?.includes(term) || false)
     );
+  });
+
+  pendingTotal = computed(() => {
+    return this.payments()
+      .filter(p => p.status === 'Pending')
+      .reduce((acc, p) => acc + parseFloat(p.amount), 0);
+  });
+
+  paidTotal = computed(() => {
+    return this.payments()
+      .filter(p => p.status === 'Paid')
+      .reduce((acc, p) => acc + parseFloat(p.amount), 0);
+  });
+
+  lastPayment = computed(() => {
+    const sorted = [...this.payments()].sort((a, b) => 
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+    return sorted.length > 0 ? sorted[0] : null;
   });
 
   constructor(
     private http: HttpClient,
     public langService: LanguageService,
     public currencyService: CurrencyService,
-    public authService: AuthService
+    public authService: AuthService,
+    private exportService: ExportService
   ) {}
 
   ngOnInit() {
@@ -50,7 +72,13 @@ export class Payments implements OnInit {
 
   loadPayments() {
     this.http.get<any[]>('http://localhost:5000/api/payments', { headers: this.getHeaders() })
-      .subscribe(data => this.payments.set(data));
+      .subscribe({
+        next: data => {
+          console.log('Payments loaded:', data);
+          this.payments.set(data);
+        },
+        error: err => console.error('Error loading payments:', err)
+      });
   }
 
   createNewPayment() {
@@ -67,69 +95,90 @@ export class Payments implements OnInit {
         // Filtrar citas pendientes o confirmadas que no estén canceladas/completadas
         const validAppointments = appointments.filter(a => a.status !== 'Cancelled' && a.status !== 'Completed');
         
-        let appointmentOptions = '<option value="">Seleccione una cita...</option>';
+        let appointmentOptions = `<option value="">${this.langService.translate('payments.select')}</option>`;
         if (validAppointments.length > 0) {
             appointmentOptions += validAppointments.map(a => 
                 `<option value="${a.id}">${new Date(a.date).toLocaleDateString()} - Dr. ${a.Doctor?.User?.lastName || 'Medico'} (${a.reason})</option>`
             ).join('');
         } else {
-            appointmentOptions = '<option value="" disabled>No hay citas pendientes</option>';
+            appointmentOptions = `<option value="" disabled>${this.langService.translate('common.noResults')}</option>`;
         }
 
         Swal.fire({
-          title: 'Registrar Pago de Cita',
+          title: this.langService.translate('payments.registerTitle'),
           html: `
             <div class="text-start">
               <div class="mb-3">
-                <label class="form-label small fw-bold mb-1">Cita a Pagar</label>
+                <label class="form-label small fw-bold mb-1">${this.langService.translate('payments.selectAppointment')}</label>
                 <select id="apptId" class="form-select form-select-sm">
                   ${appointmentOptions}
                 </select>
               </div>
 
               <div class="mb-3">
-                <label class="form-label small fw-bold mb-1">Método de Pago</label>
+                <label class="form-label small fw-bold mb-1">${this.langService.translate('payments.method')}</label>
                 <select id="method" class="form-select form-select-sm" onchange="const d=document.getElementById('details'); if(this.value==='Efectivo'){d.classList.add('d-none');} else {d.classList.remove('d-none');}">
-                    <option value="">Seleccione...</option>
-                    <option value="Transferencia">Transferencia Bancaria</option>
-                    <option value="Pago Móvil">Pago Móvil</option>
-                    <option value="Efectivo">Efectivo (Pagar en Consultorio)</option>
+                    <option value="">${this.langService.translate('payments.select')}</option>
+                    <option value="Transferencia">${this.langService.translate('sidebar.transfer')}</option>
+                    <option value="Pago Móvil">${this.langService.translate('sidebar.mobile')}</option>
+                    <option value="Efectivo">${this.langService.translate('sidebar.cash')}</option>
                     <option value="Zelle">Zelle</option>
                 </select>
               </div>
 
-              <div id="details" class="d-none">
-                <div class="mb-3">
-                    <label class="form-label small fw-bold mb-1">Banco / Plataforma</label>
-                    <input id="bank" class="form-control form-control-sm" placeholder="Ej: Banesco, Mercantil, Zelle...">
-                </div>
-                <div class="row g-2 mb-3">
-                    <div class="col-6">
-                        <label class="form-label small fw-bold mb-1">Referencia</label>
-                        <input id="ref" class="form-control form-control-sm" placeholder="Últimos 4-6 dígitos">
-                    </div>
-                    <div class="col-6">
-                        <label class="form-label small fw-bold mb-1">Monto Pagado</label>
-                        <input id="amount" type="number" class="form-control form-control-sm" placeholder="0.00">
-                    </div>
-                </div>
-                 <div class="mb-3">
-                    <label class="form-label small fw-bold mb-1">Fecha de Pago</label>
-                    <input id="date" type="date" class="form-control form-control-sm" value="${new Date().toISOString().split('T')[0]}">
-                </div>
-              </div>
+          <div id="details" class="d-none">
+            <div class="mb-3">
+                <label class="form-label small fw-bold mb-1">${this.langService.translate('payments.bankPlatform')}</label>
+                <input id="bank" class="form-control form-control-sm" placeholder="${this.langService.translate('payments.bankPlatformPlaceholder')}">
             </div>
-          `,
+            
+            <div class="row g-2 mb-3">
+                <div class="col-6">
+                    <label class="form-label small fw-bold mb-1">${this.langService.translate('payments.payCurrency')}</label>
+                    <select id="payCurrency" class="form-select form-select-sm">
+                        <option value="USD">USD ($)</option>
+                        <option value="VES">VES (Bs.)</option>
+                    </select>
+                </div>
+                <div class="col-6">
+                    <label class="form-label small fw-bold mb-1">${this.langService.translate('payments.amount')}</label>
+                    <input id="amount" type="number" class="form-control form-control-sm" placeholder="0.00">
+                </div>
+            </div>
+
+            <div class="row g-2 mb-3">
+                <div class="col-12">
+                    <label class="form-label small fw-bold mb-1">${this.langService.translate('payments.reference')}</label>
+                    <input id="ref" class="form-control form-control-sm" placeholder="${this.langService.translate('payments.refPlaceholder')}">
+                </div>
+            </div>
+
+             <div class="mb-3">
+                <label class="form-label small fw-bold mb-1">${this.langService.translate('payments.payDate')}</label>
+                <input id="date" type="date" class="form-control form-control-sm" value="${new Date().toISOString().split('T')[0]}">
+            </div>
+            <div class="mb-3">
+                <label class="form-label small fw-bold mb-1">${this.langService.translate('payments.attachReceipt')}</label>
+                <input id="receiptFile" type="file" class="form-control form-control-sm" accept="image/*,application/pdf">
+            </div>
+          </div>
+        </div>
+      `,
           showCancelButton: true,
-          confirmButtonText: 'Registrar Pago',
-          cancelButtonText: 'Cancelar',
+          confirmButtonText: this.langService.translate('payments.newPayment'),
+          cancelButtonText: this.langService.translate('common.cancel'),
           preConfirm: () => {
             const appointmentId = (document.getElementById('apptId') as HTMLSelectElement).value;
+            const apptSelect = document.getElementById('apptId') as HTMLSelectElement;
+            const apptText = apptSelect.options[apptSelect.selectedIndex].text;
             const method = (document.getElementById('method') as HTMLSelectElement).value;
             const bank = (document.getElementById('bank') as HTMLInputElement).value;
             const reference = (document.getElementById('ref') as HTMLInputElement).value;
-            const amount = (document.getElementById('amount') as HTMLInputElement).value;
+            const rawAmount = parseFloat((document.getElementById('amount') as HTMLInputElement).value);
+            const selectedCurr = (document.getElementById('payCurrency') as HTMLSelectElement).value;
             const date = (document.getElementById('date') as HTMLInputElement).value;
+            const fileInput = document.getElementById('receiptFile') as HTMLInputElement;
+            const file = fileInput?.files ? fileInput.files[0] : null;
 
             if (!appointmentId) {
                 Swal.showValidationMessage('Debe seleccionar una cita');
@@ -140,37 +189,49 @@ export class Payments implements OnInit {
                 return false;
             }
 
+            const formData = new FormData();
+            formData.append('appointmentId', appointmentId);
+            formData.append('instrument', method);
+            formData.append('currency', selectedCurr);
+            formData.append('status', 'Pending');
+
             if (method === 'Efectivo') {
-                return {
-                    appointmentId,
-                    instrument: 'Efectivo',
-                    concept: 'Pago en Consultorio (Efectivo)',
-                    amount: 0, // O monto estimado?
-                    status: 'Pending',
-                    method: 'Cash'
-                };
+                formData.append('concept', 'Pago en Consultorio (Efectivo)');
+                formData.append('amount', '0');
+                formData.append('method', 'Cash');
+            } else {
+                if (!bank) {
+                    Swal.showValidationMessage('Debe indicar el Banco o Plataforma del pago');
+                    return false;
+                }
+                if (!reference) {
+                    Swal.showValidationMessage('Debe indicar el número de referencia');
+                    return false;
+                }
+                if (!rawAmount || rawAmount <= 0) {
+                    Swal.showValidationMessage('Debe indicar un monto válido mayor a 0');
+                    return false;
+                }
+
+                // Convert to base currency (USD) for storage consistency
+                const finalAmount = selectedCurr === 'VES' ? (rawAmount / this.currencyService.rate()) : rawAmount;
+
+                formData.append('bank', bank);
+                formData.append('reference', reference);
+                formData.append('amount', finalAmount.toString());
+                formData.append('concept', `Pago Cita: ${apptText} (${rawAmount} ${selectedCurr})`);
+                formData.append('createdAt', date ? new Date(date).toISOString() : new Date().toISOString());
+                if (file) {
+                    formData.append('receipt', file);
+                }
             }
 
-            if (!bank || !reference || !amount) {
-                Swal.showValidationMessage('Complete todos los datos del pago');
-                return false;
-            }
-
-            return {
-                appointmentId,
-                instrument: method, // Transferencia, Pago Movil...
-                bank,
-                reference,
-                amount: parseFloat(amount),
-                concept: `Pago Cita`, // Backend podría mejorar esto
-                status: 'Pending',
-                createdAt: date ? new Date(date) : new Date()
-            };
+            return formData;
           }
         }).then((result) => {
             if (result.isConfirmed) {
                 const data = result.value;
-                if (data.instrument === 'Efectivo') {
+                if (data.get('instrument') === 'Efectivo') {
                     Swal.fire({
                         title: 'Pago en Efectivo',
                         text: 'Recuerde realizar su pago al llegar al consultorio para ser atendido.',
@@ -195,8 +256,158 @@ export class Payments implements OnInit {
           Swal.fire('Registrado', 'Su pago ha sido registrado y está en proceso de verificación.', 'success');
         },
         error: (err) => {
-          Swal.fire('Error', err.error?.message || 'Error registrando pago', 'error');
+          const msg = err.error?.message || err.error?.error || 'Error registrando pago';
+          Swal.fire('Error', msg, 'error');
         }
+      });
+  }
+
+  updatePayment(id: string, data: any) {
+    this.http.put(`http://localhost:5000/api/payments/${id}`, data, { headers: this.getHeaders() })
+      .subscribe({
+        next: () => {
+          this.loadPayments();
+          Swal.fire(this.langService.translate('payments.updated'), this.langService.translate('payments.updatedMsg'), 'success');
+        },
+        error: (err) => {
+          const msg = err.error?.message || err.error?.error || 'Error actualizando pago';
+          Swal.fire('Error', msg, 'error');
+        }
+      });
+  }
+
+  deletePayment(id: string) {
+    Swal.fire({
+      title: this.langService.translate('payments.confirmDelete'),
+      text: this.langService.translate('payments.confirmDeleteText'),
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: this.langService.translate('payments.yesDelete'),
+      cancelButtonText: this.langService.translate('common.cancel'),
+      confirmButtonColor: '#ef4444'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.http.delete(`http://localhost:5000/api/payments/${id}`, { headers: this.getHeaders() })
+          .subscribe({
+            next: () => {
+              this.loadPayments();
+              Swal.fire(this.langService.translate('payments.deleted'), this.langService.translate('payments.deletedMsg'), 'success');
+            },
+            error: (err) => {
+              Swal.fire('Error', err.error?.message || 'Error eliminando pago', 'error');
+            }
+          });
+      }
+    });
+  }
+
+  editPatientPayment(payment: any) {
+    this.http.get<any[]>('http://localhost:5000/api/appointments', { headers: this.getHeaders() })
+      .subscribe(appointments => {
+        const validAppointments = appointments.filter(a => a.status !== 'Cancelled' && a.status !== 'Completed');
+        const appointmentOptions = validAppointments.map(a => 
+            `<option value="${a.id}" ${a.id === payment.appointmentId ? 'selected' : ''}>${new Date(a.date).toLocaleDateString()} - Dr. ${a.Doctor?.User?.lastName || 'Medico'} (${a.reason})</option>`
+        ).join('');
+
+        Swal.fire({
+          title: this.langService.translate('payments.editTitle'),
+          html: `
+            <div class="text-start">
+              <div class="mb-3">
+                <label class="form-label small fw-bold mb-1">${this.langService.translate('payments.selectAppointment')}</label>
+                <select id="apptId" class="form-select form-select-sm">
+                  ${appointmentOptions}
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label small fw-bold mb-1">${this.langService.translate('payments.method')}</label>
+                <select id="method" class="form-select form-select-sm">
+                    <option value="Transferencia" ${payment.instrument === 'Transferencia' ? 'selected' : ''}>${this.langService.translate('sidebar.transfer')}</option>
+                    <option value="Pago Móvil" ${payment.instrument === 'Pago Móvil' ? 'selected' : ''}>${this.langService.translate('sidebar.mobile')}</option>
+                    <option value="Zelle" ${payment.instrument === 'Zelle' ? 'selected' : ''}>Zelle</option>
+                </select>
+              </div>
+
+              <div id="details">
+                <div class="mb-3">
+                    <label class="form-label small fw-bold mb-1">${this.langService.translate('payments.bankPlatform')}</label>
+                    <input id="bank" class="form-control form-control-sm" value="${payment.bank || ''}" placeholder="${this.langService.translate('payments.bankPlatformPlaceholder')}">
+                </div>
+                
+                <div class="row g-2 mb-3">
+                    <div class="col-6">
+                        <label class="form-label small fw-bold mb-1">${this.langService.translate('payments.payCurrency')}</label>
+                        <select id="payCurrency" class="form-select form-select-sm">
+                            <option value="USD" ${payment.concept.includes('USD') ? 'selected' : ''}>USD ($)</option>
+                            <option value="VES" ${payment.concept.includes('VES') ? 'selected' : ''}>VES (Bs.)</option>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small fw-bold mb-1">${this.langService.translate('payments.amount')}</label>
+                        <input id="amount" type="number" class="form-control form-control-sm" value="${payment.amount}" placeholder="0.00">
+                    </div>
+                </div>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-12">
+                        <label class="form-label small fw-bold mb-1">${this.langService.translate('payments.reference')}</label>
+                        <input id="ref" class="form-control form-control-sm" value="${payment.reference || ''}" placeholder="${this.langService.translate('payments.refPlaceholder')}">
+                    </div>
+                </div>
+
+                 <div class="mb-3">
+                    <label class="form-label small fw-bold mb-1">${this.langService.translate('payments.payDate')}</label>
+                    <input id="date" type="date" class="form-control form-control-sm" value="${new Date(payment.createdAt).toISOString().split('T')[0]}">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-bold mb-1">${this.langService.translate('payments.updateReceipt')}</label>
+                    <input id="receiptFile" type="file" class="form-control form-control-sm" accept="image/*,application/pdf">
+                    ${payment.receiptUrl ? `<div class="x-small text-muted mt-1">${this.langService.translate('payments.hasAttachment')}</div>` : ''}
+                </div>
+              </div>
+            </div>
+          `,
+          showCancelButton: true,
+          confirmButtonText: this.langService.translate('payments.saveChanges'),
+          cancelButtonText: this.langService.translate('common.cancel'),
+          preConfirm: () => {
+            const appointmentId = (document.getElementById('apptId') as HTMLSelectElement).value;
+            const apptSelect = document.getElementById('apptId') as HTMLSelectElement;
+            const apptText = apptSelect.options[apptSelect.selectedIndex].text;
+            const method = (document.getElementById('method') as HTMLSelectElement).value;
+            const bank = (document.getElementById('bank') as HTMLInputElement).value;
+            const reference = (document.getElementById('ref') as HTMLInputElement).value;
+            const rawAmount = parseFloat((document.getElementById('amount') as HTMLInputElement).value);
+            const selectedCurr = (document.getElementById('payCurrency') as HTMLSelectElement).value;
+            const date = (document.getElementById('date') as HTMLInputElement).value;
+            const fileInput = document.getElementById('receiptFile') as HTMLInputElement;
+            const file = fileInput?.files ? fileInput.files[0] : null;
+
+            if (!bank) { Swal.showValidationMessage('Indique el Banco'); return false; }
+            if (!reference) { Swal.showValidationMessage('Indique la Referencia'); return false; }
+            if (!rawAmount || rawAmount <= 0) { Swal.showValidationMessage('Monto no válido'); return false; }
+
+            const formData = new FormData();
+            formData.append('appointmentId', appointmentId);
+            formData.append('instrument', method);
+            formData.append('currency', selectedCurr);
+            
+            const finalAmount = selectedCurr === 'VES' ? (rawAmount / this.currencyService.rate()) : rawAmount;
+            formData.append('bank', bank);
+            formData.append('reference', reference);
+            formData.append('amount', finalAmount.toString());
+            formData.append('concept', `Pago Cita: ${apptText} (${rawAmount} ${selectedCurr})`);
+            formData.append('createdAt', date ? new Date(date).toISOString() : new Date().toISOString());
+            if (file) formData.append('receipt', file);
+
+            return formData;
+          }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                this.updatePayment(payment.id, result.value);
+            }
+        });
       });
   }
 
@@ -298,6 +509,7 @@ export class Payments implements OnInit {
                 reference, 
                 instrument, 
                 bank,
+                currency,
                 status: isPaid ? 'Paid' : 'Pending' 
             };
           }
@@ -339,6 +551,13 @@ export class Payments implements OnInit {
           <div class="d-flex justify-content-between mb-2">
             <strong>${this.langService.translate('payments.patient')}:</strong> <span>${payment.Patient?.User?.firstName} ${payment.Patient?.User?.lastName}</span>
           </div>
+          ${payment.Appointment ? `
+          <div class="mb-3 p-2 bg-light rounded-3 border-start border-primary border-3">
+            <p class="x-small text-muted mb-1 text-uppercase fw-bold">Cita Asociada</p>
+            <div class="small fw-bold">${new Date(payment.Appointment.date).toLocaleDateString()} - ${payment.Appointment.reason}</div>
+            ${payment.Appointment.Doctor ? `<div class="x-small text-primary mt-1">Dr. ${payment.Appointment.Doctor.User.firstName} ${payment.Appointment.Doctor.User.lastName}</div>` : ''}
+          </div>
+          ` : ''}
           <div class="d-flex justify-content-between mb-2">
             <strong>${this.langService.translate('payments.concept')}:</strong> <span>${payment.concept}</span>
           </div>
@@ -364,6 +583,13 @@ export class Payments implements OnInit {
               ${payment.status === 'Paid' ? this.langService.translate('payments.paid') : this.langService.translate('payments.pending')}
             </span>
           </div>
+          ${payment.receiptUrl ? `
+          <div class="mt-3 text-center border-top pt-3">
+            <p class="small fw-bold mb-2">${this.langService.translate('payments.receipt')}</p>
+            <a href="http://localhost:5000${payment.receiptUrl}" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill w-100">
+              <i class="bi bi-eye-fill me-1"></i> Ver Comprobante Adjunto
+            </a>
+          </div>` : ''}
         </div>
       `,
       confirmButtonText: this.langService.translate('common.cancel'),
@@ -394,21 +620,35 @@ export class Payments implements OnInit {
       p.status
     ]);
 
-    const csvContent = [
-      headers.join(','),
-      ...rows.map(r => r.join(','))
-    ].join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `Reporte_Pagos_Medicus_${new Date().toLocaleDateString()}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    Swal.fire('¡Éxito!', 'Reporte exportado correctamente.', 'success');
+    Swal.fire({
+      title: 'Exportar Reporte de Pagos',
+      text: 'Seleccione el formato de descarga',
+      icon: 'question',
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: '<i class="bi bi-file-pdf"></i> PDF',
+      denyButtonText: '<i class="bi bi-file-excel"></i> Excel',
+      cancelButtonText: '<i class="bi bi-file-text"></i> CSV',
+      confirmButtonColor: '#ef4444',
+      denyButtonColor: '#22c55e',
+      cancelButtonColor: '#64748b',
+    }).then((result) => {
+      const filename = `Reporte_Pagos_Medicus_${new Date().toISOString().split('T')[0]}`;
+      const title = 'Listado de Pagos - Medicus';
+      const user = this.authService.currentUser();
+      const branding = {
+        name: user?.businessName || (user?.accountType === 'PROFESSIONAL' ? `${user.firstName} ${user.lastName}` : 'Medicus Platform'),
+        professional: user ? `${user.firstName} ${user.lastName}` : undefined,
+        tagline: this.langService.translate('payments.subtitle')
+      };
+      
+      if (result.isConfirmed) {
+        this.exportService.exportToPdf(filename, title, headers, rows, branding);
+      } else if (result.isDenied) {
+        this.exportService.exportToExcel(filename, headers, rows, branding);
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        this.exportService.exportToCsv(filename, headers, rows);
+      }
+    });
   }
 }

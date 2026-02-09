@@ -62,8 +62,8 @@
               </div>
               <h2 class="fw-bold mb-0 text-primary" style="font-size: 1.3rem">MEDICUS</h2>
             </div>
-            <p class="fw-bold mb-0">Crear Cuenta</p>
-            <p class="text-muted x-small mb-0">Completa el formulario para registrarte</p>
+            <p class="fw-bold mb-0">{{ langService.translate('register.title') }}</p>
+            <p class="text-muted x-small mb-0">{{ langService.translate('register.subtitle') }}</p>
           </div>
 
           <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
@@ -72,10 +72,33 @@
               style="max-height: 60vh; overflow-y: auto; overflow-x: hidden; padding: 0.5rem 0.2rem"
               class="custom-scrollbar px-1 mb-2"
             >
+              <!-- Account Type Selection -->
+              <div class="mb-3">
+                <label class="form-label small fw-bold mb-1">{{
+                  langService.translate('landing.accountType')
+                }}</label>
+                <div class="d-flex gap-2">
+                  <select
+                    class="form-select glass-morphism border rounded-3 py-1.5"
+                    formControlName="accountType"
+                  >
+                    <option value="PATIENT">{{ langService.translate('register.patient') }}</option>
+                    <option value="PROFESSIONAL">
+                      {{ langService.translate('landing.professional') }}
+                    </option>
+                    <option value="CLINIC">{{ langService.translate('landing.clinic') }}</option>
+                    <option value="HOSPITAL">
+                      {{ langService.translate('landing.hospital') }}
+                    </option>
+                  </select>
+                </div>
+              </div>
               <!-- Username & Email -->
               <div class="row g-2 mb-2">
                 <div class="col-md-6">
-                  <label class="form-label small fw-bold mb-1">Usuario</label>
+                  <label class="form-label small fw-bold mb-1">{{
+                    langService.translate('common.username')
+                  }}</label>
                   <input
                     type="text"
                     class="form-control glass-morphism border rounded-3 py-1.5"
@@ -93,7 +116,9 @@
                 </div>
 
                 <div class="col-md-6">
-                  <label class="form-label small fw-bold mb-1">Email</label>
+                  <label class="form-label small fw-bold mb-1">{{
+                    langService.translate('auth.email')
+                  }}</label>
                   <input
                     type="email"
                     class="form-control glass-morphism border rounded-3 py-1.5"
@@ -112,13 +137,27 @@
               <!-- Password & Confirm -->
               <div class="row g-2 mb-2">
                 <div class="col-md-6">
-                  <label class="form-label small fw-bold mb-1">Contraseña</label>
-                  <input
-                    type="password"
-                    class="form-control glass-morphism border rounded-3 py-1.5"
-                    formControlName="password"
-                    placeholder="••••••••"
-                  />
+                  <label class="form-label small fw-bold mb-1">{{
+                    langService.translate('auth.password')
+                  }}</label>
+                  <div class="position-relative">
+                    <input
+                      [type]="showPassword() ? 'text' : 'password'"
+                      class="form-control glass-morphism border rounded-3 py-1.5 pe-5"
+                      formControlName="password"
+                      placeholder="••••••••"
+                    />
+                    <button
+                      type="button"
+                      class="btn btn-link position-absolute end-0 top-50 translate-middle-y text-muted border-0 shadow-none px-3"
+                      (click)="showPassword.set(!showPassword())"
+                    >
+                      <i
+                        class="bi"
+                        [ngClass]="showPassword() ? 'bi-eye-slash-fill' : 'bi-eye-fill'"
+                      ></i>
+                    </button>
+                  </div>
                   <small
                     class="text-danger"
                     *ngIf="
@@ -130,13 +169,27 @@
                 </div>
 
                 <div class="col-md-6">
-                  <label class="form-label small fw-bold mb-1">Confirmar</label>
-                  <input
-                    type="password"
-                    class="form-control glass-morphism border rounded-3 py-1.5"
-                    formControlName="confirmPassword"
-                    placeholder="••••••••"
-                  />
+                  <label class="form-label small fw-bold mb-1">{{
+                    langService.translate('common.confirm')
+                  }}</label>
+                  <div class="position-relative">
+                    <input
+                      [type]="showConfirmPassword() ? 'text' : 'password'"
+                      class="form-control glass-morphism border rounded-3 py-1.5 pe-5"
+                      formControlName="confirmPassword"
+                      placeholder="••••••••"
+                    />
+                    <button
+                      type="button"
+                      class="btn btn-link position-absolute end-0 top-50 translate-middle-y text-muted border-0 shadow-none px-3"
+                      (click)="showConfirmPassword.set(!showConfirmPassword())"
+                    >
+                      <i
+                        class="bi"
+                        [ngClass]="showConfirmPassword() ? 'bi-eye-slash-fill' : 'bi-eye-fill'"
+                      ></i>
+                    </button>
+                  </div>
                   <small
                     class="text-danger"
                     *ngIf="
@@ -152,7 +205,9 @@
               <!-- First & Last Name -->
               <div class="row g-2 mb-2">
                 <div class="col-md-6">
-                  <label class="form-label small fw-bold mb-1">Nombre</label>
+                  <label class="form-label small fw-bold mb-1">{{
+                    langService.translate('nurses.fields.firstName')
+                  }}</label>
                   <input
                     type="text"
                     class="form-control glass-morphism border rounded-3 py-1.5"
@@ -171,7 +226,9 @@
                 </div>
 
                 <div class="col-md-6">
-                  <label class="form-label small fw-bold mb-1">Apellido</label>
+                  <label class="form-label small fw-bold mb-1">{{
+                    langService.translate('nurses.fields.lastName')
+                  }}</label>
                   <input
                     type="text"
                     class="form-control glass-morphism border rounded-3 py-1.5"
@@ -189,91 +246,128 @@
                 </div>
               </div>
 
-              <!-- Document & Phone -->
-              <div class="row g-2 mb-2">
-                <div class="col-md-6">
-                  <label class="form-label small fw-bold mb-1">Cédula</label>
+              <!-- Patient Specific Fields -->
+              <div *ngIf="accountType() === 'PATIENT'">
+                <div class="row g-2 mb-2">
+                  <div class="col-md-6">
+                    <label class="form-label small fw-bold mb-1">{{
+                      langService.translate('medical_history.id')
+                    }}</label>
+                    <input
+                      type="text"
+                      class="form-control glass-morphism border rounded-3 py-1.5"
+                      formControlName="documentId"
+                      placeholder="V-12345678"
+                    />
+                    <small
+                      class="text-danger"
+                      *ngIf="
+                        registerForm.get('documentId')?.touched &&
+                        registerForm.get('documentId')?.invalid
+                      "
+                    >
+                      {{ getErrorMessage('documentId') }}
+                    </small>
+                  </div>
+
+                  <div class="col-md-6">
+                    <label class="form-label small fw-bold mb-1">
+                      <i class="bi bi-whatsapp text-success me-1"></i
+                      >{{ langService.translate('medical_history.phone') }}
+                    </label>
+                    <input
+                      type="tel"
+                      class="form-control glass-morphism border rounded-3 py-1.5"
+                      formControlName="phone"
+                      placeholder="+58 424-1234567"
+                    />
+                    <small
+                      class="text-danger"
+                      *ngIf="
+                        registerForm.get('phone')?.touched && registerForm.get('phone')?.invalid
+                      "
+                    >
+                      {{ getErrorMessage('phone') }}
+                    </small>
+                  </div>
+                </div>
+
+                <div class="row g-2 mb-2">
+                  <div class="col-md-6">
+                    <label class="form-label small fw-bold mb-1">{{
+                      langService.translate('common.birthDate')
+                    }}</label>
+                    <input
+                      type="date"
+                      class="form-control glass-morphism border rounded-3 py-1.5"
+                      formControlName="birthDate"
+                    />
+                  </div>
+
+                  <div class="col-md-6">
+                    <label class="form-label small fw-bold mb-1">{{
+                      langService.translate('medical_history.gender')
+                    }}</label>
+                    <select
+                      class="form-select glass-morphism border rounded-3 py-1.5"
+                      formControlName="gender"
+                    >
+                      <option value="">{{ langService.translate('payments.select') }}</option>
+                      <option value="Male">{{ langService.translate('common.male') }}</option>
+                      <option value="Female">{{ langService.translate('common.female') }}</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Provider Specific Fields -->
+              <div *ngIf="accountType() !== 'PATIENT'">
+                <div
+                  class="mb-2"
+                  *ngIf="accountType() === 'CLINIC' || accountType() === 'HOSPITAL'"
+                >
+                  <label class="form-label small fw-bold mb-1">{{
+                    langService.translate('landing.businessName')
+                  }}</label>
                   <input
                     type="text"
-                    class="form-control glass-morphism border rounded-3 py-1.5"
-                    formControlName="documentId"
-                    placeholder="V-12345678"
+                    class="form-control glass-morphism border rounded-3 py-2"
+                    formControlName="businessName"
+                    [placeholder]="langService.translate('landing.businessNamePlaceholder')"
                   />
-                  <small
-                    class="text-danger"
-                    *ngIf="
-                      registerForm.get('documentId')?.touched &&
-                      registerForm.get('documentId')?.invalid
-                    "
-                  >
-                    {{ getErrorMessage('documentId') }}
-                  </small>
                 </div>
 
-                <div class="col-md-6">
-                  <label class="form-label small fw-bold mb-1">
-                    <i class="bi bi-whatsapp text-success me-1"></i>Teléfono
-                  </label>
-                  <input
-                    type="tel"
-                    class="form-control glass-morphism border rounded-3 py-1.5"
-                    formControlName="phone"
-                    placeholder="+58 424-1234567"
-                  />
-                  <small
-                    class="text-danger"
-                    *ngIf="registerForm.get('phone')?.touched && registerForm.get('phone')?.invalid"
-                  >
-                    {{ getErrorMessage('phone') }}
-                  </small>
+                <div class="row g-2 mb-2">
+                  <div class="col-md-6">
+                    <label class="form-label small fw-bold mb-1">{{
+                      langService.translate('register.license')
+                    }}</label>
+                    <input
+                      type="text"
+                      class="form-control glass-morphism border rounded-3 py-1.5"
+                      formControlName="licenseNumber"
+                      placeholder="Nº Colegiatura"
+                    />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label small fw-bold mb-1">{{
+                      langService.translate('medical_history.phone')
+                    }}</label>
+                    <input
+                      type="tel"
+                      class="form-control glass-morphism border rounded-3 py-1.5"
+                      formControlName="phone"
+                      placeholder="Teléfono contacto"
+                    />
+                  </div>
                 </div>
               </div>
 
-              <!-- Birth Date & Gender -->
-              <div class="row g-2 mb-2">
-                <div class="col-md-6">
-                  <label class="form-label small fw-bold mb-1">Fecha Nacimiento</label>
-                  <input
-                    type="date"
-                    class="form-control glass-morphism border rounded-3 py-1.5"
-                    formControlName="birthDate"
-                  />
-                  <small
-                    class="text-danger"
-                    *ngIf="
-                      registerForm.get('birthDate')?.touched &&
-                      registerForm.get('birthDate')?.invalid
-                    "
-                  >
-                    {{ getErrorMessage('birthDate') }}
-                  </small>
-                </div>
-
-                <div class="col-md-6">
-                  <label class="form-label small fw-bold mb-1">Género</label>
-                  <select
-                    class="form-select glass-morphism border rounded-3 py-1.5"
-                    formControlName="gender"
-                  >
-                    <option value="">Seleccionar...</option>
-                    <option value="Male">Masculino</option>
-                    <option value="Female">Femenino</option>
-                    <option value="Other">Otro</option>
-                  </select>
-                  <small
-                    class="text-danger"
-                    *ngIf="
-                      registerForm.get('gender')?.touched && registerForm.get('gender')?.invalid
-                    "
-                  >
-                    {{ getErrorMessage('gender') }}
-                  </small>
-                </div>
-              </div>
-
-              <!-- Optional Fields (Collapsed) -->
+              <!-- Address (Common to all if provider, or patient optional) -->
               <div class="mb-2">
-                <label class="form-label small fw-bold mb-1">Dirección (Opcional)</label>
+                <label class="form-label small fw-bold mb-1">{{
+                  langService.translate('register.address')
+                }}</label>
                 <input
                   type="text"
                   class="form-control glass-morphism border rounded-3 py-2"

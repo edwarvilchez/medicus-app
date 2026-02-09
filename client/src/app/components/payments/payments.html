@@ -11,7 +11,7 @@
 
   <div class="card-premium border-0 p-4 mb-4">
     <div class="row g-3">
-      <div class="col-md-9">
+      <div [ngClass]="authService.hasRole(['PATIENT']) ? 'col-12' : 'col-md-9'">
         <div class="input-group glass-morphism rounded-3 border">
           <span class="input-group-text bg-transparent border-0"
             ><i class="bi bi-search text-muted"></i
@@ -24,7 +24,7 @@
           />
         </div>
       </div>
-      <div class="col-md-3">
+      <div class="col-md-3" *ngIf="!authService.hasRole(['PATIENT'])">
         <button class="btn btn-primary-premium w-100 py-2" (click)="exportReport()">
           {{ langService.translate('payments.export') }}
         </button>
@@ -38,7 +38,10 @@
         <thead class="bg-light">
           <tr>
             <th class="ps-4 py-3">{{ langService.translate('payments.reference') }}</th>
-            <th>{{ langService.translate('payments.patient') }}</th>
+            <th *ngIf="!authService.hasRole(['PATIENT'])">
+              {{ langService.translate('payments.patient') }}
+            </th>
+            <th>{{ langService.translate('payments.doctorConsultation') }}</th>
             <th>{{ langService.translate('payments.concept') }}</th>
             <th>{{ langService.translate('payments.amount') }}</th>
             <th>{{ langService.translate('payments.fecha') }}</th>
@@ -48,8 +51,36 @@
         </thead>
         <tbody>
           <tr *ngFor="let p of filteredPayments()">
-            <td class="ps-4 fw-bold">#{{ p.reference || 'N/A' }}</td>
-            <td>{{ p.Patient?.User?.firstName }} {{ p.Patient?.User?.lastName }}</td>
+            <td class="ps-4 fw-bold">
+              #{{ p.reference || 'N/A' }}
+              <i
+                class="bi bi-paperclip text-primary ms-1"
+                *ngIf="p.receiptUrl"
+                title="Tiene adjunto"
+              ></i>
+            </td>
+            <td *ngIf="!authService.hasRole(['PATIENT'])">
+              {{ p.Patient?.User?.firstName }} {{ p.Patient?.User?.lastName }}
+            </td>
+            <td>
+              <div class="fw-bold small" *ngIf="p.Appointment">
+                <i
+                  class="bi"
+                  [ngClass]="
+                    p.Appointment.type === 'Video'
+                      ? 'bi-camera-video text-info'
+                      : 'bi-person-workspace text-primary'
+                  "
+                ></i>
+                {{ p.Appointment.type === 'Video' ? 'Videoconsulta' : 'Presencial' }}
+              </div>
+              <div class="x-small text-muted" *ngIf="p.Appointment?.Doctor">
+                {{ p.Appointment.Doctor.User.firstName }} {{ p.Appointment.Doctor.User.lastName }}
+              </div>
+              <span class="text-muted small" *ngIf="!p.Appointment">{{
+                langService.translate('payments.generalPayment')
+              }}</span>
+            </td>
             <td>{{ p.concept }}</td>
             <td class="fw-bold">
               {{ currencyService.formatAmount(p.amount) }}
@@ -79,10 +110,27 @@
             <td class="text-end pe-4">
               <button
                 class="btn btn-sm btn-light border-0 me-1"
-                title="Ver Recibo"
+                [title]="langService.translate('payments.viewReceipt')"
                 (click)="viewReceipt(p)"
               >
                 <i class="bi bi-file-earmark-text"></i>
+              </button>
+              <!-- Acciones CRUD para Pacientes (Solo pendientes) -->
+              <button
+                class="btn btn-sm btn-light border-0 text-primary me-1"
+                *ngIf="p.status === 'Pending' && authService.hasRole(['PATIENT'])"
+                (click)="editPatientPayment(p)"
+                [title]="langService.translate('payments.edit')"
+              >
+                <i class="bi bi-pencil-square"></i>
+              </button>
+              <button
+                class="btn btn-sm btn-light border-0 text-danger me-1"
+                *ngIf="p.status === 'Pending' && authService.hasRole(['PATIENT'])"
+                (click)="deletePayment(p.id)"
+                [title]="langService.translate('payments.delete')"
+              >
+                <i class="bi bi-trash"></i>
               </button>
               <button
                 class="btn btn-sm btn-light border-0 text-success"

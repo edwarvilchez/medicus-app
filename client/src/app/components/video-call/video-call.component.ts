@@ -34,6 +34,13 @@ export class VideoCallComponent implements OnInit, OnDestroy, AfterViewInit {
 
   async ngOnInit() {
     const id = this.route.snapshot.params['id'];
+    
+    if (!id || id === 'NaN' || id === 'undefined') {
+      console.error('ID de videoconsulta inválido en la ruta:', id);
+      this.router.navigate(['/dashboard']);
+      return;
+    }
+
     this.consultationId.set(+id);
 
     // Obtener datos de la consulta

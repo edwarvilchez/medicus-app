@@ -4,10 +4,18 @@
       <h2 class="mb-1">{{ langService.translate('appointments_list.title') }}</h2>
       <p class="text-muted">{{ langService.translate('appointments_list.subtitle') }}</p>
     </div>
-    <button class="btn btn-primary-premium shadow-sm" (click)="openNewAppointmentModal()">
-      <i class="bi bi-plus-circle-fill me-2"></i>
-      {{ langService.translate('appointments_list.new') }}
-    </button>
+    <div class="d-flex gap-2">
+      <button
+        class="btn glass-morphism border-0 px-3 py-1 rounded-3 shadow-sm btn-sm"
+        (click)="exportReport()"
+      >
+        <i class="bi bi-download me-1"></i> {{ langService.translate('dashboard.report') }}
+      </button>
+      <button class="btn btn-primary-premium shadow-sm" (click)="openNewAppointmentModal()">
+        <i class="bi bi-plus-circle-fill me-2"></i>
+        {{ langService.translate('appointments_list.new') }}
+      </button>
+    </div>
   </div>
 
   <div class="row g-4">
@@ -51,28 +59,40 @@
       <div class="card-premium border-0 p-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
           <h5 class="fw-bold mb-0">{{ langService.translate('appointments_list.scheduled') }}</h5>
-          <div class="btn-group glass-morphism border rounded-3 overflow-hidden">
-            <button
-              class="btn btn-light border-0"
-              [class.active]="dateFilter() === 'day'"
-              (click)="setDateFilter('day')"
-            >
-              {{ langService.translate('appointments_list.tabs.day') }}
-            </button>
-            <button
-              class="btn btn-light border-0"
-              [class.active]="dateFilter() === 'week'"
-              (click)="setDateFilter('week')"
-            >
-              {{ langService.translate('appointments_list.tabs.week') }}
-            </button>
-            <button
-              class="btn btn-light border-0"
-              [class.active]="dateFilter() === 'month'"
-              (click)="setDateFilter('month')"
-            >
-              {{ langService.translate('appointments_list.tabs.month') }}
-            </button>
+          <div class="d-flex align-items-center gap-3">
+            <input
+              type="date"
+              class="form-control form-control-sm glass-morphism border rounded-3 shadow-sm"
+              style="width: auto"
+              [ngModel]="selectedDate()"
+              (ngModelChange)="onDateSelect($event)"
+            />
+            <span class="text-muted x-small d-none d-md-block">
+              ({{ filteredAppointments().length }}/{{ appointments().length }})
+            </span>
+            <div class="btn-group glass-morphism border rounded-3 overflow-hidden">
+              <button
+                class="btn btn-light border-0"
+                [class.active]="dateFilter() === 'day'"
+                (click)="setDateFilter('day')"
+              >
+                {{ langService.translate('appointments_list.tabs.day') }}
+              </button>
+              <button
+                class="btn btn-light border-0"
+                [class.active]="dateFilter() === 'week'"
+                (click)="setDateFilter('week')"
+              >
+                {{ langService.translate('appointments_list.tabs.week') }}
+              </button>
+              <button
+                class="btn btn-light border-0"
+                [class.active]="dateFilter() === 'month'"
+                (click)="setDateFilter('month')"
+              >
+                {{ langService.translate('appointments_list.tabs.month') }}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -103,9 +123,27 @@
                   </p>
                 </div>
                 <div class="text-end">
-                  <span class="badge rounded-pill mb-2" [ngClass]="getStatusClass(appt.status)">{{
-                    appt.status
-                  }}</span>
+                  <span
+                    class="badge rounded-pill mb-2 me-1"
+                    [ngClass]="getStatusClass(appt.status)"
+                    >{{ appt.status }}</span
+                  >
+                  <span
+                    class="badge rounded-pill mb-2"
+                    [ngClass]="
+                      appt.type === 'Video' ? 'bg-info' : 'bg-secondary bg-opacity-50 text-dark'
+                    "
+                  >
+                    <i
+                      class="bi"
+                      [ngClass]="appt.type === 'Video' ? 'bi-camera-video' : 'bi-person-workspace'"
+                    ></i>
+                    {{
+                      appt.type === 'Video'
+                        ? langService.translate('dashboard.stats.videoCalls')
+                        : langService.translate('dashboard.stats.inPerson')
+                    }}
+                  </span>
                   <div class="text-success small fw-bold" *ngIf="appt.status === 'Confirmed'">
                     <i class="bi bi-whatsapp"></i>
                     {{ langService.translate('dashboard.reminderSent') }}
@@ -119,7 +157,7 @@
                     title="Iniciar videoconsulta"
                   >
                     <i class="bi bi-camera-video-fill"></i>
-                    <span>Videollamada</span>
+                    <span>{{ langService.translate('appointments_list.videoCall') }}</span>
                   </button>
                 </div>
               </div>
@@ -160,7 +198,8 @@
       </div>
       <div class="modal-body p-4">
         <form [formGroup]="appointmentForm" (ngSubmit)="submitAppointment()">
-          <div class="mb-3">
+          <!-- Selección de Paciente (Oculta para Pacientes) -->
+          <div class="mb-3" [class.d-none]="isPatient()">
             <label class="form-label small fw-bold text-uppercase">{{
               langService.translate('payments.patient')
             }}</label>
@@ -175,17 +214,44 @@
             </select>
           </div>
 
+          <!-- Información del Paciente (Visible solo para Pacientes) -->
+          <div class="mb-3 p-3 bg-light rounded-3 border" *ngIf="isPatient() && currentPatient()">
+            <label class="form-label small fw-bold text-uppercase text-muted d-block mb-1">{{
+              langService.translate('payments.patient')
+            }}</label>
+            <div class="fw-bold fs-5">
+              {{ currentPatient()?.User?.firstName }} {{ currentPatient()?.User?.lastName }}
+            </div>
+          </div>
+
+          <!-- Selección de Especialidad -->
           <div class="mb-3">
             <label class="form-label small fw-bold text-uppercase">{{
-              langService.translate('appointments_list.doctorSpecialty')
+              langService.translate('appointments_list.filterSpecialty')
+            }}</label>
+            <select
+              class="form-select glass-morphism border rounded-3 py-2"
+              [ngModel]="modalSpecialty()"
+              (ngModelChange)="modalSpecialty.set($event)"
+              [ngModelOptions]="{ standalone: true }"
+            >
+              <option value="all">{{ langService.translate('appointments_list.all') }}</option>
+              <option *ngFor="let s of specialties()" [value]="s.id">{{ s.name }}</option>
+            </select>
+          </div>
+
+          <!-- Selección de Doctor -->
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-uppercase">{{
+              langService.translate('common.doctor')
             }}</label>
             <select
               class="form-select glass-morphism border rounded-3 py-2"
               formControlName="doctorId"
             >
               <option value="">{{ langService.translate('common.search') }}</option>
-              <option *ngFor="let d of doctors()" [value]="d.id">
-                {{ d.User.firstName }} {{ d.User.lastName }} - {{ d.Specialty?.name }}
+              <option *ngFor="let d of filteredDoctorsModal()" [value]="d.id">
+                {{ d.User.firstName }} {{ d.User.lastName }}
               </option>
             </select>
           </div>
@@ -220,12 +286,29 @@
             <label class="form-label small fw-bold text-uppercase">{{
               langService.translate('appointments_list.reason')
             }}</label>
-            <input
-              type="text"
-              class="form-control glass-morphism border rounded-3 py-2"
-              formControlName="reason"
-              [placeholder]="langService.translate('appointments_list.reasonPlaceholder')"
-            />
+            <div class="row g-2">
+              <div class="col-8">
+                <input
+                  type="text"
+                  class="form-control glass-morphism border rounded-3 py-2"
+                  formControlName="reason"
+                  [placeholder]="langService.translate('appointments_list.reasonPlaceholder')"
+                />
+              </div>
+              <div class="col-4">
+                <select
+                  class="form-select glass-morphism border rounded-3 py-2"
+                  formControlName="type"
+                >
+                  <option value="In-Person">
+                    {{ langService.translate('dashboard.stats.inPerson') }}
+                  </option>
+                  <option value="Video">
+                    {{ langService.translate('dashboard.stats.videoCalls') }}
+                  </option>
+                </select>
+              </div>
+            </div>
           </div>
 
           <div class="mb-4">

@@ -1,4 +1,5 @@
 const { Appointment, Patient, Doctor, User } = require('../models');
+const { Op } = require('sequelize');
 const whatsapp = require('../utils/whatsapp.service');
 
 exports.createAppointment = async (req, res) => {
@@ -52,17 +53,23 @@ exports.getAppointments = async (req, res) => {
 
     let whereClause = {};
 
-    if (userRole === 'PATIENT') {
-        const patient = await Patient.findOne({ where: { userId } });
-        
-        console.log(`[DEBUG] getAppointments - Found patient: ${patient ? patient.id : 'NONE'}`);
+    const patient = await Patient.findOne({ where: { userId } });
+    const doctor = await Doctor.findOne({ where: { userId } });
 
-        if (!patient) return res.json([]);
-        whereClause = { patientId: patient.id };
-    } else if (userRole === 'DOCTOR') {
-        const doctor = await Doctor.findOne({ where: { userId } });
-        if (!doctor) return res.json([]);
-        whereClause = { doctorId: doctor.id };
+    const adminRoles = ['SUPERADMIN', 'ADMINISTRATIVE', 'NURSE', 'RECEPTIONIST'];
+    
+    if (adminRoles.includes(userRole)) {
+        whereClause = {};
+    } else {
+        const conditions = [];
+        if (patient) conditions.push({ patientId: patient.id });
+        if (doctor) conditions.push({ doctorId: doctor.id });
+
+        if (conditions.length > 0) {
+            whereClause = { [Op.or]: conditions };
+        } else {
+            return res.json([]);
+        }
     }
 
     const appointments = await Appointment.findAll({

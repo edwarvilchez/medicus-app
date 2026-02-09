@@ -11,139 +11,166 @@ exports.getStats = async (req, res) => {
     monthlyIncome: 0,
     pendingAppointments: 0,
     upcomingAppointments: [],
-    activityData: []
+    activityData: [],
+    inPersonCount: 0,
+    videoCount: 0,
+    specialtyStats: [],
+    incomeDetails: {
+      day: { USD: 0, Bs: 0 },
+      week: { USD: 0, Bs: 0 },
+      month: { USD: 0, Bs: 0 }
+    }
   };
 
   try {
-    const todayStart = new Date();
+    const now = new Date();
+    
+    // Time Ranges
+    const todayStart = new Date(now);
     todayStart.setHours(0,0,0,0);
-    const todayEnd = new Date();
+    const todayEnd = new Date(now);
     todayEnd.setHours(23,59,59,999);
 
-    // --- FILTROS SEGÚN ROL ---
-    let appointmentWhere = { date: { [Op.between]: [todayStart, todayEnd] } };
-    let pendingWhere = { status: 'Pending' };
+    const weekStart = new Date(now);
+    weekStart.setDate(now.getDate() - now.getDay());
+    weekStart.setHours(0,0,0,0);
 
-    // Si es Paciente, necesitamos filtrar por SU ID
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    monthStart.setHours(0,0,0,0);
+
+    // --- BASIC FILTERS ---
     let patientId = null;
     if (userRole === 'PATIENT') {
       const patient = await Patient.findOne({ where: { userId } });
-      if (patient) {
-        patientId = patient.id;
-        appointmentWhere.patientId = patientId;
-        pendingWhere.patientId = patientId;
-      }
+      if (patient) patientId = patient.id;
     }
 
-    // 1. Estadísticas Básicas (Citas Hoy)
-    try {
-      responseData.appointmentsToday = await Appointment.count({ where: appointmentWhere });
-    } catch (e) { console.error('Error counting today appointments:', e); }
+    // 1. Basic Counts
+    const baseWhere = patientId ? { patientId } : {};
+    responseData.appointmentsToday = await Appointment.count({ 
+      where: { ...baseWhere, date: { [Op.between]: [todayStart, todayEnd] } } 
+    });
+    responseData.pendingAppointments = await Appointment.count({ 
+      where: { ...baseWhere, status: 'Pending' } 
+    });
 
-    // 2. Total Pacientes (Solo Admin ve el total real, Paciente ve 0 o N/A)
-    if (['SUPERADMIN', 'ADMINISTRATIVE', 'DOCTOR'].includes(userRole)) {
-      try {
-        responseData.totalPatients = await Patient.count();
-      } catch (e) { console.error('Error counting patients:', e); }
-    }
-    
-    // 3. Ingresos (Solo Admin ve ingresos)
-    if (['SUPERADMIN', 'ADMINISTRATIVE'].includes(userRole)) {
-      try {
-        responseData.monthlyIncome = await Payment.sum('amount', {
-          where: { 
-            status: 'Paid',
-            createdAt: { [Op.gte]: new Date(new Date().getFullYear(), new Date().getMonth(), 1) }
-          }
-        });
-        responseData.monthlyIncome = responseData.monthlyIncome || 0;
-      } catch (e) { console.error('Error calculating income:', e); }
+    if (['SUPERADMIN', 'ADMINISTRATIVE', 'DOCTOR', 'NURSE', 'RECEPTIONIST'].includes(userRole)) {
+      responseData.totalPatients = await Patient.count();
     }
 
-    // 4. Citas Pendientes
-    try {
-      responseData.pendingAppointments = await Appointment.count({ where: pendingWhere });
-    } catch (e) { console.error('Error counting pending:', e); }
-
-    // 5. Próximas Citas (Filtradas por rol)
-    try {
-      const upcomingWhere = {
-        date: { [Op.gte]: new Date() },
-        status: { [Op.in]: ['Pending', 'Confirmed'] }
-      };
-
-      if (userRole === 'PATIENT' && patientId) {
-        upcomingWhere.patientId = patientId;
-      }
-
-      const upcoming = await Appointment.findAll({
-        where: upcomingWhere,
-        include: [
-          {
-            model: Patient,
-            required: false,
-            include: [{ model: User, attributes: ['firstName', 'lastName'], required: false }]
-          },
-          {
+    // 2. Specialty Breakdown (Consultations Pending vs Completed)
+    const specialties = await Specialty.findAll({
+        include: [{
             model: Doctor,
             required: false,
-            include: [
-              { model: User, attributes: ['firstName', 'lastName'], required: false },
-              { model: Specialty, attributes: ['name'], required: false }
-            ]
-          }
+            include: [{
+                model: Appointment,
+                where: patientId ? { patientId } : {},
+                required: false
+            }]
+        }]
+    });
+
+    responseData.specialtyStats = (specialties || []).map(s => {
+        let pending = 0;
+        let completed = 0;
+        (s.Doctors || []).forEach(d => {
+            (d.Appointments || []).forEach(a => {
+                if (a.status === 'Completed') completed++;
+                else if (['Pending', 'Confirmed'].includes(a.status)) pending++;
+            });
+        });
+        return { name: s.name, pending, completed };
+    });
+
+    // 3. Income Details (USD / Bs)
+    const adminRoles = ['SUPERADMIN', 'ADMINISTRATIVE', 'RECEPTIONIST'];
+    const isDoctor = userRole === 'DOCTOR';
+
+    if (adminRoles.includes(userRole) || isDoctor) {
+        let paymentWhere = { 
+            status: 'Paid',
+            createdAt: { [Op.gte]: monthStart }
+        };
+
+        let paymentInclude = [];
+        if (isDoctor) {
+            const doctor = await Doctor.findOne({ where: { userId } });
+            if (doctor) {
+                paymentWhere.appointmentId = { [Op.ne]: null }; 
+                paymentInclude.push({
+                    model: Appointment,
+                    where: { doctorId: doctor.id },
+                    required: true
+                });
+            } else {
+                paymentWhere.id = null; 
+            }
+        }
+
+        const payments = await Payment.findAll({
+            where: paymentWhere,
+            include: paymentInclude
+        });
+
+        payments.forEach(p => {
+            const amount = parseFloat(p.amount);
+            const date = new Date(p.createdAt);
+            const currency = p.currency === 'Bs' ? 'Bs' : 'USD';
+
+            // Month
+            responseData.incomeDetails.month[currency] += amount;
+
+            // Week
+            if (date >= weekStart) {
+                responseData.incomeDetails.week[currency] += amount;
+            }
+
+            // Day
+            if (date >= todayStart) {
+                responseData.incomeDetails.day[currency] += amount;
+            }
+        });
+        
+        responseData.monthlyIncome = responseData.incomeDetails.month.USD; // Backward compatibility
+    }
+
+    // 4. Upcoming Appointments
+    const upcoming = await Appointment.findAll({
+        where: {
+            ...baseWhere,
+            date: { [Op.gte]: now },
+            status: { [Op.in]: ['Pending', 'Confirmed'] }
+        },
+        include: [
+            { model: Patient, include: [{ model: User, attributes: ['firstName', 'lastName'] }] },
+            { model: Doctor, include: [{ model: User, attributes: ['firstName', 'lastName'] }, { model: Specialty, attributes: ['name'] }] }
         ],
         order: [['date', 'ASC']],
         limit: 5
-      });
+    });
 
-      responseData.upcomingAppointments = upcoming.map(apt => {
-        const patientName = apt.Patient && apt.Patient.User 
-          ? `${apt.Patient.User.firstName} ${apt.Patient.User.lastName}` 
-          : 'Paciente Desconocido';
-          
-        const doctorName = apt.Doctor && apt.Doctor.User 
-          ? `${apt.Doctor.User.firstName} ${apt.Doctor.User.lastName}` 
-          : 'Doctor Asignado';
-          
-        const specialty = apt.Doctor && apt.Doctor.Specialty 
-          ? apt.Doctor.Specialty.name 
-          : 'Medicina General';
+    responseData.upcomingAppointments = upcoming.map(apt => ({
+        id: apt.id,
+        date: apt.date,
+        status: apt.status,
+        patient: { name: `${apt.Patient?.User?.firstName} ${apt.Patient?.User?.lastName}` },
+        doctor: { name: `${apt.Doctor?.User?.firstName} ${apt.Doctor?.User?.lastName}`, specialty: apt.Doctor?.Specialty?.name }
+    }));
 
-        return {
-          id: apt.id,
-          date: apt.date,
-          time: apt.time,
-          status: apt.status,
-          patient: { name: patientName },
-          doctor: { name: doctorName, specialty: specialty }
-        };
-      });
-    } catch (e) {
-      console.error('Error fetching upcoming appointments:', e.message);
-    }
-
-    // 6. Actividad Reciente (Gráfico)
-    try {
-      const sevenDaysAgo = new Date();
-      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-      
-      const activityWhere = { date: { [Op.gte]: sevenDaysAgo } };
-      if (userRole === 'PATIENT' && patientId) {
-        activityWhere.patientId = patientId;
-      }
-
-      const activity = await Appointment.findAll({
-        where: activityWhere,
+    // 5. Activity data for chart
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(now.getDate() - 7);
+    const activity = await Appointment.findAll({
+        where: { ...baseWhere, date: { [Op.gte]: sevenDaysAgo } },
         attributes: ['date', 'status'],
         order: [['date', 'ASC']]
-      });
+    });
+    responseData.activityData = activity.map(apt => ({ date: apt.date, status: apt.status }));
 
-      responseData.activityData = activity.map(apt => ({
-        date: apt.date,
-        status: apt.status
-      }));
-    } catch (e) { console.error('Error fetching activity:', e); }
+    // 6. Type Counts
+    responseData.inPersonCount = await Appointment.count({ where: { ...baseWhere, type: 'In-Person' } });
+    responseData.videoCount = await Appointment.count({ where: { ...baseWhere, type: 'Video' } });
 
     res.json(responseData);
 

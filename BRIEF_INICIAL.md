@@ -4,10 +4,11 @@
 
 **Medicus** es un sistema integral de gestión clínica y hospitalaria desarrollado con tecnologías web modernas (Angular + Node.js + PostgreSQL) que optimiza los flujos de trabajo médicos y administrativos, mejorando la experiencia tanto de pacientes como del personal de salud.
 
-**Versión Actual:** 1.6.0  
-**Estado:** En producción activa  
+**Versión Actual:** 1.7.0  
+**Estado:** Producción SaaS Multi-entidad  
 **Licencia:** MIT  
 **Autor:** Edwar Vilchez
+**Última Actualización:** 8 de Febrero, 2026
 
 ---
 
@@ -115,21 +116,13 @@ Medicus ofrece una plataforma **todo-en-uno** que:
 - Asignación a departamentos
 - Registro de actividades
 
-### 5. 🧪 Laboratorio y Reportes Médicos
+**Laboratorio Premium (SaaS Ready):**
 
-**Generación de Reportes PDF:**
-
-- ✅ Creación dinámica de documentos clínicos
-- ✅ Detección automática de valores anormales (resaltados en rojo)
-- ✅ Diseño profesional con membrete institucional
-- ✅ Visualización instantánea en navegador
-- ✅ Descarga y archivo digital
-
-**Características Técnicas:**
-
-- Generación client-side (sin carga en servidor)
-- Formato estandarizado
-- Integración con historial del paciente
+- ✅ **Diseño de Marca Blanca**: Reportes que se adaptan automáticamente a la identidad de la clínica o profesional logueado.
+- ✅ **Layout de Alta Calidad**: Estructura moderna con bloques de datos sombreados y tablas "striped" para máxima legibilidad.
+- ✅ **Detección Crítica**: Resaltado automático en negrita roja para valores fuera de los rangos de referencia.
+- ✅ **Certificación Digital**: Firma de validación automática por sistema.
+- ✅ **Soporte Multi-entidad**: Mismo sistema soporta Hospitales, Clínicas o Médicos Independientes con branding diferenciado.
 
 ### 6. 💰 Gestión Financiera Avanzada
 
@@ -664,21 +657,28 @@ npm start
 
 ## 📈 Roadmap y Futuras Mejoras
 
-### Versión 1.7.0 (Próxima)
+### Versión 1.7.0 (Actual)
+
+- ✅ **Branding SaaS Dinámico**: Soporte para múltiples tipos de cuenta (Clínica, Hospital, Profesional).
+- ✅ **Laboratorio Premium**: Nuevo motor de generación de reportes con diseño de alta fidelidad.
+- ✅ **Multi-lenguaje Extendido**: Traducción total de flujos de registro y errores internos.
+- ✅ **Base de Datos SaaS**: Esquema extendido para gestión institucional (BusinessName, AccountType).
+
+### Versión 1.8.0 (Próxima)
 
 - [ ] Integración real con WhatsApp Business API
 - [ ] Módulo de inventario médico
 - [ ] Reportes avanzados con filtros personalizados
-- [ ] Integración con pasarelas de pago
-- [ ] App móvil nativa (iOS/Android)
+- [ ] Integración con pasarelas de pago (Stripe/PayPal)
+- [ ] App móvil nativa (Capacitor)
 
 ### Versión 2.0.0 (Futuro)
 
-- [ ] Telemedicina (videoconsultas)
-- [ ] Inteligencia Artificial para diagnósticos
+- [ ] Telemedicina con WebRTC (Beta iniciada)
+- [ ] IA para análisis predictivo de diagnósticos
 - [ ] Integración con dispositivos médicos IoT
-- [ ] Sistema de facturación electrónica
-- [ ] Multi-tenant (múltiples clínicas)
+- [ ] Sistema de facturación electrónica fiscal
+- [ ] Multi-tenant completo por subdominios
 
 ---
 

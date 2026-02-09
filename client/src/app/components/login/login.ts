@@ -1,10 +1,11 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { LanguageService } from '../../services/language.service';
 import Swal from 'sweetalert2';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -13,11 +14,13 @@ import Swal from 'sweetalert2';
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-export class Login {
+export class Login implements OnInit, OnDestroy {
   loginForm: FormGroup;
   loading = signal(false);
   error = signal('');
   currentYear = new Date().getFullYear();
+  private formSub?: Subscription;
+  private readonly STORAGE_KEY = 'medicus_login_email';
 
   constructor(
     private fb: FormBuilder,
@@ -29,6 +32,25 @@ export class Login {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
+  }
+
+  ngOnInit() {
+    const savedEmail = localStorage.getItem(this.STORAGE_KEY);
+    if (savedEmail) {
+      this.loginForm.patchValue({ email: savedEmail });
+    }
+
+    this.formSub = this.loginForm.get('email')?.valueChanges.subscribe(value => {
+      if (value) {
+        localStorage.setItem(this.STORAGE_KEY, value);
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.formSub) {
+      this.formSub.unsubscribe();
+    }
   }
 
   showPassword = signal(false);

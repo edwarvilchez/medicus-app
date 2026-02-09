@@ -34,10 +34,10 @@
           [ngModelOptions]="{ standalone: true }"
         >
           <option value="all">{{ langService.translate('nurses.allShifts') }}</option>
-          <option value="Mañana">Mañana</option>
-          <option value="Tarde">Tarde</option>
-          <option value="Noche">Noche</option>
-          <option value="Rotativo">Rotativo</option>
+          <option value="Mañana">{{ langService.translate('nurses.shifts.morning') }}</option>
+          <option value="Tarde">{{ langService.translate('nurses.shifts.afternoon') }}</option>
+          <option value="Noche">{{ langService.translate('nurses.shifts.night') }}</option>
+          <option value="Rotativo">{{ langService.translate('nurses.shifts.rotating') }}</option>
         </select>
       </div>
       <div class="col-md-2">
@@ -59,7 +59,9 @@
         <div class="col-md-12">
           <p class="text-muted small mb-0">
             <i class="bi bi-info-circle me-1"></i>
-            Mostrando {{ filteredNurses().length }} de {{ nurses().length }} enfermeras/os
+            {{ langService.translate('nurses.showing') }} {{ filteredNurses().length }}
+            {{ langService.translate('nurses.of') }} {{ nurses().length }}
+            {{ langService.translate('sidebar.nurses') | lowercase }}
           </p>
         </div>
       </div>

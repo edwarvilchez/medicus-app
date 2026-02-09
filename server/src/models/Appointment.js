@@ -21,6 +21,10 @@ const Appointment = sequelize.define('Appointment', {
   notes: {
     type: DataTypes.TEXT
   },
+  type: {
+    type: DataTypes.ENUM('In-Person', 'Video'),
+    defaultValue: 'In-Person'
+  },
   reminderSent: {
     type: DataTypes.BOOLEAN,
     defaultValue: false

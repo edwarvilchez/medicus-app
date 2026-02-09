@@ -9,6 +9,9 @@ Este documento contiene las credenciales de todos los usuarios de prueba creados
 | TIPO               | NOMBRE                    | EMAIL                     | USERNAME       | PASSWORD     |
 | ------------------ | ------------------------- | ------------------------- | -------------- | ------------ |
 | **🔐 SUPERADMIN**  | **Administrador Sistema** | **admin@medicus.com**     | **superadmin** | **admin123** |
+| **HOSPITAL**       | Dirección HGC             | admin@hgc.com             | hgc.admin      | hospital123  |
+| **CLINICA**        | Admin SaludExpress        | contacto@saludexpress.com | clinica.salud  | clinica123   |
+| **PROFESSIONAL**   | Javier Méndez             | dr.mendez@medicus.com     | dr.mendez      | doctor123    |
 | **DOCTOR**         | Carlos Martínez           | dr.martinez@medicus.com   | dr.martinez    | doctor123    |
 | **DOCTOR**         | Ana Rodríguez             | dr.rodriguez@medicus.com  | dr.rodriguez   | doctor123    |
 | **DOCTOR**         | Miguel López              | dr.lopez@medicus.com      | dr.lopez       | doctor123    |
@@ -22,7 +25,7 @@ Este documento contiene las credenciales de todos los usuarios de prueba creados
 | **PATIENT**        | Elena Pérez               | pac.perez@email.com       | pac.perez      | patient123   |
 | **PATIENT**        | Luis Díaz                 | pac.diaz@email.com        | pac.diaz       | patient123   |
 
-**Total: 13 usuarios (1 SUPERADMIN + 12 usuarios de prueba)**
+**Total: 16 usuarios (1 SUPERADMIN + 15 usuarios de prueba)**
 
 ---
 
@@ -31,6 +34,25 @@ Este documento contiene las credenciales de todos los usuarios de prueba creados
 | TIPO           | EMAIL             | USERNAME   | PASSWORD |
 | -------------- | ----------------- | ---------- | -------- |
 | **SUPERADMIN** | admin@medicus.com | superadmin | admin123 |
+
+---
+
+## 🚀 Perfiles SaaS (Multi-entidad)
+
+1. **Hospital General del Centro** (HOSPITAL)
+   - Email: `admin@hgc.com`
+   - Password: `hospital123`
+   - Branding: Nombre institucional completo en reportes.
+
+2. **Centro Médico Salud Express** (CLINICA)
+   - Email: `contacto@saludexpress.com`
+   - Password: `clinica123`
+   - Branding: Nombre de la clínica y logo institucional.
+
+3. **Dr. Javier Méndez** (PROFESSIONAL)
+   - Email: `dr.mendez@medicus.com`
+   - Password: `doctor123`
+   - Branding: Marca personal (Nombre del profesional) en reportes.
 
 ---
 
@@ -158,31 +180,10 @@ Este documento contiene las credenciales de todos los usuarios de prueba creados
 - Probar login con cada tipo de usuario
 - Verificar que cada rol tenga acceso a sus módulos correspondientes
 
-### Test 2: Gestión de Doctores
+### Test 2: Branding SaaS
 
-- Login como SUPERADMIN
-- Crear, editar y eliminar doctores
-- Verificar filtros por especialidad
-
-### Test 3: Gestión de Enfermería
-
-- Crear, editar y eliminar enfermeras
-- Verificar filtros por turno
-
-### Test 4: Gestión de Pacientes
-
-- Crear, editar y eliminar pacientes
-- Verificar filtros por género
-
-### Test 5: Gestión de Staff
-
-- Crear, editar y eliminar personal administrativo
-- Verificar filtros por departamento
-
-### Test 6: Dashboard
-
-- Verificar que las estadísticas se carguen correctamente
-- Verificar que las próximas citas se muestren
+- Login como Hospital (admin@hgc.com) -> Generar PDF -> Verificar nombre del hospital.
+- Login como Médico (dr.mendez@medicus.com) -> Generar PDF -> Verificar nombre del médico.
 
 ---
 
@@ -192,20 +193,9 @@ Para regenerar los usuarios de prueba, ejecuta:
 
 ```bash
 cd server
-node src/utils/createTestUsers.js
+node run_seeder.js
 ```
 
-El script omitirá automáticamente los usuarios que ya existen.
-
 ---
 
-## 📝 Notas
-
-- Todos los passwords son simples para facilitar el testing
-- En producción, estos usuarios deben ser eliminados o sus contraseñas cambiadas
-- El script verifica duplicados antes de crear usuarios
-- Los roles deben existir en la base de datos antes de ejecutar el script
-
----
-
-**Última actualización:** 31 de Enero de 2026
+**Última actualización:** 8 de Febrero de 2026 - v1.7.0

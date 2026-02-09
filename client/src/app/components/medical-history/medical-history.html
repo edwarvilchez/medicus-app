@@ -67,6 +67,12 @@
           <button class="btn btn-primary-premium" (click)="openRecordModal()">
             {{ langService.translate('medical_history.newRecord') }}
           </button>
+          <button
+            class="btn glass-morphism border-0 px-3 py-2 rounded-3 shadow-sm"
+            (click)="exportHistory()"
+          >
+            <i class="bi bi-download me-1"></i> {{ langService.translate('dashboard.report') }}
+          </button>
           <button class="btn glass-morphism border" (click)="patientId.set('')">
             {{ langService.translate('medical_history.changePatient') }}
           </button>
@@ -77,23 +83,35 @@
     <div class="col-lg-8">
       <ul class="nav nav-pills glass-morphism p-2 rounded-4 mb-4" id="pills-tab" role="tablist">
         <li class="nav-item flex-grow-1" role="presentation">
-          <button class="nav-link active w-100 rounded-3 py-2 fw-medium" data-bs-toggle="pill">
+          <button
+            class="nav-link w-100 rounded-3 py-2 fw-medium"
+            [class.active]="activeTab() === 'consultations'"
+            (click)="activeTab.set('consultations')"
+          >
             {{ langService.translate('medical_history.tabs.consultations') }}
           </button>
         </li>
         <li class="nav-item flex-grow-1" role="presentation">
-          <button class="nav-link w-100 rounded-3 py-2 fw-medium" data-bs-toggle="pill">
+          <button
+            class="nav-link w-100 rounded-3 py-2 fw-medium"
+            [class.active]="activeTab() === 'labs'"
+            (click)="activeTab.set('labs')"
+          >
             {{ langService.translate('medical_history.tabs.labs') }}
           </button>
         </li>
         <li class="nav-item flex-grow-1" role="presentation">
-          <button class="nav-link w-100 rounded-3 py-2 fw-medium" data-bs-toggle="pill">
+          <button
+            class="nav-link w-100 rounded-3 py-2 fw-medium"
+            [class.active]="activeTab() === 'treatments'"
+            (click)="activeTab.set('treatments')"
+          >
             {{ langService.translate('medical_history.tabs.treatments') }}
           </button>
         </li>
       </ul>
 
-      <div class="medical-records-timeline">
+      <div class="medical-records-timeline" *ngIf="activeTab() === 'consultations'">
         <!-- Record Item -->
         <div class="card-premium border-0 p-4 mb-4 animate-fade-in" *ngFor="let rec of records()">
           <div class="d-flex justify-content-between align-items-start mb-3">
@@ -155,6 +173,54 @@
 
         <div class="text-center py-5" *ngIf="records().length === 0">
           <p class="text-muted">{{ langService.translate('medical_history.noRecords') }}</p>
+        </div>
+      </div>
+
+      <!-- Labs Tab Content -->
+      <div class="labs-content" *ngIf="activeTab() === 'labs'">
+        <div class="card-premium border-0 p-4 mb-4" *ngFor="let lab of labs()">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <span class="text-primary small fw-bold">{{
+                lab.createdAt | date: 'mediumDate'
+              }}</span>
+              <h5 class="fw-bold mb-0">{{ lab.examType }}</h5>
+            </div>
+            <a
+              [href]="lab.resultUrl"
+              target="_blank"
+              class="btn btn-outline-primary btn-sm rounded-pill px-3"
+              *ngIf="lab.resultUrl"
+            >
+              <i class="bi bi-file-earmark-pdf me-1"></i>
+              {{ langService.translate('medical_history.viewPdf') }}
+            </a>
+          </div>
+          <p class="mt-3 mb-0 text-muted" *ngIf="lab.notes">{{ lab.notes }}</p>
+        </div>
+        <div class="text-center py-5" *ngIf="labs().length === 0">
+          <p class="text-muted">{{ langService.translate('medical_history.noLabs') }}</p>
+        </div>
+      </div>
+
+      <!-- Treatments Tab Content -->
+      <div class="treatments-content" *ngIf="activeTab() === 'treatments'">
+        <div class="card-premium border-0 p-4 mb-4">
+          <h5 class="fw-bold mb-3">
+            {{ langService.translate('medical_history.treatmentsSummary') }}
+          </h5>
+          <div *ngFor="let rec of records()">
+            <div class="border-start border-primary border-4 ps-3 mb-4" *ngIf="rec.treatment">
+              <span class="text-muted x-small fw-bold">{{
+                rec.createdAt | date: 'mediumDate'
+              }}</span>
+              <p class="mb-0 fw-medium">{{ rec.treatment }}</p>
+              <p class="x-small text-muted mt-1">{{ rec.indications }}</p>
+            </div>
+          </div>
+          <div class="text-center py-5" *ngIf="records().length === 0">
+            <p class="text-muted">{{ langService.translate('medical_history.noTreatments') }}</p>
+          </div>
         </div>
       </div>
     </div>

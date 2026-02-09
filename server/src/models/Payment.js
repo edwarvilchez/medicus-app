@@ -15,6 +15,10 @@ const Payment = sequelize.define('Payment', {
     type: DataTypes.STRING,
     defaultValue: 'Cash'
   },
+  currency: {
+    type: DataTypes.STRING,
+    defaultValue: 'USD'
+  },
   status: {
     type: DataTypes.ENUM('Paid', 'Pending', 'Cancelled'),
     defaultValue: 'Pending'
@@ -29,6 +33,9 @@ const Payment = sequelize.define('Payment', {
     type: DataTypes.STRING
   },
   instrument: {
+    type: DataTypes.STRING
+  },
+  receiptUrl: {
     type: DataTypes.STRING
   }
 });

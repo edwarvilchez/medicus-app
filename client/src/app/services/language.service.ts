@@ -26,7 +26,12 @@ export class LanguageService {
         error: 'Error',
         warning: 'Atención',
         noResults: 'No se encontraron resultados',
-        doctor: 'Doctor'
+        doctor: 'Doctor',
+        birthDate: 'Fecha de Nacimiento',
+        male: 'Masculino',
+        female: 'Femenino',
+        username: 'Nombre de Usuario',
+        confirm: 'Confirmar'
       },
       auth: {
         login: 'Iniciar Sesión',
@@ -48,7 +53,32 @@ export class LanguageService {
         collect: 'Cobrar',
         receipt: 'Recibo',
         pending: 'Pendiente',
-        paid: 'Pagado'
+        paid: 'Pagado',
+        doctorConsultation: 'Consulta / Médico',
+        generalPayment: 'Pago General',
+        edit: 'Editar Pago',
+        delete: 'Eliminar Pago',
+        registerTitle: 'Registrar Pago de Cita',
+        editTitle: 'Editar Pago de Cita',
+        payCurrency: 'Moneda del Pago',
+        bankPlatform: 'Banco / Plataforma',
+        updateReceipt: 'Actualizar Comprobante (Opcional)',
+        hasAttachment: 'Ya tiene un archivo adjunto',
+        selectAppointment: 'Cita a Pagar',
+        method: 'Método de Pago',
+        select: 'Seleccione...',
+        bankPlatformPlaceholder: 'Ej: Banesco, Mercantil, Zelle...',
+        refPlaceholder: 'Últimos 4-6 dígitos',
+        payDate: 'Fecha de Pago',
+        attachReceipt: 'Adjuntar Comprobante (Opcional)',
+        saveChanges: 'Guardar Cambios',
+        confirmDelete: '¿Estás seguro?',
+        confirmDeleteText: 'Esta acción eliminará el registro del pago permanentemente.',
+        yesDelete: 'Sí, eliminar',
+        deleted: 'Eliminado',
+        deletedMsg: 'El pago ha sido eliminado.',
+        updated: 'Actualizado',
+        updatedMsg: 'Su pago ha sido actualizado de forma exitosa.'
       },
       medical_history: {
         title: 'Historial del Paciente',
@@ -77,7 +107,11 @@ export class LanguageService {
         diagnosisPlaceholder: 'Escribe el diagnóstico principal...',
         examPlaceholder: 'Detalles del examen físico...',
         treatmentPlaceholder: 'Medicamentos y dosis...',
-        indicationsPlaceholder: 'Recomendaciones generales...'
+        indicationsPlaceholder: 'Recomendaciones generales...',
+        viewPdf: 'Ver PDF',
+        noLabs: 'No hay resultados de laboratorio para este paciente.',
+        treatmentsSummary: 'Resumen de Tratamientos',
+        noTreatments: 'No se registran tratamientos activos.'
       },
       sidebar: {
         medicalManagement: 'GESTIÓN MÉDICA',
@@ -99,7 +133,8 @@ export class LanguageService {
         mobile: 'Pago Móvil',
         debit: 'Débito',
         credit: 'Crédito',
-        currency: 'Moneda'
+        currency: 'Moneda',
+        bulkData: 'Carga Masiva'
       },
       landing: {
         title: 'Tu Socio en',
@@ -115,7 +150,23 @@ export class LanguageService {
         enterSystem: 'Ingresar al Sistema',
         noAccount: '¿No tienes cuenta?',
         registerHere: 'Regístrate aquí',
-        publicBooking: 'Agendar Cita (Sin cuenta)'
+        publicBooking: 'Agendar Cita (Sin cuenta)',
+        accountType: 'Tipo de Cuenta',
+        professional: 'Profesional Independiente',
+        clinic: 'Clínica / Centro Médico',
+        hospital: 'Hospital / Institución',
+        businessName: 'Nombre Institucional / Comercial',
+        businessNamePlaceholder: 'Ej: Clínica San José'
+      },
+      register: {
+        title: 'Crear Cuenta',
+        subtitle: 'Únete a nuestra plataforma',
+        patient: 'Paciente',
+        provider: 'Proveedor de Salud',
+        license: 'Número de Colegiatura / Licencia',
+        address: 'Dirección de la Sede',
+        success: '¡Registro Exitoso!',
+        error: 'Error de Registro'
       },
       dashboard: {
         controlPanel: 'Panel de Control',
@@ -138,10 +189,32 @@ export class LanguageService {
           totalPatients: 'Pacientes Totales',
           appointments: 'Citas Hoy',
           income: 'Ingresos Mes',
-          pending: 'Pendientes'
+          pending: 'Pendientes',
+          inPerson: 'Presenciales',
+          videoCalls: 'Videoconsultas',
+          specialtyBreakdown: 'Rendimiento por Especialidad',
+          toAttend: 'Por Atender',
+          attended: 'Atendidas',
+          incomeAnalysis: 'Análisis de Ingresos',
+          daily: 'Diario',
+          weekly: 'Semanal',
+          monthly: 'Mensual'
         },
         reminderSent: 'Recordatorio enviado',
         active: 'Activo'
+      },
+      navbar: {
+        updateInfo: 'Actualizar Datos',
+        changePassword: 'Cambiar Contraseña',
+        logout: 'Cerrar Sesión',
+        profile: 'Perfil'
+      },
+      roles: {
+        ADMIN: 'Administrador',
+        DOCTOR: 'Médico',
+        PATIENT: 'Paciente',
+        NURSE: 'Enfermería',
+        STAFF: 'Administrativo'
       },
       specialties: {
         all: 'Todas',
@@ -162,7 +235,49 @@ export class LanguageService {
           shift: 'Turno',
           license: 'Licencia'
         },
-        noResults: 'No se encontraron enfermeros'
+        noResults: 'No se encontraron enfermeros',
+        filtersCleared: 'Filtros Limpiados',
+        filtersClearedMsg: 'Se han restablecido todos los filtros',
+        showing: 'Mostrando',
+        of: 'de',
+        fields: {
+          firstName: 'Nombre',
+          lastName: 'Apellido',
+          email: 'Email',
+          phone: 'Teléfono',
+          license: 'Licencia',
+          shift: 'Turno',
+          specialization: 'Especialización',
+          password: 'Contraseña',
+          passwordPlaceholder: 'Mínimo 6 caracteres'
+        },
+        shifts: {
+          morning: 'Mañana',
+          afternoon: 'Tarde',
+          night: 'Noche',
+          rotating: 'Rotativo'
+        },
+        specialties: {
+          general: 'Enfermería General',
+          icu: 'Cuidados Intensivos',
+          pediatrics: 'Pediatría',
+          surgery: 'Quirófano',
+          emergency: 'Emergencias',
+          geriatrics: 'Geriatría',
+          neonatology: 'Neonatología',
+          oncology: 'Oncología'
+        },
+        messages: {
+          created: '¡Enfermera/o Creada/o!',
+          createdMsg: 'El personal de enfermería ha sido registrado exitosamente.',
+          deleted: '¡Eliminado!',
+          deletedMsg: 'Registro eliminado exitosamente.',
+          confirmDelete: '¿Confirmar eliminación?',
+          confirmDeleteText: 'Se borrará el registro del enfermero/a.',
+          yesDelete: 'Sí, eliminar',
+          errorDelete: 'No se pudo eliminar el registro',
+          completeRequired: 'Por favor completa todos los campos obligatorios'
+        }
       },
       lab: {
         title: 'Laboratorio',
@@ -208,7 +323,20 @@ export class LanguageService {
         time: 'Hora',
         reason: 'Motivo de Consulta',
         reasonPlaceholder: 'Ej: Control Mensual',
-        notes: 'Observaciones (Opcional)'
+        notes: 'Observaciones (Opcional)',
+        videoCall: 'Videollamada',
+        success: '¡Cita Agendada!',
+        success_msg: 'La cita ha sido registrada exitosamente.',
+        success_info: 'Se ha enviado una notificación automática, pero puedes usar estos accesos directos:',
+        error_create: 'No se pudo agendar la cita. Por favor, intenta de nuevo.'
+      },
+      video_history: {
+        title: 'Historial de Videoconsultas',
+        subtitle: 'Registro de llamadas realizadas y programadas',
+        sidebar: 'Videoconsultas',
+        starting: 'Iniciando videoconsulta...',
+        wait: 'Por favor espera',
+        error_init: 'No se pudo iniciar la videoconsulta. Intenta de nuevo.'
       },
       doctors: {
         title: 'Equipo Médico',
@@ -237,7 +365,12 @@ export class LanguageService {
         error: 'Error',
         warning: 'Warning',
         noResults: 'No results found',
-        doctor: 'Doctor'
+        doctor: 'Doctor',
+        birthDate: 'Birth Date',
+        male: 'Male',
+        female: 'Female',
+        username: 'Username',
+        confirm: 'Confirm'
       },
       auth: {
         login: 'Login',
@@ -259,7 +392,32 @@ export class LanguageService {
         collect: 'Collect',
         receipt: 'Receipt',
         pending: 'Pending',
-        paid: 'Paid'
+        paid: 'Paid',
+        doctorConsultation: 'Consultation / Doctor',
+        generalPayment: 'General Payment',
+        edit: 'Edit Payment',
+        delete: 'Delete Payment',
+        registerTitle: 'Register Appointment Payment',
+        editTitle: 'Edit Appointment Payment',
+        payCurrency: 'Payment Currency',
+        bankPlatform: 'Bank / Platform',
+        updateReceipt: 'Update Receipt (Optional)',
+        hasAttachment: 'Already has an attachment',
+        selectAppointment: 'Appointment to Pay',
+        method: 'Payment Method',
+        select: 'Select...',
+        bankPlatformPlaceholder: 'e.g. Banesco, Mercantil, Zelle...',
+        refPlaceholder: 'Last 4-6 digits',
+        payDate: 'Payment Date',
+        attachReceipt: 'Attach Receipt (Optional)',
+        saveChanges: 'Save Changes',
+        confirmDelete: 'Are you sure?',
+        confirmDeleteText: 'This action will permanently delete the payment record.',
+        yesDelete: 'Yes, delete',
+        deleted: 'Deleted',
+        deletedMsg: 'The payment has been deleted.',
+        updated: 'Updated',
+        updatedMsg: 'Your payment has been successfully updated.'
       },
       medical_history: {
         title: 'Patient History',
@@ -288,7 +446,11 @@ export class LanguageService {
         diagnosisPlaceholder: 'Enter main diagnosis...',
         examPlaceholder: 'Physical exam details...',
         treatmentPlaceholder: 'Medications and dosage...',
-        indicationsPlaceholder: 'General recommendations...'
+        indicationsPlaceholder: 'General recommendations...',
+        viewPdf: 'View PDF',
+        noLabs: 'No lab results found for this patient.',
+        treatmentsSummary: 'Treatments Summary',
+        noTreatments: 'No active treatments recorded.'
       },
       sidebar: {
         medicalManagement: 'MEDICAL MANAGEMENT',
@@ -310,7 +472,8 @@ export class LanguageService {
         mobile: 'Mobile Payment',
         debit: 'Debit Card',
         credit: 'Credit Card',
-        currency: 'Currency'
+        currency: 'Currency',
+        bulkData: 'Bulk Import'
       },
       landing: {
         title: 'Your Partner in',
@@ -326,7 +489,23 @@ export class LanguageService {
         enterSystem: 'Log In',
         noAccount: "Don't have an account?",
         registerHere: 'Register here',
-        publicBooking: 'Schedule Appointment (No account)'
+        publicBooking: 'Schedule Appointment (No account)',
+        accountType: 'Account Type',
+        professional: 'Independent Professional',
+        clinic: 'Clinic / Medical Center',
+        hospital: 'Hospital / Institution',
+        businessName: 'Institutional / Business Name',
+        businessNamePlaceholder: 'e.g. St. Joseph Clinic'
+      },
+      register: {
+        title: 'Create Account',
+        subtitle: 'Join our platform',
+        patient: 'Patient',
+        provider: 'Healthcare Provider',
+        license: 'Medical License Number',
+        address: 'Office Address',
+        success: 'Registration Successful!',
+        error: 'Registration Error'
       },
       dashboard: {
         controlPanel: 'Control Panel',
@@ -349,7 +528,16 @@ export class LanguageService {
           totalPatients: 'Total Patients',
           appointments: 'Today\'s Appointments',
           income: 'Month Revenue',
-          pending: 'Pending'
+          pending: 'Pending',
+          inPerson: 'In-Person',
+          videoCalls: 'Video Calls',
+          specialtyBreakdown: 'Specialty Performance',
+          toAttend: 'To Attend',
+          attended: 'Attended',
+          incomeAnalysis: 'Income Analysis',
+          daily: 'Daily',
+          weekly: 'Weekly',
+          monthly: 'Monthly'
         },
         reminderSent: 'Reminder sent',
         active: 'Active'
@@ -373,7 +561,49 @@ export class LanguageService {
           shift: 'Shift',
           license: 'License'
         },
-        noResults: 'No nurses found'
+        noResults: 'No nurses found',
+        filtersCleared: 'Filters Cleared',
+        filtersClearedMsg: 'All filters have been reset',
+        showing: 'Showing',
+        of: 'of',
+        fields: {
+          firstName: 'First Name',
+          lastName: 'Last Name',
+          email: 'Email',
+          phone: 'Phone',
+          license: 'License',
+          shift: 'Shift',
+          specialization: 'Specialty',
+          password: 'Password',
+          passwordPlaceholder: 'Minimum 6 characters'
+        },
+        shifts: {
+          morning: 'Morning',
+          afternoon: 'Afternoon',
+          night: 'Night',
+          rotating: 'Rotating'
+        },
+        specialties: {
+          general: 'General Nursing',
+          icu: 'Intensive Care (ICU)',
+          pediatrics: 'Pediatrics',
+          surgery: 'Surgery',
+          emergency: 'Emergency',
+          geriatrics: 'Geriatrics',
+          neonatology: 'Neonatology',
+          oncology: 'Oncology'
+        },
+        messages: {
+          created: 'Nurse Created!',
+          createdMsg: 'Nursing staff has been successfully registered.',
+          deleted: 'Deleted!',
+          deletedMsg: 'Record successfully deleted.',
+          confirmDelete: 'Confirm deletion?',
+          confirmDeleteText: 'This will delete the nurse record.',
+          yesDelete: 'Yes, delete',
+          errorDelete: 'Could not delete the record',
+          completeRequired: 'Please complete all required fields'
+        }
       },
       lab: {
         title: 'Laboratory',
@@ -419,7 +649,20 @@ export class LanguageService {
         time: 'Time',
         reason: 'Reason for Visit',
         reasonPlaceholder: 'e.g. Monthly Checkup',
-        notes: 'Notes (Optional)'
+        notes: 'Notes (Optional)',
+        videoCall: 'Video Call',
+        success: 'Appointment Scheduled!',
+        success_msg: 'The appointment has been registered successfully.',
+        success_info: 'An automatic notification has been sent, but you can use these shortcuts:',
+        error_create: 'Could not schedule the appointment. Please try again.'
+      },
+      video_history: {
+        title: 'Video Consultation History',
+        subtitle: 'Record of made and scheduled calls',
+        sidebar: 'Video Calls',
+        starting: 'Starting video consultation...',
+        wait: 'Please wait',
+        error_init: 'Could not start the video consultation. Please try again.'
       },
       doctors: {
         title: 'Medical Team',
@@ -432,7 +675,19 @@ export class LanguageService {
         schedule: 'Schedule',
         available: 'Available'
       },
-
+      navbar: {
+        updateInfo: 'Update Info',
+        changePassword: 'Change Password',
+        logout: 'Logout',
+        profile: 'Profile'
+      },
+      roles: {
+        ADMIN: 'Administrator',
+        DOCTOR: 'Doctor',
+        PATIENT: 'Patient',
+        NURSE: 'Nurse',
+        STAFF: 'Staff'
+      }
     }
   };
 

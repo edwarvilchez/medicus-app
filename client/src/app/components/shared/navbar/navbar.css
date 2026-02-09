@@ -9,3 +9,11 @@
     font-size: 0.75rem;
     line-height: 1;
 }
+
+.transition {
+    transition: all 0.2s ease;
+}
+
+.rotate-180 {
+    transform: rotate(180deg);
+}

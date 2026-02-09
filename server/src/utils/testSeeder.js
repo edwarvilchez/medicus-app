@@ -15,6 +15,25 @@ const seedTestData = async () => {
 
     // --- USERS DATA ---
     const users = [
+        // NEW SAAS MULTI-ENTITY PROFILES
+        {
+            username: 'dr.mendez', email: 'dr.mendez@medicus.com', password: 'doctor123',
+            firstName: 'Javier', lastName: 'Méndez', role: 'DOCTOR',
+            accountType: 'PROFESSIONAL',
+            specialtyConfig: { name: 'Traumatología', license: 'MED-777', phone: '+58414-9998877' }
+        },
+        {
+            username: 'clinica.salud', email: 'contacto@saludexpress.com', password: 'clinica123',
+            firstName: 'Admin', lastName: 'SaludExpress', role: 'ADMINISTRATIVE',
+            accountType: 'CLINIC',
+            businessName: 'Centro Médico Salud Express'
+        },
+        {
+            username: 'hgc.admin', email: 'admin@hgc.com', password: 'hospital123',
+            firstName: 'Dirección', lastName: 'HGC', role: 'ADMINISTRATIVE',
+            accountType: 'HOSPITAL',
+            businessName: 'Hospital General del Centro'
+        },
         // SUPERADMIN
         {
             username: 'superadmin', email: 'admin@medicus.com', password: 'admin123',
@@ -83,6 +102,7 @@ const seedTestData = async () => {
     for (const userData of users) {
         if (!roles[userData.role]) continue;
 
+        console.log(`Processing user: ${userData.username} (${userData.email})...`);
         const [user, created] = await User.findOrCreate({
             where: { email: userData.email }, // Check by email to avoid duplicates
             defaults: {
@@ -91,13 +111,13 @@ const seedTestData = async () => {
                 password: userData.password,
                 firstName: userData.firstName,
                 lastName: userData.lastName,
+                businessName: userData.businessName,
+                accountType: userData.accountType || 'PATIENT',
                 roleId: roles[userData.role].id
             }
         });
 
-        if (created) {
-            console.log(`✅ User created: ${userData.username} (${userData.role})`);
-        }
+        console.log(`User ${userData.username}: created=${created}, id=${user.id}`);
 
         // Handle specific role data
         if (userData.role === 'DOCTOR' && userData.specialtyConfig) {

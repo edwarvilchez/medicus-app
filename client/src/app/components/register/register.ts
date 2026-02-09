@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, signal, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { LanguageService } from '../../services/language.service';
 import Swal from 'sweetalert2';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-register',
@@ -13,10 +14,15 @@ import Swal from 'sweetalert2';
   templateUrl: './register.html',
   styleUrl: './register.css',
 })
-export class Register {
+export class Register implements OnInit, OnDestroy {
   registerForm: FormGroup;
   loading = false;
   currentYear = new Date().getFullYear();
+  showPassword = signal(false);
+  showConfirmPassword = signal(false);
+  private formSub?: Subscription;
+  private readonly STORAGE_KEY = 'medicus_register_draft';
+  accountType = signal<'PATIENT' | 'PROFESSIONAL' | 'CLINIC' | 'HOSPITAL'>('PATIENT');
 
   constructor(
     private fb: FormBuilder,
@@ -41,8 +47,72 @@ export class Register {
       address: [''],
       bloodType: [''],
       allergies: [''],
-      acceptTerms: [false, Validators.requiredTrue]
+      acceptTerms: [false, Validators.requiredTrue],
+
+      // Provider specific data
+      businessName: [''],
+      licenseNumber: [''],
+      accountType: ['PATIENT']
     }, { validators: this.passwordMatchValidator });
+  }
+
+  ngOnInit() {
+    // Restaurar datos guardados
+    const savedDraft = localStorage.getItem(this.STORAGE_KEY);
+    if (savedDraft) {
+      try {
+        const draftValues = JSON.parse(savedDraft);
+        // No restauramos contraseñas por seguridad
+        delete draftValues.password;
+        delete draftValues.confirmPassword;
+        this.registerForm.patchValue(draftValues);
+      } catch (e) {
+        console.error('Error al restaurar borrador de registro:', e);
+      }
+    }
+
+    // Guardar cambios automáticamente
+    this.formSub = this.registerForm.valueChanges.subscribe(values => {
+      const toSave = { ...values };
+      delete toSave.password;
+      delete toSave.confirmPassword;
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(toSave));
+    });
+
+    // Listen to account type changes to adjust validators
+    this.registerForm.get('accountType')?.valueChanges.subscribe(type => {
+      this.accountType.set(type);
+      this.调整Validators(type);
+    });
+  }
+
+  private 调整Validators(type: string) {
+    const businessNameControl = this.registerForm.get('businessName');
+    const licenseNumberControl = this.registerForm.get('licenseNumber');
+    const documentIdControl = this.registerForm.get('documentId');
+
+    if (type === 'PATIENT') {
+      businessNameControl?.clearValidators();
+      licenseNumberControl?.clearValidators();
+      documentIdControl?.setValidators([Validators.required]);
+    } else {
+      documentIdControl?.clearValidators();
+      licenseNumberControl?.setValidators([Validators.required]);
+      if (type === 'CLINIC' || type === 'HOSPITAL') {
+        businessNameControl?.setValidators([Validators.required]);
+      } else {
+        businessNameControl?.clearValidators();
+      }
+    }
+    businessNameControl?.updateValueAndValidity();
+    licenseNumberControl?.updateValueAndValidity();
+    documentIdControl?.updateValueAndValidity();
+  }
+
+  ngOnDestroy() {
+    if (this.formSub) {
+      this.formSub.unsubscribe();
+    }
   }
 
   passwordMatchValidator(form: FormGroup) {
@@ -67,8 +137,13 @@ export class Register {
         password: formValue.password,
         firstName: formValue.firstName,
         lastName: formValue.lastName,
-        role: 'PATIENT',
-        patientData: {
+        role: formValue.accountType === 'PATIENT' ? 'PATIENT' : (formValue.accountType === 'PROFESSIONAL' ? 'DOCTOR' : 'ADMINISTRATIVE'),
+        accountType: formValue.accountType,
+        businessName: formValue.businessName,
+        licenseNumber: formValue.licenseNumber,
+        address: formValue.address,
+        phone: formValue.phone,
+        patientData: formValue.accountType === 'PATIENT' ? {
           documentId: formValue.documentId,
           phone: formValue.phone,
           birthDate: formValue.birthDate,
@@ -76,27 +151,31 @@ export class Register {
           address: formValue.address,
           bloodType: formValue.bloodType,
           allergies: formValue.allergies
-        }
+        } : undefined
       };
 
       this.http.post('http://localhost:5000/api/auth/register', registrationData)
         .subscribe({
-          next: (response) => {
+          next: (response: any) => {
             this.loading = false;
+            localStorage.removeItem(this.STORAGE_KEY);
             Swal.fire({
-              title: '¡Registro Exitoso!',
-              text: 'Tu cuenta ha sido creada. Ahora puedes iniciar sesión.',
+              title: this.langService.translate('register.success'),
+              text: response.message || (this.langService.lang() === 'es' ? 'Tu cuenta ha sido creada exitosamente.' : 'Your account has been created successfully.'),
               icon: 'success',
-              confirmButtonColor: '#0ea5e9'
+              confirmButtonColor: '#0ea5e9',
+              confirmButtonText: this.langService.translate('auth.login')
             }).then(() => {
               this.router.navigate(['/login']);
             });
           },
           error: (error) => {
             this.loading = false;
+            const errorMsg = error.error?.message || error.error?.error || (this.langService.lang() === 'es' ? 'No se pudo completar el registro.' : 'Could not complete registration.');
+            
             Swal.fire({
-              title: 'Error',
-              text: error.error?.message || 'No se pudo completar el registro. Por favor, intenta de nuevo.',
+              title: this.langService.translate('register.error'),
+              text: errorMsg,
               icon: 'error',
               confirmButtonColor: '#ef4444'
             });
@@ -131,20 +210,24 @@ export class Register {
 
   getErrorMessage(fieldName: string): string {
     const control = this.registerForm.get(fieldName);
+    const isEs = this.langService.lang() === 'es';
+    
     if (control?.hasError('required')) {
-      return 'Este campo es requerido';
+      return isEs ? 'Este campo es requerido' : 'This field is required';
     }
     if (control?.hasError('email')) {
-      return 'Email inválido';
+      return isEs ? 'Email inválido' : 'Invalid email';
     }
     if (control?.hasError('minlength')) {
-      return `Mínimo ${control.errors?.['minlength'].requiredLength} caracteres`;
+      return isEs 
+        ? `Mínimo ${control.errors?.['minlength'].requiredLength} caracteres` 
+        : `Minimum ${control.errors?.['minlength'].requiredLength} characters`;
     }
     if (control?.hasError('pattern')) {
-      return 'Formato inválido';
+      return isEs ? 'Formato inválido' : 'Invalid format';
     }
     if (control?.hasError('passwordMismatch')) {
-      return 'Las contraseñas no coinciden';
+      return isEs ? 'Las contraseñas no coinciden' : 'Passwords do not match';
     }
     return '';
   }

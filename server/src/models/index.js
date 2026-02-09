@@ -10,6 +10,7 @@ const Appointment = require('./Appointment');
 const MedicalRecord = require('./MedicalRecord');
 const LabResult = require('./LabResult');
 const Payment = require('./Payment');
+const sequelize = require('../config/db.config');
 const VideoConsultation = require('./VideoConsultation');
 
 // User - Role
@@ -84,5 +85,6 @@ module.exports = {
   MedicalRecord,
   LabResult,
   Payment,
-  VideoConsultation
+  VideoConsultation,
+  sequelize
 };

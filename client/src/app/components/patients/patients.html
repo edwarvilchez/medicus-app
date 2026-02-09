@@ -4,9 +4,17 @@
       <h2 class="mb-1">{{ langService.translate('patients_list.title') }}</h2>
       <p class="text-muted">{{ langService.translate('patients_list.subtitle') }}</p>
     </div>
-    <button class="btn btn-primary-premium" (click)="createNewPatient()">
-      <i class="bi bi-person-plus-fill me-2"></i> {{ langService.translate('patients_list.new') }}
-    </button>
+    <div class="d-flex gap-2">
+      <button
+        class="btn glass-morphism border-0 px-3 py-1 rounded-3 shadow-sm btn-sm"
+        (click)="exportReport()"
+      >
+        <i class="bi bi-download me-1"></i> {{ langService.translate('dashboard.report') }}
+      </button>
+      <button class="btn btn-primary-premium" (click)="createNewPatient()">
+        <i class="bi bi-person-plus-fill me-2"></i> {{ langService.translate('patients_list.new') }}
+      </button>
+    </div>
   </div>
 
   <div class="card-premium border-0 p-4 mb-4">

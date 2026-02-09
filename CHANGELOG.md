@@ -2,6 +2,29 @@
 
 Todas las modificaciones notables del proyecto serán documentadas en este archivo.
 
+## [1.7.0] - 2026-02-08
+
+### 🚀 SaaS Multi-Entidad & Branding Dinámico
+
+- ✅ **Modelos de Negocio**: Implementación de tipos de cuenta: `PROFESSIONAL`, `CLINIC` y `HOSPITAL`.
+- ✅ **Marca Blanca (White Label)**: El sistema ahora adopta automáticamente el `businessName` de la entidad logueada para reportes y exportaciones.
+- ✅ **Registro Extendido**: Formulario de registro adaptativo según el tipo de cuenta, con validaciones específicas para números de licencia y razones sociales.
+- ✅ **Base de Datos**: Evolución del esquema `Users` para soportar metadatos institucionales y tipos de cuenta vía ENUM.
+
+### 🧪 Laboratorio Premium
+
+- ✅ **Rediseño de Reportes**: Nuevo motor de generación de PDF con estética moderna (Card Layout, Sombras, Tipografía Slate).
+- ✅ **Branding Medicus**: Aplicación de identidad visual corporativa con iconos de marca y barras de acento en Azul Medicus.
+- ✅ **Legibilidad Avanzada**: Sistema de filas alternas ("Zebra stripes") y resaltado crítico en negrita roja para resultados anormales.
+- ✅ **Optimización de Espacio**: Eliminación de campos redundantes y ajuste de grid para prevenir superposiciones de texto.
+
+### 🌎 Soporte Global
+
+- ✅ **I18n Full Coverage**: Localización completa de mensajes de error de servidor, validaciones de formularios y etiquetas de registro.
+- ✅ **Signals Driven i18n**: Optimización de la reactividad del idioma en todos los servicios de exportación (PDF/Excel/CSV).
+
+---
+
 ## [1.6.1] - 2026-02-08
 
 ### 📹 Módulo de Videoconsultas (Beta)

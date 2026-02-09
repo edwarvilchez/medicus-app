@@ -61,8 +61,8 @@ export class Nurses implements OnInit {
     this.searchTerm.set('');
     this.shiftFilter.set('all');
     Swal.fire({
-      title: 'Filtros Limpiados',
-      text: 'Se han restablecido todos los filtros',
+      title: this.langService.translate('nurses.filtersCleared'),
+      text: this.langService.translate('nurses.filtersClearedMsg'),
       icon: 'success',
       timer: 1500,
       showConfirmButton: false
@@ -71,62 +71,62 @@ export class Nurses implements OnInit {
 
   createNewNurse() {
     Swal.fire({
-      title: 'Nueva/o Enfermera/o',
+      title: this.langService.translate('nurses.new'),
       html: `
         <div class="text-start">
           <div class="row g-2">
             <div class="col-md-6">
-              <label class="form-label small fw-bold mb-1">Nombre</label>
+              <label class="form-label small fw-bold mb-1">${this.langService.translate('nurses.fields.firstName')}</label>
               <input id="firstName" class="form-control form-control-sm" placeholder="María">
             </div>
             <div class="col-md-6">
-              <label class="form-label small fw-bold mb-1">Apellido</label>
+              <label class="form-label small fw-bold mb-1">${this.langService.translate('nurses.fields.lastName')}</label>
               <input id="lastName" class="form-control form-control-sm" placeholder="González">
             </div>
             <div class="col-md-6">
-              <label class="form-label small fw-bold mb-1">Email</label>
+              <label class="form-label small fw-bold mb-1">${this.langService.translate('nurses.fields.email')}</label>
               <input id="email" type="email" class="form-control form-control-sm" placeholder="enfermera@medicus.com">
             </div>
             <div class="col-md-6">
-              <label class="form-label small fw-bold mb-1">Teléfono</label>
+              <label class="form-label small fw-bold mb-1">${this.langService.translate('nurses.fields.phone')}</label>
               <input id="phone" class="form-control form-control-sm" placeholder="+58412-1234567">
             </div>
             <div class="col-md-6">
-              <label class="form-label small fw-bold mb-1">Licencia</label>
+              <label class="form-label small fw-bold mb-1">${this.langService.translate('nurses.fields.license')}</label>
               <input id="licenseNumber" class="form-control form-control-sm" placeholder="ENF-12345">
             </div>
             <div class="col-md-6">
-              <label class="form-label small fw-bold mb-1">Turno</label>
+              <label class="form-label small fw-bold mb-1">${this.langService.translate('nurses.fields.shift')}</label>
               <select id="shift" class="form-select form-select-sm">
-                <option value="Mañana">Mañana</option>
-                <option value="Tarde">Tarde</option>
-                <option value="Noche">Noche</option>
-                <option value="Rotativo">Rotativo</option>
+                <option value="Mañana">${this.langService.translate('nurses.shifts.morning')}</option>
+                <option value="Tarde">${this.langService.translate('nurses.shifts.afternoon')}</option>
+                <option value="Noche">${this.langService.translate('nurses.shifts.night')}</option>
+                <option value="Rotativo">${this.langService.translate('nurses.shifts.rotating')}</option>
               </select>
             </div>
             <div class="col-12">
-              <label class="form-label small fw-bold mb-1">Especialización</label>
+              <label class="form-label small fw-bold mb-1">${this.langService.translate('nurses.fields.specialization')}</label>
               <select id="specialization" class="form-select form-select-sm">
-                <option value="Enfermería General">Enfermería General</option>
-                <option value="Cuidados Intensivos">Cuidados Intensivos</option>
-                <option value="Pediatría">Pediatría</option>
-                <option value="Quirófano">Quirófano</option>
-                <option value="Emergencias">Emergencias</option>
-                <option value="Geriatría">Geriatría</option>
-                <option value="Neonatología">Neonatología</option>
-                <option value="Oncología">Oncología</option>
+                <option value="Enfermería General">${this.langService.translate('nurses.specialties.general')}</option>
+                <option value="Cuidados Intensivos">${this.langService.translate('nurses.specialties.icu')}</option>
+                <option value="Pediatría">${this.langService.translate('nurses.specialties.pediatrics')}</option>
+                <option value="Quirófano">${this.langService.translate('nurses.specialties.surgery')}</option>
+                <option value="Emergencias">${this.langService.translate('nurses.specialties.emergency')}</option>
+                <option value="Geriatría">${this.langService.translate('nurses.specialties.geriatrics')}</option>
+                <option value="Neonatología">${this.langService.translate('nurses.specialties.neonatology')}</option>
+                <option value="Oncología">${this.langService.translate('nurses.specialties.oncology')}</option>
               </select>
             </div>
             <div class="col-12">
-              <label class="form-label small fw-bold mb-1">Contraseña</label>
-              <input id="password" type="password" class="form-control form-control-sm" placeholder="Mínimo 6 caracteres">
+              <label class="form-label small fw-bold mb-1">${this.langService.translate('nurses.fields.password')}</label>
+              <input id="password" type="password" class="form-control form-control-sm" placeholder="${this.langService.translate('nurses.fields.passwordPlaceholder')}">
             </div>
           </div>
         </div>
       `,
       showCancelButton: true,
-      confirmButtonText: 'Crear Enfermera/o',
-      cancelButtonText: 'Cancelar',
+      confirmButtonText: this.langService.translate('nurses.new'),
+      cancelButtonText: this.langService.translate('common.cancel'),
       confirmButtonColor: '#0ea5e9',
       cancelButtonColor: '#64748b',
       width: '600px',
@@ -144,7 +144,7 @@ export class Nurses implements OnInit {
         const password = (document.getElementById('password') as HTMLInputElement).value;
 
         if (!firstName || !lastName || !email || !phone || !licenseNumber || !password) {
-          Swal.showValidationMessage('Por favor completa todos los campos obligatorios');
+          Swal.showValidationMessage(this.langService.translate('nurses.messages.completeRequired'));
           return false;
         }
 
@@ -169,16 +169,16 @@ export class Nurses implements OnInit {
             next: () => {
               this.loadNurses();
               Swal.fire({
-                title: '¡Enfermera/o Creada/o!',
-                text: 'El personal de enfermería ha sido registrado exitosamente.',
+                title: this.langService.translate('nurses.messages.created'),
+                text: this.langService.translate('nurses.messages.createdMsg'),
                 icon: 'success',
                 confirmButtonColor: '#0ea5e9'
               });
             },
             error: (err) => {
               Swal.fire({
-                title: 'Error',
-                text: err.error?.message || 'No se pudo crear el registro. Verifica los datos.',
+                title: this.langService.translate('common.error'),
+                text: err.error?.message || 'No se pudo crear el registro.',
                 icon: 'error',
                 confirmButtonColor: '#ef4444'
               });
@@ -190,14 +190,14 @@ export class Nurses implements OnInit {
 
   deleteNurse(id: string) {
     Swal.fire({
-      title: '¿Confirmar eliminación?',
-      text: "Se borrará el registro del enfermero/a.",
+      title: this.langService.translate('nurses.messages.confirmDelete'),
+      text: this.langService.translate('nurses.messages.confirmDeleteText'),
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#ef4444',
       cancelButtonColor: '#64748b',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
+      confirmButtonText: this.langService.translate('nurses.messages.yesDelete'),
+      cancelButtonText: this.langService.translate('common.cancel')
     }).then((result) => {
       if (result.isConfirmed) {
         this.http.delete(`http://localhost:5000/api/nurses/${id}`, { headers: this.getHeaders() })
@@ -205,16 +205,16 @@ export class Nurses implements OnInit {
             next: () => {
               this.loadNurses();
               Swal.fire({
-                title: '¡Eliminado!',
-                text: 'Registro eliminado exitosamente.',
+                title: this.langService.translate('nurses.messages.deleted'),
+                text: this.langService.translate('nurses.messages.deletedMsg'),
                 icon: 'success',
                 confirmButtonColor: '#0ea5e9'
               });
             },
             error: () => {
               Swal.fire({
-                title: 'Error',
-                text: 'No se pudo eliminar el registro',
+                title: this.langService.translate('common.error'),
+                text: this.langService.translate('nurses.messages.errorDelete'),
                 icon: 'error',
                 confirmButtonColor: '#ef4444'
               });

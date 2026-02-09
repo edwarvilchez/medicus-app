@@ -4,11 +4,11 @@ const { v4: uuidv4 } = require('uuid');
 // Crear sala de videoconsulta
 exports.createVideoConsultation = async (req, res) => {
   try {
-    console.log('📥 Request body:', req.body);
-    console.log('👤 User from token:', req.user);
-    
     const { appointmentId } = req.body;
-    const doctorId = req.user.id; // Del middleware de autenticación
+    
+    if (!appointmentId) {
+      return res.status(400).json({ message: 'appointmentId es requerido' });
+    }
 
     // Verificar que la cita existe
     const appointment = await Appointment.findByPk(appointmentId, {
@@ -24,26 +24,24 @@ exports.createVideoConsultation = async (req, res) => {
       ]
     });
 
-    console.log('📋 Appointment found:', appointment ? 'Yes' : 'No');
-    if (appointment) {
-      console.log('👥 Patient User ID:', appointment.Patient?.User?.id);
-      console.log('👨‍⚕️ Doctor User ID:', appointment.Doctor?.User?.id);
-    }
-
     if (!appointment) {
       return res.status(404).json({ message: 'Cita no encontrada' });
     }
 
-    // Obtener el userId del paciente desde la cita
+    // Obtener los User IDs
     const patientUserId = appointment.Patient?.User?.id;
     const doctorUserId = appointment.Doctor?.User?.id;
 
     if (!patientUserId || !doctorUserId) {
-      return res.status(400).json({ message: 'Datos de la cita incompletos' });
+      return res.status(400).json({ message: 'La cita no tiene asociados correctamente al paciente o doctor' });
     }
 
     // Verificar que no exista ya una videoconsulta para esta cita
-    const existing = await VideoConsultation.findOne({ where: { appointmentId } });
+    // Forzamos el tipo de appointmentId para evitar errores de casting
+    const existing = await VideoConsultation.findOne({ 
+      where: { appointmentId: appointmentId.toString() } 
+    });
+
     if (existing) {
       return res.status(200).json({
         message: 'Videoconsulta ya existe',
@@ -62,29 +60,17 @@ exports.createVideoConsultation = async (req, res) => {
       status: 'scheduled'
     });
 
-    console.log(`✅ Videoconsulta creada: ${roomId}`);
+    console.log(`✅ Videoconsulta creada: ${roomId} (ID: ${videoConsultation.id})`);
 
     res.status(201).json({
       message: 'Videoconsulta creada exitosamente',
       videoConsultation
     });
   } catch (error) {
-    const fs = require('fs');
-    const path = require('path');
-    const logPath = path.join(__dirname, '../../server_error.log');
-    const errorMessage = `[${new Date().toISOString()}] ERROR: ${error.message}\nSTACK: ${error.stack}\n\n`;
-    
-    try {
-      fs.appendFileSync(logPath, errorMessage);
-    } catch (e) {
-      console.error('Error writing to log file', e);
-    }
-
     console.error('❌ Error creando videoconsulta:', error);
     res.status(500).json({ 
-      message: 'Error del servidor', 
-      error: error.message,
-      stack: error.stack
+      message: 'Error del servidor al crear videoconsulta', 
+      error: error.message 
     });
   }
 };
@@ -93,35 +79,30 @@ exports.createVideoConsultation = async (req, res) => {
 exports.getVideoConsultation = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(`📥 GET VideoConsultation ID: ${id}`);
     
-    // Primero verificar si existe sin relaciones complejas
-    const simpleCheck = await VideoConsultation.findByPk(id);
-    if (!simpleCheck) {
-      console.log('❌ No encontrada en chequeo simple');
-      return res.status(404).json({ message: 'Videoconsulta no encontrada' });
+    if (!id || id === 'NaN' || id === 'undefined') {
+      return res.status(400).json({ message: 'ID de videoconsulta inválido' });
     }
-    console.log('✅ Chequeo simple OK. Cargando relaciones...');
 
+    // Cargar con relaciones mínimas para evitar errores de columnas fantasmas
     const videoConsultation = await VideoConsultation.findByPk(id, {
       include: [
         { 
           model: User, 
           as: 'doctor', 
-          attributes: ['id', 'firstName', 'lastName', 'email'],
-          include: [{ model: Doctor, attributes: ['licenseNumber'] }]
+          attributes: ['id', 'firstName', 'lastName', 'email']
         },
         { 
           model: User, 
           as: 'patient', 
-          attributes: ['id', 'firstName', 'lastName', 'email'],
-          include: [{ model: Patient, attributes: ['birthDate', 'bloodType'] }]
+          attributes: ['id', 'firstName', 'lastName', 'email']
         },
-        { model: Appointment }
+        { 
+          model: Appointment,
+          attributes: ['id', 'date', 'time', 'reason', 'status']
+        }
       ]
     });
-
-    console.log('✅ Relaciones cargadas correctamente');
 
     if (!videoConsultation) {
       return res.status(404).json({ message: 'Videoconsulta no encontrada' });
@@ -129,19 +110,8 @@ exports.getVideoConsultation = async (req, res) => {
 
     res.json(videoConsultation);
   } catch (error) {
-    const fs = require('fs');
-    const path = require('path');
-    const logPath = path.join(__dirname, '../../server_error.log');
-    const errorMessage = `[${new Date().toISOString()}] ERROR GET /${req.params.id}: ${error.message}\nSTACK: ${error.stack}\n\n`;
-    
-    try {
-      fs.appendFileSync(logPath, errorMessage);
-    } catch (e) {
-      console.error('Error writing to log file', e);
-    }
-
-    console.error('❌ Error obteniendo videoconsulta:', error);
-    res.status(500).json({ message: 'Error del servidor', error: error.message, stack: error.stack });
+    console.error(`❌ Error obteniendo videoconsulta ${req.params.id}:`, error);
+    res.status(500).json({ message: 'Error del servidor al obtener videoconsulta', error: error.message });
   }
 };
 

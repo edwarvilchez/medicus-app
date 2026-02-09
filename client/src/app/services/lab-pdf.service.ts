@@ -2,156 +2,208 @@ import { Injectable } from '@angular/core';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { LabReport } from '../components/lab-results/lab-report.model';
+import { AuthService } from './auth.service';
+import { LanguageService } from './language.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LabPdfService {
 
+  constructor(
+    private authService: AuthService,
+    private langService: LanguageService
+  ) {}
+
   // Método privado para crear el documento
   private createDoc(report: LabReport): jsPDF {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.width;
+    const user = this.authService.currentUser();
+    const isEs = this.langService.lang() === 'es';
     
-    // --- CABECERA (Header) ---
-    // Título / Logo placeholder
-    doc.setFontSize(16);
-    doc.setTextColor(0, 0, 0);
-    // doc.text("MEDICUS", 14, 15); // Logo iría aquí
+    // Branding Setup
+    const branding = {
+      name: user?.businessName || (user?.accountType === 'PROFESSIONAL' ? `${user.firstName} ${user.lastName}` : 'Medicus Platform'),
+      tagline: user?.businessName ? 'Servicios de Salud Integrales' : 'Gestión Médica Profesional'
+    };
+
+    // --- CABECERA PREMIUM (Medicus Header) ---
+    // Background Accent (Top Blue Bar)
+    doc.setFillColor(14, 165, 233); // #0ea5e9 (Medicus Blue)
+    doc.rect(0, 0, pageWidth, 2, 'F');
+
+    // Heartbeat Icon / Logo Placeholder (Stylized Heart)
+    doc.setDrawColor(14, 165, 233);
+    doc.setLineWidth(1);
+    doc.line(14, 15, 18, 15);
+    doc.line(18, 15, 20, 10);
+    doc.line(20, 10, 23, 20);
+    doc.line(23, 20, 25, 15);
+    doc.line(25, 15, 30, 15);
+
+    // Branding Name (Izquierda Superior)
+    doc.setFontSize(22);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(15, 23, 42); // Slate-900
+    doc.text(branding.name.toUpperCase(), 35, 18);
     
-    // Nro de Orden (Derecha)
+    doc.setFontSize(8.5);
+    doc.setFont('helvetica', 'medium'); // Try helvetica-bold if medium is not available
+    doc.setTextColor(14, 165, 233); // Medicus Blue
+    doc.text(branding.tagline.toUpperCase(), 35, 23);
+
+    // Platform Identity (Top Right)
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(148, 163, 184); // Slate-400
+    doc.text('POWERED BY MEDICUS PLATFORM', pageWidth - 14, 8, { align: 'right' });
+
+    // Lab Order / Document ID (Derecha)
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
-    doc.text(report.header.labOrder, pageWidth - 14, 15, { align: 'right' });
+    doc.setTextColor(30, 41, 59); // Slate-800
+    doc.text(report.header.labOrder, pageWidth - 14, 18, { align: 'right' });
     
-    // Línea separadora
+    // Line Separator (Main)
+    doc.setDrawColor(226, 232, 240); // Slate-200
     doc.setLineWidth(0.5);
-    doc.line(14, 18, pageWidth - 14, 18);
+    doc.line(14, 28, pageWidth - 14, 28);
 
-    // Datos del Paciente (Grid como en la imagen)
-    doc.setFontSize(9);
+    // Patient Data Block (Modern Card Style)
+    doc.setFillColor(248, 250, 252); // Slate-50
+    doc.roundedRect(14, 32, pageWidth - 28, 25, 2, 2, 'F');
+    
+    doc.setFontSize(8.5);
+    doc.setTextColor(71, 85, 105); // Slate-600
+    
+    let y = 39;
+    const col1 = 18;
+    const col2 = 115;
+    const col3 = 145;
+    const col4 = 172;
+    
+    // Labels Header (Upper line of the gray block)
+    doc.setFont('helvetica', 'bold');
+    doc.text(isEs ? 'PACIENTE' : 'PATIENT', col1, y);
+    doc.text(isEs ? 'SEXO' : 'SEX', col2, y);
+    doc.text(isEs ? 'EDAD' : 'AGE', col3, y);
+    doc.text(isEs ? 'INGRESO' : 'ENTRY', col4, y);
+    
+    y += 5;
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(15, 23, 42); // Slate-900
+    doc.text(`${report.header.patientName}`, col1, y);
     doc.setFont('helvetica', 'normal');
+    doc.text(`C.I: ${report.header.ci}`, col1, y + 4);
     
-    let y = 25;
-    const leftCol = 14;
-    const midCol = 90; // Ajustado
-    const rightCol = 150; // Ajustado
+    doc.text(report.header.sex, col2, y);
+    doc.text(`${report.header.age} ${isEs ? 'Años' : 'Years'}`, col3, y);
+    doc.text(report.header.entryDate, col4, y);
+
+    y = 53;
+    // Lower line inside block (Address and Phone only)
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(71, 85, 105);
+    doc.text(isEs ? 'DIRECCIÓN' : 'ADDRESS', col1, y);
+    doc.text(isEs ? 'TELÉFONO' : 'PHONE', col2, y);
     
-    // Fila 1
-    doc.setFont('helvetica', 'bold'); doc.text('Paciente:', leftCol, y);
-    doc.setFont('helvetica', 'normal'); doc.text(`${report.header.patientName}  CI: ${report.header.ci}`, leftCol + 16, y);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(15, 23, 42);
+    doc.text(report.header.address.toUpperCase(), col1 + 22, y);
+    doc.text(report.header.phone, col2 + 20, y);
 
-    doc.setFont('helvetica', 'bold'); doc.text('Sexo:', 115, y); // Ajuste manual de posición
-    doc.setFont('helvetica', 'normal'); doc.text(report.header.sex, 125, y);
-    
-    doc.setFont('helvetica', 'bold'); doc.text('Edad:', 145, y);
-    doc.setFont('helvetica', 'normal'); doc.text(`${report.header.age} Años`, 155, y);
-
-    doc.setFont('helvetica', 'bold'); doc.text('Ingreso:', rightCol + 15, y);
-    doc.setFont('helvetica', 'normal'); doc.text(report.header.entryDate, rightCol + 30, y);
-
-    y += 6;
-    // Fila 2
-    doc.setFont('helvetica', 'bold'); doc.text('Dirección:', leftCol, y);
-    doc.setFont('helvetica', 'normal'); doc.text(report.header.address, leftCol + 18, y);
-
-    doc.setFont('helvetica', 'bold'); doc.text('Teléfono:', 115, y);
-    doc.setFont('helvetica', 'normal'); doc.text(report.header.phone, 130, y);
-
-    doc.setFont('helvetica', 'bold'); doc.text('Hora:', rightCol + 15, y);
-    doc.setFont('helvetica', 'normal'); doc.text(report.header.entryTime, rightCol + 25, y);
-
-    y += 6;
-    // Fila 3
-    doc.setFont('helvetica', 'bold'); doc.text('Convenio:', leftCol, y);
-    const convenio = report.header.agreement || 'PARTICULAR';
-    doc.setFont('helvetica', 'normal'); doc.text(convenio, leftCol + 18, y);
-
-    doc.setFont('helvetica', 'bold'); doc.text('Imp:', rightCol + 15, y); // Impresión
-    doc.setFont('helvetica', 'normal'); doc.text(report.header.printDate, rightCol + 23, y);
-    
-    // Línea separadora final cabecera
-    y += 4;
-    doc.line(14, y, pageWidth - 14, y);
-
-    y += 10; // Espacio antes del contenido
+    y = 65;
 
     // --- SECCIONES ---
-    
     report.sections.forEach(section => {
-      // Título de Sección (Ej: HEMATOLOGIA / QUIMICA SANGUINEA)
-      // Color naranja/oro de la imagen
-      doc.setTextColor(234, 88, 12); // #ea580c (Orange-600 aprox)
-      doc.setFontSize(14);
-      doc.setFont('helvetica', 'bold');
-      doc.text(section.title.toUpperCase(), 14, y);
+      // Modern Section Title
+      doc.setFillColor(15, 23, 42); // Dark background
+      doc.roundedRect(14, y, 6, 6, 1, 1, 'F'); // Square accent
       
-      // Línea debajo del título
-      doc.setDrawColor(234, 88, 12);
-      doc.setLineWidth(1); // Más gruesa
-      doc.line(14, y + 2, 80, y + 2); // Subrayado parcial estilizado
-      doc.setDrawColor(0); // Reset color negro
-      doc.setTextColor(0); // Reset texto negro
+      doc.setTextColor(15, 23, 42); 
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text(section.title.toUpperCase(), 23, y + 5);
+      
+      doc.setDrawColor(14, 165, 233); // Medicus Blue line
+      doc.setLineWidth(1);
+      doc.line(23, y + 7, 60, y + 7); 
 
-      y += 5;
+      y += 12;
 
-      // Tabla de Resultados
       autoTable(doc, {
         startY: y,
-        head: [['Descripción del Examen', 'Resultado', 'Unidades', 'Valores de Referencia']],
+        head: [[
+          isEs ? 'ESTUDIO / PARÁMETRO' : 'STUDY / PARAMETER', 
+          isEs ? 'RESULTADO' : 'RESULT', 
+          isEs ? 'UNIDAD' : 'UNIT', 
+          isEs ? 'VALORES DE REFERENCIA' : 'REFERENCE RANGE'
+        ]],
         body: section.items.map(item => [
           item.description,
           item.result,
           item.units,
           item.referenceValues
         ]),
-        theme: 'plain', // Limpio, sin bandas de color por defecto para parecerse a la imagen
-        styles: {
-          fontSize: 10,
-          cellPadding: 3,
-          valign: 'middle',
-        },
+        theme: 'striped', // Modern look
         headStyles: {
-          fillColor: [255, 255, 255], // Fondo blanco encabezado
-          textColor: [0, 0, 0], // Texto negro
+          fillColor: [15, 23, 42], // Slate-900 header
+          textColor: [255, 255, 255],
+          fontSize: 8.5,
           fontStyle: 'bold',
-          lineWidth: { bottom: 1 }, // Solo línea abajo
-          lineColor: [0, 0, 0] // Línea negra
+          halign: 'center',
+          cellPadding: 3
+        },
+        styles: {
+          fontSize: 8.5,
+          cellPadding: 4,
+          valign: 'middle',
+          font: 'helvetica'
         },
         columnStyles: {
-          0: { cellWidth: 'auto', fontStyle: 'bold' }, // Descripción
-          1: { cellWidth: 30, halign: 'center', fontStyle: 'bold' }, // Resultado
-          2: { cellWidth: 30, halign: 'center' }, // Unidades
-          3: { cellWidth: 40, halign: 'center' }  // Ref
+          0: { cellWidth: 90, fontStyle: 'bold' },
+          1: { cellWidth: 30, halign: 'center', fontStyle: 'bold' },
+          2: { cellWidth: 30, halign: 'center' },
+          3: { cellWidth: 35, halign: 'center' }
         },
+        alternateRowStyles: {
+          fillColor: [248, 250, 252] // Slate-50 stripes
+        },
+        margin: { left: 14, right: 14 },
         didParseCell: (data) => {
-          // Detectar valores anormales y ponerlos en rojo (Columna Resultado index 1)
           if (data.section === 'body' && data.column.index === 1) {
             const rowItem = section.items[data.row.index];
             if (rowItem.isAbnormal) {
-              data.cell.styles.textColor = [220, 38, 38]; // Rojo
+              data.cell.styles.textColor = [220, 38, 38]; // Abnormal Red
+              data.cell.styles.fontStyle = 'bold';
             }
           }
-        },
-        margin: { left: 14, right: 14 }
+        }
       });
 
-      // Actualizar Y para la siguiente sección
       // @ts-ignore
-      y = doc.lastAutoTable.finalY + 10;
+      y = doc.lastAutoTable.finalY + 15;
     });
+
+    // Final Certification Footer
+    const footerY = doc.internal.pageSize.height - 40;
+    doc.setDrawColor(226, 232, 240);
+    doc.line( pageWidth / 2 - 30, footerY - 5, pageWidth / 2 + 30, footerY - 5);
+    doc.setFontSize(8);
+    doc.setTextColor(71, 85, 105);
+    doc.text(isEs ? 'VALIDADO POR SISTEMA' : 'SYSTEM VALIDATED', pageWidth / 2, footerY, { align: 'center' });
+    doc.text(branding.name.toUpperCase(), pageWidth / 2, footerY + 4, { align: 'center' });
 
     return doc;
   }
 
-  // Descargar el PDF
   generatePDF(report: LabReport) {
     const doc = this.createDoc(report);
-    const filename = `Resultados_${report.header.patientName.replace(/\s+/g, '_')}_${report.header.labOrder}.pdf`;
+    const filename = `Lab_${report.header.labOrder}_${report.header.patientName.replace(/\s+/g, '_')}.pdf`;
     doc.save(filename);
   }
 
-  // Abrir el PDF en nueva pestaña (Visualizar)
   viewPDF(report: LabReport) {
     const doc = this.createDoc(report);
     const blob = doc.output('blob');

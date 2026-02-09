@@ -7,6 +7,8 @@ import { HttpClient } from '@angular/common/http';
 import Swal from 'sweetalert2';
 
 import { LanguageService } from '../../services/language.service';
+import { ExportService } from '../../services/export.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-medical-history',
@@ -22,6 +24,7 @@ export class MedicalHistory implements OnInit {
   labs = signal<any[]>([]);
   
   showRecordModal = signal(false);
+  activeTab = signal<'consultations' | 'labs' | 'treatments'>('consultations');
   recordForm: FormGroup;
 
   patients = signal<any[]>([]);
@@ -31,7 +34,9 @@ export class MedicalHistory implements OnInit {
     private http: HttpClient,
     private fb: FormBuilder,
     private route: ActivatedRoute,
-    public langService: LanguageService
+    public langService: LanguageService,
+    private exportService: ExportService,
+    public authService: AuthService
   ) {
     this.recordForm = this.fb.group({
       diagnosis: ['', Validators.required],
@@ -275,5 +280,52 @@ export class MedicalHistory implements OnInit {
     printWindow.document.close();
     printWindow.focus();
     // setTimeout(() => printWindow.print(), 500); // Optional: auto print
+  }
+
+  exportHistory() {
+    if (this.records().length === 0) {
+      Swal.fire('Atención', 'No hay registros médicos para exportar', 'warning');
+      return;
+    }
+
+    const patientName = `${this.patient()?.User?.firstName} ${this.patient()?.User?.lastName}`;
+    const headers = ['Fecha', 'Médico', 'Diagnóstico', 'Tratamiento'];
+    const rows = this.records().map(r => [
+      new Date(r.createdAt).toLocaleDateString(),
+      `Dr. ${r.Doctor?.User?.firstName} ${r.Doctor?.User?.lastName}`,
+      r.diagnosis,
+      r.treatment || 'N/A'
+    ]);
+
+    Swal.fire({
+      title: 'Exportar Historia Médica',
+      text: 'Seleccione el formato de descarga',
+      icon: 'question',
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: '<i class="bi bi-file-pdf"></i> PDF',
+      denyButtonText: '<i class="bi bi-file-excel"></i> Excel',
+      cancelButtonText: '<i class="bi bi-file-text"></i> CSV',
+      confirmButtonColor: '#ef4444',
+      denyButtonColor: '#22c55e',
+      cancelButtonColor: '#64748b',
+    }).then((result) => {
+      const filename = `Historia_${patientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}`;
+      const title = `Historia Médica: ${patientName}`;
+      const user = this.authService.currentUser();
+      const branding = {
+        name: user?.businessName || (user?.accountType === 'PROFESSIONAL' ? `${user.firstName} ${user.lastName}` : 'Medicus Platform'),
+        professional: user ? `${user.firstName} ${user.lastName}` : undefined,
+        tagline: this.langService.translate('medical_history.subtitle')
+      };
+      
+      if (result.isConfirmed) {
+        this.exportService.exportToPdf(filename, title, headers, rows, branding);
+      } else if (result.isDenied) {
+        this.exportService.exportToExcel(filename, headers, rows, branding);
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        this.exportService.exportToCsv(filename, headers, rows);
+      }
+    });
   }
 }

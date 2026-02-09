@@ -17,6 +17,7 @@ app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/uploads', express.static('uploads'));
 
 // Test DB Connection
 sequelize.authenticate()
@@ -37,6 +38,7 @@ app.use('/api/payments', require('./routes/payment.routes'));
 app.use('/api/stats', require('./routes/stats.routes'));
 app.use('/api/specialties', require('./routes/specialty.routes'));
 app.use('/api/video-consultations', require('./routes/videoConsultation.routes'));
+app.use('/api/bulk', require('./routes/bulk.routes'));
 
 // Basic route
 app.get('/', (req, res) => {

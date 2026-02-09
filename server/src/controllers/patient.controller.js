@@ -9,6 +9,17 @@ exports.getPatients = async (req, res) => {
   }
 };
 
+exports.getPatientByUserId = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const patient = await Patient.findOne({ where: { userId }, include: [User] });
+    if (!patient) return res.status(404).json({ message: 'Patient profile not found' });
+    res.json(patient);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 exports.deletePatient = async (req, res) => {
   try {
     const { id } = req.params;

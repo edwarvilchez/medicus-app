@@ -31,9 +31,21 @@ const User = sequelize.define('User', {
   lastName: {
     type: DataTypes.STRING
   },
+  businessName: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  accountType: {
+    type: DataTypes.ENUM('PATIENT', 'PROFESSIONAL', 'CLINIC', 'HOSPITAL'),
+    defaultValue: 'PATIENT'
+  },
   isActive: {
     type: DataTypes.BOOLEAN,
     defaultValue: true
+  },
+  gender: {
+    type: DataTypes.ENUM('Male', 'Female', 'Other'),
+    allowNull: true
   },
   resetToken: {
     type: DataTypes.STRING,

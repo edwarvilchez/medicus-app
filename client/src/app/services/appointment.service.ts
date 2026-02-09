@@ -21,4 +21,8 @@ export class AppointmentService {
   updateStatus(id: string, status: string): Observable<any> {
     return this.http.patch<any>(`${this.apiUrl}/${id}/status`, { status });
   }
+
+  getPatientByUserId(userId: string): Observable<any> {
+    return this.http.get<any>(`http://localhost:5000/api/patients/user/${userId}`);
+  }
 }

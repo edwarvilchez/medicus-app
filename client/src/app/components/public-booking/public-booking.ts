@@ -1,9 +1,10 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import Swal from 'sweetalert2';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-public-booking',
@@ -12,12 +13,14 @@ import Swal from 'sweetalert2';
   templateUrl: './public-booking.html',
   styleUrl: './public-booking.css',
 })
-export class PublicBooking implements OnInit {
+export class PublicBooking implements OnInit, OnDestroy {
   bookingForm: FormGroup;
   doctors = signal<any[]>([]);
   timeSlots: string[] = [];
   loading = signal(false);
   step = signal(1);
+  private formSub?: Subscription;
+  private readonly STORAGE_KEY = 'medicus_booking_draft';
 
   constructor(
     private fb: FormBuilder,
@@ -45,6 +48,29 @@ export class PublicBooking implements OnInit {
 
   ngOnInit() {
     this.loadDoctors();
+    this.restoreDraft();
+    
+    this.formSub = this.bookingForm.valueChanges.subscribe(values => {
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(values));
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.formSub) {
+      this.formSub.unsubscribe();
+    }
+  }
+
+  restoreDraft() {
+    const saved = localStorage.getItem(this.STORAGE_KEY);
+    if (saved) {
+      try {
+        const values = JSON.parse(saved);
+        this.bookingForm.patchValue(values);
+      } catch (e) {
+        console.error('Error restoring booking draft:', e);
+      }
+    }
   }
 
   loadDoctors() {
@@ -157,6 +183,7 @@ export class PublicBooking implements OnInit {
               confirmButtonText: 'Entendido',
               confirmButtonColor: '#0ea5e9'
             }).then(() => {
+              localStorage.removeItem(this.STORAGE_KEY);
               this.bookingForm.reset();
               this.step.set(1);
             });

@@ -5,6 +5,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { LanguageService } from '../../services/language.service';
+import { ExportService } from '../../services/export.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-patients',
@@ -38,7 +40,9 @@ export class Patients implements OnInit {
   constructor(
     private http: HttpClient,
     private router: Router,
-    public langService: LanguageService
+    public langService: LanguageService,
+    private exportService: ExportService,
+    public authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -204,6 +208,53 @@ export class Patients implements OnInit {
               });
             }
           });
+      }
+    });
+  }
+
+  exportReport() {
+    if (this.filteredPatients().length === 0) {
+      Swal.fire('Atención', 'No hay datos para exportar', 'warning');
+      return;
+    }
+
+    const headers = ['Paciente', 'Email', 'Documento ID', 'Género', 'Teléfono'];
+    const rows = this.filteredPatients().map(p => [
+      `${p.User.firstName} ${p.User.lastName}`,
+      p.User.email,
+      p.documentId,
+      p.gender,
+      p.phone
+    ]);
+
+    Swal.fire({
+      title: 'Exportar Listado de Pacientes',
+      text: 'Seleccione el formato de descarga',
+      icon: 'question',
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: '<i class="bi bi-file-pdf"></i> PDF',
+      denyButtonText: '<i class="bi bi-file-excel"></i> Excel',
+      cancelButtonText: '<i class="bi bi-file-text"></i> CSV',
+      confirmButtonColor: '#ef4444',
+      denyButtonColor: '#22c55e',
+      cancelButtonColor: '#64748b',
+    }).then((result) => {
+      const filename = `Listado_Pacientes_Medicus_${new Date().toISOString().split('T')[0]}`;
+      const title = 'Listado de Pacientes - Medicus';
+      const user = this.authService.currentUser();
+      const branding = {
+        name: user?.businessName || (user?.accountType === 'PROFESSIONAL' ? `${user.firstName} ${user.lastName}` : 'Medicus Platform'),
+        professional: user ? `${user.firstName} ${user.lastName}` : undefined,
+        tagline: this.langService.translate('patients_list.subtitle')
+      };
+      
+      if (result.isConfirmed) {
+        this.exportService.exportToPdf(filename, title, headers, rows, branding);
+      } else if (result.isDenied) {
+        this.exportService.exportToExcel(filename, headers, rows, branding);
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        this.exportService.exportToCsv(filename, headers, rows);
       }
     });
   }

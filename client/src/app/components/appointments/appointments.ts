@@ -7,6 +7,8 @@ import { VideoConsultationService } from '../../services/video-consultation.serv
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import Swal from 'sweetalert2';
 import { LanguageService } from '../../services/language.service';
+import { ExportService } from '../../services/export.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-appointments',
@@ -27,6 +29,11 @@ export class Appointments implements OnInit {
   showModal = signal(false);
   whatsappSending = signal(false);
   timeSlots: string[] = [];
+  isPatient = signal(false);
+  currentPatient = signal<any>(null);
+  modalSpecialty = signal<string | number>('all');
+
+  selectedDate = signal<string>(new Date().toISOString().split('T')[0]);
 
   filteredAppointments = computed(() => {
     const specialtyId = this.selectedSpecialty();
@@ -41,28 +48,74 @@ export class Appointments implements OnInit {
     }
 
     // 2. Filter by Date
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // Helper to get local YYYY-MM-DD string from a Date object or ISO string
+    const getLocalDateString = (dateInput: string | Date): string => {
+      const d = new Date(dateInput);
+      const year = d.getFullYear();
+      const month = (d.getMonth() + 1).toString().padStart(2, '0');
+      const day = d.getDate().toString().padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+
+    const targetDateStr = this.selectedDate(); // "YYYY-MM-DD" from input
+    // Only parse if we need week/month logic
+    const [y, m, d] = targetDateStr.split('-').map(Number);
+    const targetDate = new Date(y, m - 1, d); // Local midnight object for range calcs
 
     result = result.filter(appt => {
-      const apptDate = new Date(appt.date);
-      apptDate.setHours(0, 0, 0, 0);
+      if (!appt.date) return false;
+      const apptDateStr = getLocalDateString(appt.date);
 
       if (filter === 'day') {
-        return apptDate.getTime() === today.getTime();
+        // Direct string match is safest for same local day
+        // Check if apptDateStr matches our target YYYY-MM-DD
+        // However, getLocalDateString uses browser local time for 'appt.date' (ISO).
+        // If appt.date is 2026-02-10T14:00:00 (local), getLocalDateString -> 2026-02-10.
+        // If targetDateStr is 2026-02-10. Match.
+        return apptDateStr === targetDateStr;
       } else if (filter === 'week') {
-        const startOfWeek = new Date(today);
-        startOfWeek.setDate(today.getDate() - today.getDay()); // Sunday
+        // Range Check
+        const apptDate = new Date(appt.date);
+        const apptLocal = new Date(apptDate.getFullYear(), apptDate.getMonth(), apptDate.getDate());
+        
+        const startOfWeek = new Date(targetDate);
+        startOfWeek.setDate(targetDate.getDate() - targetDate.getDay()); // Sunday
+        startOfWeek.setHours(0,0,0,0);
+        
         const endOfWeek = new Date(startOfWeek);
         endOfWeek.setDate(startOfWeek.getDate() + 6); // Saturday
-        return apptDate >= startOfWeek && apptDate <= endOfWeek;
+        endOfWeek.setHours(23,59,59,999);
+
+        return apptLocal >= startOfWeek && apptLocal <= endOfWeek;
       } else if (filter === 'month') {
-        return apptDate.getMonth() === today.getMonth() && apptDate.getFullYear() === today.getFullYear();
+        const apptY = parseInt(apptDateStr.split('-')[0]);
+        const apptM = parseInt(apptDateStr.split('-')[1]);
+        return apptY === y && apptM === m;
       }
       return true;
     });
 
     return result;
+  });
+
+  filteredDoctors = computed(() => {
+    const specialtyId = this.selectedSpecialty();
+    if (specialtyId === 'all') {
+      return this.doctors();
+    }
+    return this.doctors().filter(d => 
+      d.specialtyId == specialtyId || d.Specialty?.id == specialtyId
+    );
+  });
+
+  filteredDoctorsModal = computed(() => {
+    const specialtyId = this.modalSpecialty();
+    if (specialtyId === 'all') {
+      return this.doctors();
+    }
+    return this.doctors().filter(d => 
+      d.specialtyId == specialtyId || d.Specialty?.id == specialtyId
+    );
   });
 
 
@@ -73,14 +126,20 @@ export class Appointments implements OnInit {
     private fb: FormBuilder,
     public langService: LanguageService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private exportService: ExportService,
+    public authService: AuthService
   ) {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    this.isPatient.set(user.role === 'PATIENT' || user.roleId === 3);
+
     this.appointmentForm = this.fb.group({
       patientId: ['', Validators.required],
       doctorId: ['', Validators.required],
       appointmentDate: ['', Validators.required],
       appointmentTime: ['', Validators.required],
       reason: ['', Validators.required],
+      type: ['In-Person', Validators.required],
       notes: ['']
     });
     
@@ -90,6 +149,20 @@ export class Appointments implements OnInit {
   ngOnInit() {
     this.loadAppointments();
     this.loadDropdownData();
+
+    if (this.isPatient()) {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (user && user.id) {
+          this.appointmentService.getPatientByUserId(user.id).subscribe({
+            next: (patient) => {
+              this.currentPatient.set(patient);
+              this.appointmentForm.patchValue({ patientId: patient.id });
+              this.appointmentForm.get('patientId')?.disable(); // Disable patient selection for patients
+            },
+            error: (err) => console.error('Error loading patient profile:', err)
+          });
+        }
+    }
 
     // Check for doctorId in query params
     this.route.queryParams.subscribe(params => {
@@ -120,9 +193,13 @@ export class Appointments implements OnInit {
   }
 
   loadAppointments() {
+    console.log('[DEBUG] loadAppointments called');
     this.appointmentService.getAppointments().subscribe({
-      next: (data) => this.appointments.set(data),
-      error: (err) => console.error('Error loading appointments:', err)
+      next: (data) => {
+        console.log('[DEBUG] appointments received:', data);
+        this.appointments.set(data);
+      },
+      error: (err) => console.error('[ERROR] loading appointments:', err)
     });
   }
   
@@ -131,9 +208,18 @@ export class Appointments implements OnInit {
   }
 
   loadDropdownData() {
-    this.http.get<any[]>('http://localhost:5000/api/patients', { headers: this.getHeaders() }).subscribe(data => this.patients.set(data));
-    this.http.get<any[]>('http://localhost:5000/api/doctors', { headers: this.getHeaders() }).subscribe(data => this.doctors.set(data));
-    this.http.get<any[]>('http://localhost:5000/api/specialties', { headers: this.getHeaders() }).subscribe(data => this.specialties.set(data));
+    if (!this.isPatient()) {
+      this.http.get<any[]>('http://localhost:5000/api/patients', { headers: this.getHeaders() }).subscribe(data => {
+        this.patients.set(data);
+      });
+    }
+    
+    this.http.get<any[]>('http://localhost:5000/api/doctors', { headers: this.getHeaders() }).subscribe(data => {
+      this.doctors.set(data);
+    });
+    this.http.get<any[]>('http://localhost:5000/api/specialties', { headers: this.getHeaders() }).subscribe(data => {
+      this.specialties.set(data);
+    });
   }
 
   setSpecialtyFilter(id: string | number) {
@@ -144,30 +230,30 @@ export class Appointments implements OnInit {
     this.dateFilter.set(filter);
   }
 
+  onDateSelect(date: string) {
+    this.selectedDate.set(date);
+  }
+
   openNewAppointmentModal() {
+    this.modalSpecialty.set('all');
     this.showModal.set(true);
   }
 
   closeModal() {
+    this.modalSpecialty.set('all');
     this.showModal.set(false);
     this.appointmentForm.reset();
   }
 
   getGoogleCalendarLink(formData: any, patientName: string, doctorName: string) {
-    // Logic from Rootes project adapted
-    // formData.date is "YYYY-MM-DDTHH:mm"
     const [datePart, timePart] = formData.date.split('T');
     const startTime = datePart.replace(/-/g, '') + 'T' + timePart.replace(/:/g, '') + '00Z';
-    
-    // Add 30 mins for end time
     const dateObj = new Date(formData.date);
     const endDateObj = new Date(dateObj.getTime() + 30 * 60000);
-    const endDateISO = endDateObj.toISOString().split('.')[0]; // Remove ms
+    const endDateISO = endDateObj.toISOString().split('.')[0];
     const endTime = endDateISO.replace(/-/g, '').replace(/:/g, '') + 'Z';
-
     const details = `Cita con Dr. ${doctorName}\nPaciente: ${patientName}\nMotivo: ${formData.reason}`;
     const location = 'Clínica Medicus';
-
     return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent('Cita Médica: ' + formData.reason)}&details=${encodeURIComponent(details)}&location=${encodeURIComponent(location)}&dates=${startTime}/${endTime}&add=edwarvilchez1977@gmail.com`;
   }
 
@@ -180,35 +266,34 @@ export class Appointments implements OnInit {
       `*Motivo:* ${formData.reason}\n\n` +
       `Te esperamos. Si necesitas cancelar o reagendar, contáctanos al 0424-1599101.`
     );
-    // Send to patient's WhatsApp number
     const cleanPhone = phone.replace(/\D/g, '');
     return `https://wa.me/${cleanPhone}?text=${message}`;
   }
 
   submitAppointment() {
-    if (this.appointmentForm.valid) {
+    if (this.appointmentForm.valid || (this.isPatient() && this.appointmentForm.get('doctorId')?.valid)) {
       this.whatsappSending.set(true);
-      const formVal = this.appointmentForm.value;
+      // We need to use getRawValue() because patientId might be disabled
+      const formVal = this.appointmentForm.getRawValue();
 
-      // Combine date and time into ISO format
       const combinedDateTime = `${formVal.appointmentDate}T${formVal.appointmentTime}:00`;
       const appointmentData = {
         patientId: formVal.patientId,
         doctorId: formVal.doctorId,
         date: combinedDateTime,
         reason: formVal.reason,
+        type: formVal.type,
         notes: formVal.notes
       };
 
       // Lookup names for the links
-      const patient = this.patients().find(p => p.id === formVal.patientId);
+      const patient = this.isPatient() ? this.currentPatient() : this.patients().find(p => p.id === formVal.patientId);
       const doctor = this.doctors().find(d => d.id === formVal.doctorId);
       
       const patientName = patient ? `${patient.User.firstName} ${patient.User.lastName}` : 'Paciente';
-      const patientPhone = patient ? patient.phone : '';
+      const patientPhone = patient ? (patient.phone || patient.User?.phone) : '';
       const doctorName = doctor ? `${doctor.User.firstName} ${doctor.User.lastName}` : 'Doctor';
 
-      // Create formData object for helper methods
       const formDataForLinks = {
         ...appointmentData,
         date: combinedDateTime
@@ -224,10 +309,10 @@ export class Appointments implements OnInit {
           this.whatsappSending.set(false);
           
           Swal.fire({
-            title: '¡Cita Agendada!',
+            title: this.langService.translate('appointments_list.success'),
             html: `
-              <p>La cita ha sido registrada exitosamente.</p>
-              <p class="text-muted small">Se ha enviado una notificación automática, pero puedes usar estos accesos directos:</p>
+              <p>${this.langService.translate('appointments_list.success_msg')}</p>
+              <p class="text-muted small">${this.langService.translate('appointments_list.success_info')}</p>
               <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
                 <a href="${waLink}" target="_blank" style="background-color: #25D366; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold; display: flex; align-items: center; gap: 5px;">
                   <i class="bi bi-whatsapp"></i> WhatsApp
@@ -246,8 +331,8 @@ export class Appointments implements OnInit {
           console.error('Error creating appointment:', err);
           this.whatsappSending.set(false);
           Swal.fire({
-            title: 'Error',
-            text: 'No se pudo agendar la cita. Por favor, intenta de nuevo.',
+            title: this.langService.translate('common.error'),
+            text: this.langService.translate('appointments_list.error_create'),
             icon: 'error',
             confirmButtonColor: '#ef4444'
           });
@@ -280,8 +365,8 @@ export class Appointments implements OnInit {
 
       // Mostrar loading
       Swal.fire({
-        title: 'Iniciando videoconsulta...',
-        text: 'Por favor espera',
+        title: this.langService.translate('video_history.starting'),
+        text: this.langService.translate('video_history.wait'),
         allowOutsideClick: false,
         didOpen: () => {
           Swal.showLoading();
@@ -289,26 +374,36 @@ export class Appointments implements OnInit {
       });
 
       // Crear o obtener videoconsulta
-      this.videoConsultationService.createVideoConsultation(
-        appointment.id
-      ).subscribe({
-        next: (response) => {
-          Swal.close();
+    this.videoConsultationService.createVideoConsultation(
+      appointment.id
+    ).subscribe({
+      next: (response: any) => {
+        Swal.close();
+        
+        if (response && response.videoConsultation && response.videoConsultation.id) {
           const consultationId = response.videoConsultation.id;
-          
           // Navegar al componente de videollamada
           this.router.navigate(['/video-call', consultationId]);
-        },
-        error: (err) => {
-          console.error('Error creando videoconsulta:', err);
+        } else {
+          console.error('Respuesta de videoconsulta inválida:', response);
           Swal.fire({
             icon: 'error',
-            title: 'Error',
-            text: 'No se pudo iniciar la videoconsulta. Intenta de nuevo.',
+            title: 'Error de Datos',
+            text: 'No se pudo obtener el ID de la videoconsulta correctamente.',
             confirmButtonColor: '#ef4444'
           });
         }
-      });
+      },
+      error: (err) => {
+        console.error('Error creando videoconsulta:', err);
+        Swal.fire({
+          icon: 'error',
+          title: this.langService.translate('common.error'),
+          text: this.langService.translate('video_history.error_init'),
+          confirmButtonColor: '#ef4444'
+        });
+      }
+    });
     } catch (error) {
       console.error('Error:', error);
     }
@@ -329,8 +424,55 @@ export class Appointments implements OnInit {
     // Permitir hasta 2 horas después de la hora programada
     const twoHoursAfter = new Date(appointmentDate.getTime() + 2 * 60 * 60 * 1000);
     
-    const isTimeValid = now >= oneHourBefore;
-    
-    return (isDoctor || isPatient) && isConfirmed && isTimeValid;
+    return (isDoctor || isPatient) && isConfirmed;
+  }
+
+  exportReport() {
+    if (this.filteredAppointments().length === 0) {
+      Swal.fire('Atención', 'No hay datos para exportar', 'warning');
+      return;
+    }
+
+    const headers = ['Fecha', 'Paciente', 'Doctor', 'Especialidad', 'Motivo', 'Tipo', 'Estado'];
+    const rows = this.filteredAppointments().map(a => [
+      new Date(a.date).toLocaleDateString(),
+      `${a.Patient?.User?.firstName} ${a.Patient?.User?.lastName}`,
+      `Dr. ${a.Doctor?.User?.firstName} ${a.Doctor?.User?.lastName}`,
+      a.Doctor?.Specialty?.name || 'N/A',
+      a.reason,
+      a.type,
+      a.status
+    ]);
+
+    Swal.fire({
+      title: 'Exportar Listado de Citas',
+      text: 'Seleccione el formato de descarga',
+      icon: 'question',
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: '<i class="bi bi-file-pdf"></i> PDF',
+      denyButtonText: '<i class="bi bi-file-excel"></i> Excel',
+      cancelButtonText: '<i class="bi bi-file-text"></i> CSV',
+      confirmButtonColor: '#ef4444',
+      denyButtonColor: '#22c55e',
+      cancelButtonColor: '#64748b',
+    }).then((result) => {
+      const filename = `Listado_Citas_Medicus_${new Date().toISOString().split('T')[0]}`;
+      const title = 'Listado de Citas Médicas - Medicus';
+      const user = this.authService.currentUser();
+      const branding = {
+        name: user?.businessName || (user?.accountType === 'PROFESSIONAL' ? `${user.firstName} ${user.lastName}` : 'Medicus Platform'),
+        professional: user ? `${user.firstName} ${user.lastName}` : undefined,
+        tagline: this.langService.translate('appointments_list.subtitle')
+      };
+      
+      if (result.isConfirmed) {
+        this.exportService.exportToPdf(filename, title, headers, rows, branding);
+      } else if (result.isDenied) {
+        this.exportService.exportToExcel(filename, headers, rows, branding);
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        this.exportService.exportToCsv(filename, headers, rows);
+      }
+    });
   }
 }

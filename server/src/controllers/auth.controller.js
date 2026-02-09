@@ -1,11 +1,33 @@
-const { User, Role, Patient } = require('../models');
+const { User, Role, Patient, sequelize } = require('../models');
 const jwt = require('jsonwebtoken');
+const { Op } = require('sequelize');
 
 exports.register = async (req, res) => {
+  const t = await sequelize.transaction();
   try {
-    const { username, email, password, firstName, lastName, roleName, patientData } = req.body;
+    const { username, email, password, firstName, lastName, role: bodyRole, roleName, patientData, businessName, accountType, licenseNumber, address } = req.body;
+    let finalRoleName = bodyRole || roleName || 'PATIENT';
+    const finalAccountType = accountType || 'PATIENT';
+
+    // Map account types to internal roles if necessary
+    if (finalAccountType === 'PROFESSIONAL') finalRoleName = 'DOCTOR';
+    if (finalAccountType === 'CLINIC' || finalAccountType === 'HOSPITAL') finalRoleName = 'ADMINISTRATIVE';
     
-    let role = await Role.findOne({ where: { name: roleName || 'PATIENT' } });
+    // Check if user already exists to give a cleaner error before database constraint
+    const existingUser = await User.findOne({ where: { [Op.or]: [{ email }, { username }] } });
+    if (existingUser) {
+      const field = existingUser.email === email ? 'email' : 'username';
+      await t.rollback();
+      return res.status(400).json({ 
+        message: field === 'email' ? 'Este correo electrónico ya está registrado.' : 'Este nombre de usuario ya está en uso.' 
+      });
+    }
+
+    let role = await Role.findOne({ where: { name: finalRoleName } });
+    if (!role) {
+      await t.rollback();
+      return res.status(400).json({ message: 'El rol especificado no es válido.' });
+    }
     
     const user = await User.create({
       username,
@@ -13,11 +35,21 @@ exports.register = async (req, res) => {
       password,
       firstName,
       lastName,
-      roleId: role.id
-    });
+      businessName,
+      accountType: finalAccountType,
+      roleId: role.id,
+      gender: patientData?.gender || req.body.gender // Use patient gender or direct gender
+    }, { transaction: t });
 
     // If registering as a patient, create patient record
     if (role.name === 'PATIENT' && patientData) {
+      // Check if documentId already exists
+      const existingPatient = await Patient.findOne({ where: { documentId: patientData.documentId } });
+      if (existingPatient) {
+        await t.rollback();
+        return res.status(400).json({ message: 'Esta cédula/documento ya está registrado en el sistema.' });
+      }
+
       await Patient.create({
         userId: user.id,
         documentId: patientData.documentId,
@@ -27,13 +59,39 @@ exports.register = async (req, res) => {
         address: patientData.address,
         bloodType: patientData.bloodType,
         allergies: patientData.allergies
+      }, { transaction: t });
+    }
+
+    // Role-specific extensions
+    if (finalAccountType === 'PROFESSIONAL' || finalRoleName === 'DOCTOR') {
+      const Doctor = require('../models/Doctor');
+      await Doctor.create({
+        userId: user.id,
+        licenseNumber: licenseNumber || 'TEMP-' + Date.now(),
+        address: address,
+        phone: req.body.phone
+      }, { transaction: t });
+    }
+
+    await t.commit();
+
+    const token = jwt.sign({ id: user.id, role: role.name }, process.env.JWT_SECRET, { expiresIn: '8h' });
+    res.status(201).json({ 
+      message: 'Cuenta creada con éxito',
+      token, 
+      user: { id: user.id, username, email, firstName, lastName, businessName, accountType: user.accountType, role: role.name, gender: user.gender } 
+    });
+  } catch (error) {
+    await t.rollback();
+    console.error('Registration Error:', error);
+    
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      return res.status(400).json({ 
+        message: 'Error de duplicación: ' + error.errors[0].message 
       });
     }
 
-    const token = jwt.sign({ id: user.id, role: role.name }, process.env.JWT_SECRET, { expiresIn: '8h' });
-    res.status(201).json({ token, user: { id: user.id, username, email, firstName, lastName, role: role.name } });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: 'No se pudo completar el registro. Error interno del servidor.' });
   }
 };
 
@@ -47,7 +105,17 @@ exports.login = async (req, res) => {
     }
 
     const token = jwt.sign({ id: user.id, role: user.Role.name }, process.env.JWT_SECRET, { expiresIn: '8h' });
-    res.json({ token, user: { id: user.id, username: user.username, email, firstName: user.firstName, lastName: user.lastName, role: user.Role.name } });
+    res.json({ token, user: { 
+      id: user.id, 
+      username: user.username, 
+      email, 
+      firstName: user.firstName, 
+      lastName: user.lastName, 
+      businessName: user.businessName,
+      accountType: user.accountType,
+      role: user.Role.name, 
+      gender: user.gender 
+    } });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

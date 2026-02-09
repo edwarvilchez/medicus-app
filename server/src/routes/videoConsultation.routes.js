@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const videoConsultationController = require('../controllers/videoConsultation.controller');
 const authMiddleware = require('../middlewares/auth.middleware');
+const roleMiddleware = require('../middlewares/role.middleware');
 
 console.log('📦 Loading VideoConsultation Controller...');
 console.log('📦 Controller Create Function:', videoConsultationController.createVideoConsultation ? 'Found' : 'MISSING');
@@ -10,8 +11,9 @@ if (!videoConsultationController.createVideoConsultation) {
   console.error('❌ FATAL: createVideoConsultation is not exported from the controller!');
 }
 
-// Todas las rutas requieren autenticación
+// Todas las rutas requieren autenticación y roles específicos (NURSE excluido por diseño clínico)
 router.use(authMiddleware);
+router.use(roleMiddleware(['SUPERADMIN', 'ADMINISTRATIVE', 'DOCTOR', 'PATIENT']));
 
 // Crear videoconsulta
 router.post('/', videoConsultationController.createVideoConsultation);

@@ -2,6 +2,7 @@ import { Component, OnInit, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { StatsService } from '../../services/stats.service';
+import { ExportService } from '../../services/export.service';
 import Swal from 'sweetalert2';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData, ChartType, Chart, registerables } from 'chart.js';
@@ -28,7 +29,15 @@ export class Dashboard implements OnInit {
     monthlyIncome: 0,
     pendingAppointments: 0,
     upcomingAppointments: [],
-    activityData: []
+    activityData: [],
+    inPersonCount: 0,
+    videoCount: 0,
+    specialtyStats: [],
+    incomeDetails: {
+      day: { USD: 0, Bs: 0 },
+      week: { USD: 0, Bs: 0 },
+      month: { USD: 0, Bs: 0 }
+    }
   });
 
   // Configuración del Gráfico
@@ -71,21 +80,58 @@ export class Dashboard implements OnInit {
     ]
   };
 
+  // Configuración del Gráfico de Rosca (Especialidades)
+  public pieChartOptions: any = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { 
+        display: true, 
+        position: 'bottom',
+        labels: {
+          boxWidth: 8,
+          font: { size: 9 },
+          padding: 8
+        }
+      },
+      tooltip: {
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        titleColor: '#1e293b',
+        bodyColor: '#475569',
+        borderColor: '#e2e8f0',
+        borderWidth: 1
+      }
+    },
+    cutout: '70%'
+  };
+  public pieChartType: ChartType = 'doughnut';
+  public pieChartData: ChartData<'doughnut'> = {
+    labels: [],
+    datasets: [{ data: [], backgroundColor: [] }]
+  };
+
   constructor(
     private statsService: StatsService,
+    private exportService: ExportService,
     public authService: AuthService,
     public langService: LanguageService,
     private router: Router
   ) {
-    // Reaccionar cuando cambian los stats para actualizar el gráfico
+    // Reaccionar cuando cambian los stats para actualizar los gráficos
     effect(() => {
-      const data = this.stats().activityData;
-      // Re-trigger cuando cambie el idioma también
+      const stats = this.stats();
       const locale = this.langService.locale(); 
-      if (data && data.length > 0) {
-        this.updateChartData(data);
+      
+      // Update Bar Chart
+      if (stats.activityData && stats.activityData.length > 0) {
+        this.updateChartData(stats.activityData);
       } else {
         this.updateChartData([]);
+      }
+
+      // Update Pie Chart
+      if (stats.specialtyStats && stats.specialtyStats.length > 0) {
+        this.updatePieChartData(stats.specialtyStats);
       }
     });
   }
@@ -171,10 +217,35 @@ export class Dashboard implements OnInit {
     };
   }
 
+  updatePieChartData(specialtyStats: any[]) {
+    // Only show specialties with active appointments (pending or completed)
+    const activeStats = specialtyStats.filter(s => (s.pending + s.completed) > 0);
+    
+    this.pieChartData = {
+      labels: activeStats.map(s => s.name),
+      datasets: [{
+        data: activeStats.map(s => s.pending + s.completed),
+        backgroundColor: [
+          '#0ea5e9', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', 
+          '#ec4899', '#6366f1', '#14b8a6', '#f97316', '#84cc16'
+        ],
+        hoverOffset: 4,
+        borderWidth: 0
+      }]
+    };
+  }
+
   formatCurrency(amount: number): string {
     return new Intl.NumberFormat('es-VE', {
       style: 'currency',
       currency: 'USD'
+    }).format(amount);
+  }
+
+  formatBs(amount: number): string {
+    return new Intl.NumberFormat('es-VE', {
+      style: 'currency',
+      currency: 'VES'
     }).format(amount);
   }
 
@@ -188,19 +259,55 @@ export class Dashboard implements OnInit {
   }
 
   downloadDailyReport() {
-    Swal.fire({
-      title: 'Generando Reporte',
-      text: 'Preparando reporte diario de actividades...',
-      icon: 'info',
-      showConfirmButton: false,
-      timer: 1500
-    }).then(() => {
-      Swal.fire({
-        title: '¡Reporte Generado!',
-        text: 'El reporte diario se ha descargado exitosamente.',
-        icon: 'success',
-        confirmButtonColor: '#0ea5e9'
+    const s = this.stats();
+    const headers = ['Estadística', 'Valor'];
+    const rows = [
+      ['Citas Hoy', s.appointmentsToday],
+      ['Pacientes Totales', s.totalPatients],
+      ['Presenciales (Mes)', s.inPersonCount],
+      ['Videoconsultas (Mes)', s.videoCount],
+      ['Ingresos USD (Mes)', s.incomeDetails?.month?.USD || 0],
+      ['Ingresos Bs (Mes)', s.incomeDetails?.month?.Bs || 0],
+    ];
+
+    if (s.specialtyStats && s.specialtyStats.length > 0) {
+      rows.push(['', '']);
+      rows.push(['Rendimiento por Especialidad', '']);
+      s.specialtyStats.forEach((ext: any) => {
+        rows.push([ext.name, `Pend: ${ext.pending} / Atend: ${ext.completed}`]);
       });
+    }
+
+    Swal.fire({
+      title: 'Exportar Reporte',
+      text: 'Seleccione el formato de descarga',
+      icon: 'question',
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: '<i class="bi bi-file-pdf"></i> PDF',
+      denyButtonText: '<i class="bi bi-file-excel"></i> Excel',
+      cancelButtonText: '<i class="bi bi-file-text"></i> CSV',
+      confirmButtonColor: '#ef4444',
+      denyButtonColor: '#22c55e',
+      cancelButtonColor: '#64748b',
+    }).then((result) => {
+      const filename = `Reporte_Diario_${new Date().toISOString().split('T')[0]}`;
+      const title = 'Reporte de Actividad - Medicus';
+      const user = this.authService.currentUser();
+      
+      const branding = {
+        name: user?.businessName || (user?.accountType === 'PROFESSIONAL' ? `${user.firstName} ${user.lastName}` : 'Medicus Platform'),
+        professional: user ? `${user.firstName} ${user.lastName}` : undefined,
+        tagline: user?.businessName ? this.langService.translate('landing.description').substring(0, 30) + '...' : 'Gestión Clínica Profesional'
+      };
+      
+      if (result.isConfirmed) {
+        this.exportService.exportToPdf(filename, title, headers, rows, branding);
+      } else if (result.isDenied) {
+        this.exportService.exportToExcel(filename, headers, rows, branding);
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        this.exportService.exportToCsv(filename, headers, rows);
+      }
     });
   }
 
@@ -215,5 +322,34 @@ export class Dashboard implements OnInit {
         timer: 1000
       });
     }, 100);
+  }
+  getUserTitle(): string {
+    const user = this.authService.currentUser();
+    if (!user) return '';
+
+    const role = user.role?.toUpperCase();
+    const gender = user.gender;
+    const lang = this.langService.locale();
+
+    if (role === 'DOCTOR') {
+      if (lang.startsWith('en')) return 'Dr.';
+      // Spanish
+      if (gender === 'Male') return 'Dr.';
+      if (gender === 'Female') return 'Dra.';
+      return 'Dr./Dra.';
+    }
+
+    // Other roles
+    if (lang.startsWith('en')) {
+        if (gender === 'Male') return 'Mr.';
+        if (gender === 'Female') return 'Ms.';
+        return '';
+    }
+
+    // Spanish
+    if (gender === 'Male') return 'Sr.';
+    if (gender === 'Female') return 'Sra.';
+
+    return '';
   }
 }
