@@ -44,3 +44,22 @@ Aplicación full-stack para gestión clínica: frontend en Angular (v21) y backe
 - Añadir pruebas unitarias y de integración (Vitest/Jest + supertest).
 - Añadir un workflow de GitHub Actions para CI (lint + tests + build).
 - Considerar desplegar artefactos con Docker y usar un secret manager para variables.
+
+## Release / Merge Log
+
+Fecha: 2026-02-09
+
+- Rama `chore/refactor-import-tests` creada y cambios principales:
+	- Reemplazo de `xlsx` por `exceljs` en cliente (mejor compatibilidad)
+	- Nuevo `importService` en backend para parsing CSV/XLSX y validaciones
+	- Middleware centralizado de uploads con límites y filtros
+	- Migraciones iniciales para `Roles` y `Users`
+	- CI y seguridad: audit steps, PR template, security checklist
+	- Tests básicos y runner para validación local
+
+Acciones realizadas: los cambios fueron integrados y empujados a la rama remota `chore/refactor-import-tests`.
+
+Pasos recomendados para release:
+- Revisar PR en GitHub y abrir revisión de código.
+- Probar en entorno staging antes de fusionar a `master`.
+
