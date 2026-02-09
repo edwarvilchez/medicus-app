@@ -83,26 +83,31 @@ exports.getVideoConsultation = async (req, res) => {
     if (!id || id === 'NaN' || id === 'undefined') {
       return res.status(400).json({ message: 'ID de videoconsulta inválido' });
     }
+    // Soportar: (1) id numérico (PK) o (2) roomId (UUID/string) en la misma ruta.
+    // Evita errores cuando el frontend pasa el roomId en lugar del ID numérico.
+    let videoConsultation = null;
+    const isNumericId = /^\d+$/.test(String(id));
 
-    // Cargar con relaciones mínimas para evitar errores de columnas fantasmas
-    const videoConsultation = await VideoConsultation.findByPk(id, {
-      include: [
-        { 
-          model: User, 
-          as: 'doctor', 
-          attributes: ['id', 'firstName', 'lastName', 'email']
-        },
-        { 
-          model: User, 
-          as: 'patient', 
-          attributes: ['id', 'firstName', 'lastName', 'email']
-        },
-        { 
-          model: Appointment,
-          attributes: ['id', 'date', 'time', 'reason', 'status']
-        }
-      ]
-    });
+    if (isNumericId) {
+      // Buscar por PK numérico
+      videoConsultation = await VideoConsultation.findByPk(id, {
+        include: [
+          { model: User, as: 'doctor', attributes: ['id', 'firstName', 'lastName', 'email'] },
+          { model: User, as: 'patient', attributes: ['id', 'firstName', 'lastName', 'email'] },
+          { model: Appointment, attributes: ['id', 'date', 'time', 'reason', 'status'] }
+        ]
+      });
+    } else {
+      // Buscar por roomId cuando se recibe un UUID/string
+      videoConsultation = await VideoConsultation.findOne({
+        where: { roomId: id },
+        include: [
+          { model: User, as: 'doctor', attributes: ['id', 'firstName', 'lastName', 'email'] },
+          { model: User, as: 'patient', attributes: ['id', 'firstName', 'lastName', 'email'] },
+          { model: Appointment, attributes: ['id', 'date', 'time', 'reason', 'status'] }
+        ]
+      });
+    }
 
     if (!videoConsultation) {
       return res.status(404).json({ message: 'Videoconsulta no encontrada' });
