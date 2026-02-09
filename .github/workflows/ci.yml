@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [ develop, master, staging ]
+  pull_request:
+    branches: [ develop, master, staging ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install server dependencies
+        working-directory: ./server
+        run: npm ci
+
+      - name: Install client dependencies
+        working-directory: ./client
+        run: npm ci
+
+      - name: Build client
+        working-directory: ./client
+        run: npm run build --if-present
+
+      - name: Run client tests
+        working-directory: ./client
+        run: npm test --if-present
+
+      - name: Run server tests
+        working-directory: ./server
+        run: npm test --if-present
+
+      - name: Audit server dependencies (fail on high)
+        working-directory: ./server
+        run: npm audit --audit-level=high
+
+      - name: Audit client dependencies (fail on high)
+        working-directory: ./client
+        run: npm audit --audit-level=high

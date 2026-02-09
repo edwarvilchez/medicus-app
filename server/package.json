@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test/runTests.js",
+    "migrate": "npx sequelize-cli db:migrate",
+    "test-email": "node src/utils/testEmail.js"
   },
   "keywords": [],
   "author": "",
@@ -23,11 +25,17 @@
     "morgan": "^1.10.1",
     "multer": "^2.0.2",
     "node-cron": "^4.2.1",
-    "nodemon": "^3.1.11",
+    "nodemailer": "^8.0.1",
     "pg": "^8.18.0",
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.37.7",
     "socket.io": "^4.8.3",
     "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "exceljs": "^4.3.0",
+    "nodemon": "^3.1.11",
+    "sequelize-cli": "^6.6.0",
+    
   }
 }

@@ -1,55 +1,53 @@
 const { User, Patient, Doctor, Role, Specialty, sequelize } = require('../models');
-const { parse } = require('csv-parse');
 const fs = require('fs');
-const path = require('path');
+const { isCsvFile, isXlsxFile, validateRecord, parseCsv, parseXlsx } = require('../services/importService');
 
 exports.importData = async (req, res) => {
-    const { type } = req.params;
-    const filePath = req.file.path;
-    const results = [];
-    const errors = [];
-    let successCount = 0;
+  const { type } = req.params;
+  const filePath = req.file.path;
+  const errors = [];
+  let successCount = 0;
 
-    try {
-        const parser = fs.createReadStream(filePath).pipe(
-            parse({
-                columns: true,
-                skip_empty_lines: true,
-                trim: true
-            })
-        );
+  try {
+    let records = [];
+    if (isCsvFile(filePath)) records = await parseCsv(filePath);
+    else if (isXlsxFile(filePath)) records = await parseXlsx(filePath);
+    else throw new Error('Unsupported file format');
 
-        for await (const record of parser) {
-            const t = await sequelize.transaction();
-            try {
-                if (type === 'patients') {
-                    await importPatient(record, t);
-                } else if (type === 'doctors') {
-                    await importDoctor(record, t);
-                } else {
-                    throw new Error('Invalid import type');
-                }
-                await t.commit();
-                successCount++;
-            } catch (err) {
-                await t.rollback();
-                errors.push({ record, error: err.message });
-            }
-        }
+    if (records.length > 5000) throw new Error('Import too large; maximum 5000 rows allowed');
 
-        fs.unlinkSync(filePath); // Delete temp file
+    for (const record of records) {
+      const validation = validateRecord(type, record);
+      if (validation.length) {
+        errors.push({ record, error: validation.join('; ') });
+        continue;
+      }
 
-        res.json({
-            message: `Import completed: ${successCount} successful, ${errors.length} failed.`,
-            successCount,
-            errorCount: errors.length,
-            errors
-        });
-
-    } catch (error) {
-        console.error('Bulk import error:', error);
-        res.status(500).json({ error: error.message });
+      const t = await sequelize.transaction();
+      try {
+        if (type === 'patients') await importPatient(record, t);
+        else if (type === 'doctors') await importDoctor(record, t);
+        else throw new Error('Invalid import type');
+        await t.commit();
+        successCount++;
+      } catch (err) {
+        await t.rollback();
+        errors.push({ record, error: err.message });
+      }
     }
+
+    fs.unlinkSync(filePath);
+
+    res.json({
+      message: `Import completed: ${successCount} successful, ${errors.length} failed.`,
+      successCount,
+      errorCount: errors.length,
+      errors
+    });
+  } catch (error) {
+    console.error('Bulk import error:', error);
+    res.status(500).json({ error: error.message });
+  }
 };
 
 async function importPatient(data, transaction) {

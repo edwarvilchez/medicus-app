@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 import { LanguageService } from './language.service';
 
 export interface BrandingInfo {
@@ -58,31 +58,46 @@ export class ExportService {
   /**
    * Export data to Excel (XLSX)
    */
-  exportToExcel(filename: string, headers: string[], rows: any[][], branding?: BrandingInfo) {
+  async exportToExcel(filename: string, headers: string[], rows: any[][], branding?: BrandingInfo) {
     const brand = { ...this.defaultBranding, ...branding };
     const data = [
       [brand.name.toUpperCase()],
       [brand.tagline || ''],
       [''],
-      [headers],
+      headers,
       ...rows
     ];
-    const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(data);
-    
-    // Auto-size columns accurately
-    const colWidths = headers.map((h, i) => {
-      let maxLen = h.length;
-      rows.forEach(r => {
-        const cellValue = String(r[i] || '');
-        if (cellValue.length > maxLen) maxLen = cellValue.length;
-      });
-      return { wch: maxLen + 2 };
-    });
-    ws['!cols'] = colWidths;
 
-    const wb: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Reporte');
-    XLSX.writeFile(wb, `${filename}.xlsx`);
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet('Reporte');
+
+    // Add rows
+    data.forEach(r => sheet.addRow(r));
+
+    // Auto-size columns based on headers and rows
+    const colCount = headers.length;
+    const colWidths = new Array(colCount).fill(10);
+    for (let i = 0; i < colCount; i++) {
+      let maxLen = String(headers[i] || '').length;
+      rows.forEach(r => {
+        const cell = String(r[i] || '');
+        if (cell.length > maxLen) maxLen = cell.length;
+      });
+      colWidths[i] = { width: Math.min(Math.max(maxLen + 2, 10), 50) };
+    }
+    sheet.columns = colWidths as any;
+
+    // Write workbook to buffer and trigger download
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `${filename}.xlsx`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 
   /**

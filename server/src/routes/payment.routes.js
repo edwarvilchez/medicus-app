@@ -3,19 +3,10 @@ const router = express.Router();
 const paymentController = require('../controllers/payment.controller');
 const authMiddleware = require('../middlewares/auth.middleware');
 
-const multer = require('multer');
-const path = require('path');
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  }
-});
-
-const upload = multer({ storage });
+const { createUpload } = require('../middlewares/upload.middleware');
+const upload = createUpload({ dest: 'uploads/', maxSize: 5 * 1024 * 1024, allowedTypes: [
+  'application/pdf', 'image/png', 'image/jpeg', 'image/jpg'
+] });
 
 router.post('/', authMiddleware, upload.single('receipt'), paymentController.createPayment);
 router.get('/', authMiddleware, paymentController.getPayments);
