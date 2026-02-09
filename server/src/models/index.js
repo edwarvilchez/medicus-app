@@ -12,6 +12,7 @@ const LabResult = require('./LabResult');
 const Payment = require('./Payment');
 const sequelize = require('../config/db.config');
 const VideoConsultation = require('./VideoConsultation');
+const Organization = require('./Organization');
 
 // User - Role
 Role.hasMany(User, { foreignKey: 'roleId' });
@@ -72,6 +73,11 @@ VideoConsultation.belongsTo(Appointment, { foreignKey: 'appointmentId' });
 
 Appointment.hasOne(VideoConsultation, { foreignKey: 'appointmentId' });
 
+// Organization Associations
+User.belongsTo(Organization, { foreignKey: 'organizationId' });
+Organization.hasMany(User, { foreignKey: 'organizationId' });
+Organization.belongsTo(User, { as: 'owner', foreignKey: 'ownerId' });
+
 module.exports = {
   User,
   Role,
@@ -86,5 +92,6 @@ module.exports = {
   LabResult,
   Payment,
   VideoConsultation,
+  Organization,
   sequelize
 };

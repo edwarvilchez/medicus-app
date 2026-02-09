@@ -39,6 +39,7 @@ app.use('/api/stats', require('./routes/stats.routes'));
 app.use('/api/specialties', require('./routes/specialty.routes'));
 app.use('/api/video-consultations', require('./routes/videoConsultation.routes'));
 app.use('/api/bulk', require('./routes/bulk.routes'));
+app.use('/api/team', require('./routes/team.routes'));
 
 // Basic route
 app.get('/', (req, res) => {
@@ -66,11 +67,12 @@ sequelize.sync({ force: false })
     
     // Start Scheduler
     require('./utils/scheduler')();
-
+  })
+  .catch(err => console.log('Error syncing database (Ignoring): ' + err))
+  .finally(() => {
     server.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}.`);
       console.log(`🎥 WebSocket server ready for video consultations`);
     });
-  })
-  .catch(err => console.log('Error syncing database: ' + err));
+  });
 

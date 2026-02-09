@@ -207,6 +207,19 @@ Medicus ofrece una plataforma **todo-en-uno** que:
 
 ---
 
+### 10. 👥 Gestión de Equipos (SaaS)
+
+**Administración de Personal (Mi Equipo):**
+
+- ✅ **Gestión Centralizada**: El propietario de la cuenta (Clínica/Hospital/Profesional) puede añadir miembros al staff.
+- ✅ **Roles Soportados**: Doctor, Enfermera, Administrativo.
+- ✅ **Aislamiento de Datos**:
+  - Personal ve solo pacientes de su organización.
+  - Agendas filtradas por doctores de la misma entidad.
+- ✅ **Invitación Rápida**: Creación de usuarios simplificada con contraseñas temporales.
+
+---
+
 ## 🛡️ Seguridad y Cumplimiento
 
 ### Estándares Internacionales
@@ -351,6 +364,7 @@ medicus-app/
 │   │   │   │   ├── payments/
 │   │   │   │   ├── login/
 │   │   │   │   ├── register/
+│   │   │   │   ├── team/        # [NUEVO] Gestión de Equipos
 │   │   │   │   └── shared/      # Sidebar, Navbar, Footer
 │   │   │   ├── services/        # Lógica de negocio
 │   │   │   ├── guards/          # Protección de rutas
@@ -424,6 +438,7 @@ medicus-app/
    - Agenda citas manualmente
    - Confirma/cancela citas
    - Gestiona pagos y facturación
+   - **Administra el equipo (Mi Equipo)**
 
 2. **Reportes Financieros:**
    - Consulta ingresos del día/mes
@@ -487,6 +502,17 @@ medicus-app/
 6. Marca como pagado (opcional)
 7. Genera recibo digital
 
+### CU-05: Gestionar Equipo (SaaS)
+
+**Actor:** Director/Propietario  
+**Flujo:**
+
+1. Accede a módulo "Mi Equipo"
+2. Ve lista de miembros actuales
+3. Añade nuevo miembro (Doctor, Enfermera, Administrativo)
+4. Ingresa email y datos básicos
+5. Usuario recibe acceso inmediato
+
 ---
 
 ## 📊 Métricas y KPIs
@@ -532,29 +558,22 @@ medicus-app/
 - **Password:** admin123
 - **Acceso:** Total al sistema
 
-### Doctores (Password: doctor123)
+### SaaS (Multi-Entidad) - Versión 1.7.0
 
-1. dr.martinez@medicus.com - Cardiología
-2. dr.rodriguez@medicus.com - Pediatría
-3. dr.lopez@medicus.com - Dermatología
+1. **Hospital General del Centro**
+   - **User:** admin@hgc.com
+   - **Pass:** hospital123
+   - **Rol:** HOSPITAL (Dueño)
 
-### Enfermeras (Password: nurse123)
+2. **Centro Médico Salud Express**
+   - **User:** contacto@saludexpress.com
+   - **Pass:** clinica123
+   - **Rol:** CLINIC (Dueño)
 
-1. enf.garcia@medicus.com - Cuidados Intensivos
-2. enf.fernandez@medicus.com - Pediatría
-3. enf.torres@medicus.com - Emergencias
-
-### Personal Administrativo (Password: staff123)
-
-1. staff.ramirez@medicus.com - Recepcionista
-2. staff.morales@medicus.com - Contador
-3. staff.silva@medicus.com - Coordinador
-
-### Pacientes (Password: patient123)
-
-1. pac.gonzalez@email.com - Juan González
-2. pac.perez@email.com - Elena Pérez
-3. pac.diaz@email.com - Luis Díaz
+3. **Dr. Javier Méndez**
+   - **User:** dr.mendez@medicus.com
+   - **Pass:** doctor123
+   - **Rol:** PROFESSIONAL (Dueño)
 
 ---
 
@@ -652,13 +671,15 @@ npm start
 - `/lab-results` - Resultados de laboratorio
 - `/payments` - Gestión de pagos
 - `/medical-records` - Historiales médicos
+- `/team` - Mi Equipo (Gestión SaaS)
 
 ---
 
 ## 📈 Roadmap y Futuras Mejoras
 
-### Versión 1.7.0 (Actual)
+### Versión 1.7.0 / 1.7.1 (Actual)
 
+- ✅ **Gestión de Equipos**: Módulo para añadir staff a organizaciones.
 - ✅ **Branding SaaS Dinámico**: Soporte para múltiples tipos de cuenta (Clínica, Hospital, Profesional).
 - ✅ **Laboratorio Premium**: Nuevo motor de generación de reportes con diseño de alta fidelidad.
 - ✅ **Multi-lenguaje Extendido**: Traducción total de flujos de registro y errores internos.
@@ -700,4 +721,4 @@ Este proyecto está bajo la Licencia MIT. Ver archivo LICENSE para más detalles
 
 **Desarrollado con ❤️ para mejorar la gestión de clínicas médicas**
 
-_Última actualización: Febrero 2026 - Versión 1.6.0_
+_Última actualización: Febrero 2026 - Versión 1.7.1_

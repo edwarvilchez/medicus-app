@@ -1,4 +1,4 @@
-const { User, Role, Patient, sequelize } = require('../models');
+const { User, Role, Patient, Organization, sequelize } = require('../models');
 const jwt = require('jsonwebtoken');
 const { Op } = require('sequelize');
 
@@ -72,6 +72,22 @@ exports.register = async (req, res) => {
         phone: req.body.phone
       }, { transaction: t });
     }
+    
+    // Create Organization for business accounts
+    if (['PROFESSIONAL', 'CLINIC', 'HOSPITAL'].includes(finalAccountType)) {
+      const orgName = businessName || (finalAccountType === 'PROFESSIONAL' ? `${firstName} ${lastName}` : username);
+      const newOrg = await Organization.create({
+        name: orgName,
+        type: finalAccountType,
+        ownerId: user.id
+      }, { transaction: t });
+
+      // Link user to organization
+      await user.update({ organizationId: newOrg.id }, { transaction: t });
+      
+      // Update returned user object
+      user.organizationId = newOrg.id;
+    }
 
     await t.commit();
 
@@ -95,16 +111,52 @@ exports.register = async (req, res) => {
   }
 };
 
-exports.login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const user = await User.findOne({ where: { email }, include: [Role] });
+const fs = require('fs');
+const path = require('path');
+const logFile = path.resolve(__dirname, '../../login_debug.log');
 
-    if (!user || !(await user.comparePassword(password))) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+const log = (msg) => {
+  try {
+    fs.appendFileSync(logFile, `${new Date().toISOString()} - ${msg}\n`);
+  } catch (e) {
+    console.error('LOGGING FAILED:', e);
+  }
+};
+
+exports.login = async (req, res) => {
+  const { email, password } = req.body;
+  
+  try {
+    log(`[LOGIN START] Request received for: ${email}`);
+    
+    // Explicitly check env var
+    if (!process.env.JWT_SECRET) {
+      log(`[CRITICAL] JWT_SECRET MISSING`);
+      return res.status(500).json({ message: 'Error interno: JWT_SECRET no configurado.' });
     }
 
+    const user = await User.findOne({ where: { email }, include: [Role] });
+
+    if (!user) {
+      log(`[LOGIN FAIL] User not found: ${email}`);
+      return res.status(401).json({ message: 'Credenciales inválidas (Usuario no encontrado)' });
+    }
+
+    log(`User Found: ID=${user.id}, Role=${user.Role ? user.Role.name : 'NULL'}`);
+
+    // LOG HASH FOR ANALYSIS (Be careful with real production, but okay for debug here)
+    // log(`Stored Hash: ${user.password}`);
+
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      log(`[LOGIN FAIL] Password mismatch for: ${email}`);
+      return res.status(401).json({ message: 'Credenciales inválidas (Contraseña incorrecta)' });
+    }
+
+    log(`Password Match. Generating Token...`);
     const token = jwt.sign({ id: user.id, role: user.Role.name }, process.env.JWT_SECRET, { expiresIn: '8h' });
+    
+    log(`Token Generated. Sending Response.`);
     res.json({ token, user: { 
       id: user.id, 
       username: user.username, 
@@ -114,10 +166,13 @@ exports.login = async (req, res) => {
       businessName: user.businessName,
       accountType: user.accountType,
       role: user.Role.name, 
-      gender: user.gender 
+      gender: user.gender,
+      organizationId: user.organizationId
     } });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    log(`[LOGIN EXCEPTION] ${error.message} \nStack: ${error.stack}`);
+    console.error('[LOGIN ERROR]', error);
+    res.status(500).json({ message: 'Error interno del servidor: ' + error.message });
   }
 };
 

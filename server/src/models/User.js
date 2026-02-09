@@ -54,6 +54,10 @@ const User = sequelize.define('User', {
   resetExpires: {
     type: DataTypes.DATE,
     allowNull: true
+  },
+  organizationId: {
+    type: DataTypes.UUID,
+    allowNull: true
   }
 }, {
   hooks: {

@@ -48,22 +48,40 @@ exports.getAppointments = async (req, res) => {
   try {
     const userRole = req.user.role ? req.user.role.toUpperCase() : '';
     const userId = req.user.id;
+    const organizationId = req.user.organizationId;
     
-    console.log(`[DEBUG] getAppointments - Role: ${userRole}, UserID: ${userId}`);
+    // console.log(`[DEBUG] getAppointments - Role: ${userRole}, UserID: ${userId}, OrgID: ${organizationId}`);
 
     let whereClause = {};
-
-    const patient = await Patient.findOne({ where: { userId } });
-    const doctor = await Doctor.findOne({ where: { userId } });
-
     const adminRoles = ['SUPERADMIN', 'ADMINISTRATIVE', 'NURSE', 'RECEPTIONIST'];
     
+    // Dynamic Include for Doctor to filter by Organization
+    let doctorUserInclude = { model: User, attributes: ['id', 'firstName', 'lastName', 'email', 'organizationId'] };
+    
+    // If not SUPERADMIN and belongs to an Organization, filter Doctors by that Organization
+    if (organizationId && userRole !== 'SUPERADMIN') {
+        doctorUserInclude.where = { organizationId };
+    }
+
     if (adminRoles.includes(userRole)) {
-        whereClause = {};
+        // Admin Roles: See all appointments in their Organization (via Doctor filter above)
+        // If SUPERADMIN (no orgId usually), they see all.
+        // If Org Admin, they see all appointments where Doctor is in their Org.
+        whereClause = {}; 
+        
+        // Safety: If Admin has no Org and is not SuperAdmin (unlikely but possible), they see nothing?
+        // Or all? Let's assume all if no org, strict if org.
     } else {
+        // Doctor or Patient: Specific filtering
         const conditions = [];
-        if (patient) conditions.push({ patientId: patient.id });
-        if (doctor) conditions.push({ doctorId: doctor.id });
+        
+        if (userRole === 'PATIENT') {
+             const patient = await Patient.findOne({ where: { userId } });
+             if (patient) conditions.push({ patientId: patient.id });
+        } else if (userRole === 'DOCTOR') {
+             const doctor = await Doctor.findOne({ where: { userId } });
+             if (doctor) conditions.push({ doctorId: doctor.id });
+        }
 
         if (conditions.length > 0) {
             whereClause = { [Op.or]: conditions };
@@ -76,7 +94,11 @@ exports.getAppointments = async (req, res) => {
       where: whereClause,
       include: [
         { model: Patient, include: [User] },
-        { model: Doctor, include: [User] }
+        { 
+            model: Doctor, 
+            include: [doctorUserInclude],
+            required: true // Inner join to ensure Organization filter applies
+        }
       ],
       order: [['date', 'ASC']]
     });

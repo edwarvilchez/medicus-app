@@ -2,6 +2,24 @@
 
 Todas las modificaciones notables del proyecto serán documentadas en este archivo.
 
+## [1.7.1] - 2026-02-08
+
+### 🐛 Correcciones y Estabilidad
+
+- ✅ **Autenticación SaaS Fix**: Solucionado el problema donde `organizationId` no se incluía correctamente en la sesión del usuario, impidiendo el acceso a funciones específicas de la organización.
+- ✅ **Gestión de Errores de Login**: Mejorada la respuesta del servidor en fallos de autenticación para mostrar mensajes de error específicos en el frontend en lugar de errores genéricos 500.
+- ✅ **Sincronización de Base de Datos**: Implementada tolerancia a fallos en la sincronización de tablas (`UnknownConstraintError`) para asegurar que el servidor arranque correctamente incluso si existen conflictos de restricciones menores.
+- ✅ **Corrección de Rutas de Equipo**: Solucionada la importación incorrecta de middleware en `team.routes.js` que causaba caídas del servidor.
+
+### 👥 Gestión de Equipos (Feature)
+
+- ✅ **Módulo "Mi Equipo"**: Nueva interfaz en el frontend para que administradores de Clínicas/Hospitales gestionen su personal (Doctores, Enfermeros, Administrativos).
+- ✅ **Filtrado Contextual**:
+  - **Pacientes**: Ahora los usuarios administrativos y enfermeros solo ven pacientes asociados a su organización.
+  - **Citas**: El calendario y listas de citas filtran automáticamente por la organización del usuario autenticado.
+
+---
+
 ## [1.7.0] - 2026-02-08
 
 ### 🚀 SaaS Multi-Entidad & Branding Dinámico

@@ -14,6 +14,7 @@ import { Payments } from './components/payments/payments';
 import { MedicalHistory } from './components/medical-history/medical-history';
 import { VideoHistory } from './components/video-history/video-history';
 import { BulkData } from './components/bulk-data/bulk-data';
+import { TeamComponent } from './components/team/team.component';
 import { authGuard } from './guards/auth.guard';
 import { roleGuard } from './guards/role.guard';
 
@@ -104,6 +105,13 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard], 
     data: { roles: ['SUPERADMIN'] },
     title: 'Medicus - Carga Masiva'
+  },
+  { 
+    path: 'team', 
+    component: TeamComponent, 
+    canActivate: [authGuard, roleGuard], 
+    data: { roles: ['SUPERADMIN', 'ADMINISTRATIVE', 'DOCTOR'] },
+    title: 'Medicus - Gestión de Equipo'
   },
   { path: '**', redirectTo: 'dashboard' }
 ];

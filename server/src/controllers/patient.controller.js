@@ -2,7 +2,28 @@ const { Patient, User } = require('../models');
 
 exports.getPatients = async (req, res) => {
   try {
-    const patients = await Patient.findAll({ include: [User] });
+    const { organizationId, role } = req.user;
+    
+    let whereClause = {};
+    if (role === 'SUPERADMIN') {
+      whereClause = {};
+    } else if (organizationId) {
+      whereClause = { organizationId };
+    } else {
+      // If user has no organization (e.g. standalone patient?), they shouldn't be listing patients.
+      // But for safety, let's just return nothing or throw error.
+      // Assuming only Staff/Doctors call this.
+      return res.json([]);
+    }
+
+    const patients = await Patient.findAll({ 
+      include: [{
+        model: User,
+        where: whereClause,
+        attributes: ['id', 'firstName', 'lastName', 'email', 'organizationId']
+      }]
+    });
+    
     res.json(patients);
   } catch (error) {
     res.status(500).json({ error: error.message });
