@@ -1,13 +1,8 @@
-/**
- * Polyfills para simple-peer y WebRTC
- */
+import { Buffer } from 'buffer';
+import * as process from 'process';
 
-// Polyfill para process (requerido por simple-peer)
-(window as any).process = {
-  env: { DEBUG: undefined },
-  version: '',
-  browser: true
-};
-
-// Polyfill para Buffer (requerido por simple-peer)
 (window as any).global = window;
+(window as any).Buffer = Buffer;
+(window as any).process = process;
+
+console.log('✅ Polyfills loaded: global, Buffer, process');

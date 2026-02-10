@@ -4,11 +4,11 @@
 
 **Medicus** es un sistema integral de gestión clínica y hospitalaria desarrollado con tecnologías web modernas (Angular + Node.js + PostgreSQL) que optimiza los flujos de trabajo médicos y administrativos, mejorando la experiencia tanto de pacientes como del personal de salud.
 
-**Versión Actual:** 1.7.0  
+**Versión Actual:** 1.8.0  
 **Estado:** Producción SaaS Multi-entidad  
 **Licencia:** MIT  
 **Autor:** Edwar Vilchez
-**Última Actualización:** 8 de Febrero, 2026
+**Última Actualización:** 10 de Febrero, 2026
 
 ---
 
@@ -217,6 +217,16 @@ Medicus ofrece una plataforma **todo-en-uno** que:
   - Personal ve solo pacientes de su organización.
   - Agendas filtradas por doctores de la misma entidad.
 - ✅ **Invitación Rápida**: Creación de usuarios simplificada con contraseñas temporales.
+
+### 11. 🎥 Videoconsultas (Telemedicina)
+
+**Plataforma de Videollamadas Integrada:**
+
+- ✅ **WebRTC P2P**: Conexión directa y segura entre Doctor y Paciente.
+- ✅ **Sala de Espera Virtual**: Gestión de estados (Programada, En Curso, Finalizada).
+- ✅ **Notas Clínicas**: Registro de observaciones durante/después de la llamada.
+- ✅ **Informes en PDF**: Generación automática de resumen de la consulta con notas.
+- ✅ **Historial de Consultas**: Acceso a videoconsultas pasadas tanto para médicos como pacientes.
 
 ---
 
@@ -685,8 +695,11 @@ npm start
 - ✅ **Multi-lenguaje Extendido**: Traducción total de flujos de registro y errores internos.
 - ✅ **Base de Datos SaaS**: Esquema extendido para gestión institucional (BusinessName, AccountType).
 
-### Versión 1.8.0 (Próxima)
+### Versión 1.8.0 (Actual)
 
+- ✅ **Telemedicina con WebRTC**: Módulo completo de videoconsultas con WebRTC y Socket.io.
+- ✅ **Historial de Videoconsultas**: Registro y consulta de sesiones anteriores.
+- ✅ **Informes PDF**: Generación de reportes de videoconsultas.
 - [ ] Integración real con WhatsApp Business API
 - [ ] Módulo de inventario médico
 - [ ] Reportes avanzados con filtros personalizados
@@ -695,7 +708,6 @@ npm start
 
 ### Versión 2.0.0 (Futuro)
 
-- [ ] Telemedicina con WebRTC (Beta iniciada)
 - [ ] IA para análisis predictivo de diagnósticos
 - [ ] Integración con dispositivos médicos IoT
 - [ ] Sistema de facturación electrónica fiscal
@@ -721,4 +733,4 @@ Este proyecto está bajo la Licencia MIT. Ver archivo LICENSE para más detalles
 
 **Desarrollado con ❤️ para mejorar la gestión de clínicas médicas**
 
-_Última actualización: Febrero 2026 - Versión 1.7.1_
+_Última actualización: Febrero 2026 - Versión 1.8.0_

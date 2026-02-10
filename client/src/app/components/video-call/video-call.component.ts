@@ -33,19 +33,23 @@ export class VideoCallComponent implements OnInit, OnDestroy, AfterViewInit {
   ) {}
 
   async ngOnInit() {
+    console.log('🎥 VideoCallComponent initialized');
     const id = this.route.snapshot.params['id'];
-    
-    if (!id || id === 'NaN' || id === 'undefined') {
-      console.error('ID de videoconsulta inválido en la ruta:', id);
+    const numericId = +id;
+
+    if (!id || isNaN(numericId) || numericId <= 0) {
+      console.error(`ID inválido: ${id} (Parsed: ${numericId})`);
       this.router.navigate(['/dashboard']);
       return;
     }
-
-    this.consultationId.set(+id);
+    
+    console.log(`🎥 Fetching consultation ${numericId}`);
+    this.consultationId.set(numericId);
 
     // Obtener datos de la consulta
-    this.videoService.getVideoConsultation(+id).subscribe({
+    this.videoService.getVideoConsultation(numericId).subscribe({
       next: async (consultation) => {
+        console.log('🎥 Consultation loaded:', consultation);
         this.roomId.set(consultation.roomId);
         
         // Determinar si es doctor o paciente
@@ -101,7 +105,7 @@ export class VideoCallComponent implements OnInit, OnDestroy, AfterViewInit {
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'No se pudo cargar la videoconsulta',
+          text: `No se pudo cargar la videoconsulta (ID: ${id}, Parsed: ${+id})`,
           confirmButtonColor: '#4a90e2'
         });
         this.router.navigate(['/dashboard']);

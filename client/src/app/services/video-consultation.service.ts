@@ -205,11 +205,21 @@ export class VideoConsultationService {
     });
 
     this.peer.on('signal', (data: SimplePeer.SignalData) => {
-      console.log('📤 Enviando señal WebRTC');
-      if (initiator) {
+      console.log(`📤 Enviando señal WebRTC: ${data.type}`);
+      
+      if (data.type === 'offer') {
         this.socket!.emit('offer', { roomId: this.currentRoomId, offer: data });
-      } else {
+      } else if (data.type === 'answer') {
         this.socket!.emit('answer', { roomId: this.currentRoomId, answer: data });
+      } else if (data.type === 'candidate') {
+        this.socket!.emit('ice-candidate', { roomId: this.currentRoomId, candidate: data });
+      } else {
+        // Fallback para otros tipos de señales (renegotiate, transceivers)
+        if (initiator) {
+          this.socket!.emit('offer', { roomId: this.currentRoomId, offer: data });
+        } else {
+          this.socket!.emit('answer', { roomId: this.currentRoomId, answer: data });
+        }
       }
     });
 

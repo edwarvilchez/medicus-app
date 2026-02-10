@@ -1,9 +1,11 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AppointmentService } from '../../services/appointment.service';
+import { VideoConsultationService } from '../../services/video-consultation.service';
 import { LanguageService } from '../../services/language.service';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -12,10 +14,15 @@ import Swal from 'sweetalert2';
   imports: [CommonModule, RouterModule],
   template: `
     <div class="container-fluid py-4">
-      <div class="row mb-4">
-        <div class="col-12">
-          <h3 class="fw-bold mb-1">{{ langService.translate('video_history.title') }}</h3>
-          <p class="text-muted">{{ langService.translate('video_history.subtitle') }}</p>
+      <div class="row mb-4 align-items-center">
+        <div class="col">
+          <h3 class="fw-bold mb-1">Historial de Videoconsultas</h3>
+          <p class="text-muted">Consulta los informes y notas de tus sesiones anteriores.</p>
+        </div>
+        <div class="col-auto">
+          <button class="btn btn-outline-primary" (click)="loadHistory()">
+            <i class="bi bi-arrow-clockwise"></i> Actualizar
+          </button>
         </div>
       </div>
 
@@ -23,55 +30,98 @@ import Swal from 'sweetalert2';
         <div class="col-12" *ngIf="loading()">
           <div class="text-center py-5">
             <div class="spinner-border text-primary" role="status">
-              <span class="visually-hidden">Loading...</span>
+              <span class="visually-hidden">Cargando...</span>
             </div>
           </div>
         </div>
 
-        <div class="col-12" *ngIf="!loading() && videoAppointments().length === 0">
-          <div class="card-premium p-5 text-center border-0 shadow-sm">
-            <i class="bi bi-camera-video text-muted fs-1 mb-3 d-block"></i>
-            <h5 class="text-muted">No se registran videoconsultas</h5>
-            <p class="text-muted small">Las citas marcadas como modalidad "Video" aparecerán aquí.</p>
-            <button class="btn btn-primary-premium mt-3" routerLink="/appointments">
-              Ir a Agenda de Citas
+        <div class="col-12" *ngIf="!loading() && consultations().length === 0">
+          <div class="card p-5 text-center border-0 shadow-sm rounded-4">
+            <div class="mb-3">
+              <div class="icon-circle bg-light text-muted mx-auto">
+                <i class="bi bi-camera-video fs-1"></i>
+              </div>
+            </div>
+            <h5 class="text-muted mb-2">No se encontraron videoconsultas</h5>
+            <p class="text-muted small mb-4">
+              Aquí aparecerá el historial de tus videollamadas realizadas y sus informes.
+            </p>
+            <button class="btn btn-primary px-4 rounded-pill" routerLink="/appointments">
+              Ir a Mis Citas
             </button>
           </div>
         </div>
 
-        <div class="col-md-6 col-lg-4" *ngFor="let apt of videoAppointments()">
-          <div class="card-premium h-100 border-0 shadow-sm p-3 position-relative">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-              <div class="badge px-3 py-2 rounded-pill" [ngClass]="getStatusClass(apt.status)">
-                {{ apt.status }}
-              </div>
-              <div class="text-primary small fw-bold">
-                <i class="bi bi-clock me-1"></i> {{ formatTime(apt.time) }}
-              </div>
-            </div>
-
-            <h6 class="fw-bold mb-1">{{ apt.reason }}</h6>
-            <div class="d-flex align-items-center gap-2 mb-3">
-              <div class="avatar-circle-sm bg-primary bg-opacity-10 text-primary fw-bold">
-                {{ apt.Patient?.User?.firstName?.charAt(0) }}
-              </div>
-              <div class="small">
-                <span class="text-muted d-block x-small text-uppercase fw-bold">Paciente</span>
-                <span class="fw-medium">{{ apt.Patient?.User?.firstName }} {{ apt.Patient?.User?.lastName }}</span>
+        <div class="col-md-6 col-lg-4" *ngFor="let vc of consultations()">
+          <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden hover-card">
+            <div class="card-header bg-white border-0 pt-4 px-4 pb-0">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <span class="badge rounded-pill" 
+                  [ngClass]="{
+                    'bg-success': vc.status === 'completed',
+                    'bg-primary': vc.status === 'scheduled' || vc.status === 'active',
+                    'bg-danger': vc.status === 'cancelled'
+                  }">
+                  {{ getStatusLabel(vc.status) }}
+                </span>
+                <small class="text-muted">
+                  <i class="bi bi-calendar3 me-1"></i> {{ vc.Appointment?.date | date:'dd MMM yyyy' }}
+                </small>
               </div>
             </div>
 
-            <div class="border-top pt-3 mt-auto">
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="small text-muted">
-                  <i class="bi bi-calendar3 me-1"></i> {{ apt.date | date:'dd/MM/yyyy' }}
+            <div class="card-body px-4">
+              <div class="d-flex align-items-center gap-3 mb-4">
+                <div class="avatar-circle bg-primary bg-opacity-10 text-primary fw-bold fs-5">
+                  {{ isDoctor ? vc.patient?.firstName?.charAt(0) : vc.doctor?.firstName?.charAt(0) }}
                 </div>
-                <button 
-                  *ngIf="canJoin(apt)"
-                  (click)="joinCall(apt)"
-                  class="btn btn-sm btn-primary rounded-pill px-3"
-                >
-                  <i class="bi bi-camera-video-fill me-1"></i> Entrar
+                <div>
+                  <div class="small text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">
+                    {{ isDoctor ? 'Paciente' : 'Doctor' }}
+                  </div>
+                  <h6 class="mb-0 fw-bold text-dark">
+                    {{ isDoctor 
+                      ? (vc.patient?.firstName + ' ' + vc.patient?.lastName) 
+                      : ('Dr. ' + vc.doctor?.firstName + ' ' + vc.doctor?.lastName) 
+                    }}
+                  </h6>
+                  <small class="text-muted" *ngIf="!isDoctor && vc.doctor?.Doctor?.specialty">
+                    {{ vc.doctor.Doctor.specialty }}
+                  </small>
+                </div>
+              </div>
+
+              <div class="info-grid mb-3">
+                <div class="d-flex align-items-center gap-2 text-muted small">
+                  <i class="bi bi-clock"></i>
+                  <span>Duración: {{ vc.duration ? vc.duration + ' min' : '--' }}</span>
+                </div>
+                <div class="d-flex align-items-center gap-2 text-muted small">
+                  <i class="bi bi-camera-video"></i>
+                  <span>ID: {{ vc.id }}</span>
+                </div>
+              </div>
+
+              <div *ngIf="vc.notes" class="notes-preview p-3 bg-light rounded-3 mb-3">
+                <div class="d-flex align-items-center gap-2 mb-2 text-primary small fw-bold">
+                  <i class="bi bi-journal-text"></i> Notas de la consulta:
+                </div>
+                <p class="mb-0 text-muted small text-truncate-3">{{ vc.notes }}</p>
+              </div>
+            </div>
+
+            <div class="card-footer bg-white border-0 px-4 pb-4 pt-0">
+              <div class="d-grid gap-2">
+                <button *ngIf="vc.status === 'completed'" 
+                        class="btn btn-outline-primary btn-sm rounded-pill" 
+                        (click)="generateReport(vc)">
+                  <i class="bi bi-file-earmark-pdf me-1"></i> Descargar Informe
+                </button>
+                
+                <button *ngIf="vc.status === 'scheduled' || vc.status === 'active'" 
+                        class="btn btn-primary btn-sm rounded-pill"
+                        [routerLink]="['/video-call', vc.id]">
+                  <i class="bi bi-camera-video-fill me-1"></i> Unirse a la llamada
                 </button>
               </div>
             </div>
@@ -81,70 +131,177 @@ import Swal from 'sweetalert2';
     </div>
   `,
   styles: [`
-    .avatar-circle-sm {
-      width: 32px;
-      height: 32px;
+    .hover-card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .hover-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+    .avatar-circle {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+    .icon-circle {
+      width: 80px;
+      height: 80px;
       border-radius: 50%;
-      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .text-truncate-3 {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
     }
   `]
 })
 export class VideoHistory implements OnInit {
-  videoAppointments = signal<any[]>([]);
+  consultations = signal<any[]>([]);
   loading = signal(true);
+  isDoctor = false;
 
   constructor(
-    private appointmentService: AppointmentService,
-    public langService: LanguageService,
+    private videoService: VideoConsultationService,
     private authService: AuthService,
-    private router: Router
+    public langService: LanguageService
   ) {}
 
   ngOnInit() {
-    this.loadVideoAppointments();
+    this.checkRole();
+    this.loadHistory();
   }
 
-  loadVideoAppointments() {
+  checkRole() {
+    this.isDoctor = this.authService.hasRole(['DOCTOR']);
+  }
+
+  loadHistory() {
     this.loading.set(true);
-    this.appointmentService.getAppointments().subscribe({
+    let request$;
+
+    if (this.isDoctor) {
+      request$ = this.videoService.getMyConsultations();
+    } else {
+      request$ = this.videoService.getMyPatientConsultations();
+    }
+
+    request$.subscribe({
       next: (data) => {
-        // Filter only video calls
-        this.videoAppointments.set(data.filter((apt: any) => apt.type === 'Video'));
+        this.consultations.set(data);
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('Error loading video history:', err);
+        console.error('Error loading history:', err);
         this.loading.set(false);
+        Swal.fire('Error', 'No se pudo cargar el historial', 'error');
       }
     });
   }
 
-  getStatusClass(status: string): string {
-    switch (status) {
-      case 'Confirmed': return 'bg-success bg-opacity-10 text-success';
-      case 'Pending': return 'bg-warning bg-opacity-10 text-warning';
-      case 'Cancelled': return 'bg-danger bg-opacity-10 text-danger';
-      default: return 'bg-secondary bg-opacity-10 text-secondary';
+  getStatusLabel(status: string): string {
+    const map: any = {
+      'scheduled': 'Programada',
+      'active': 'En Curso',
+      'completed': 'Finalizada',
+      'cancelled': 'Cancelada'
+    };
+    return map[status] || status;
+  }
+
+  generateReport(vc: any) {
+    const doc = new jsPDF();
+    const primaryColor = '#4a90e2';
+
+    // Header
+    doc.setFillColor(primaryColor);
+    doc.rect(0, 0, 210, 40, 'F');
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(22);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Informe de Videoconsulta', 20, 25);
+    
+    doc.setFontSize(10);
+    doc.text('Medicus - Plataforma de Telemedicina', 140, 25);
+
+    // Info General
+    doc.setTextColor(60, 60, 60);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    
+    let y = 60;
+    
+    doc.setFont('helvetica', 'bold');
+    doc.text('Detalles de la Sesión', 20, y);
+    doc.line(20, y + 2, 190, y + 2);
+    
+    y += 15;
+    
+    // Doctor
+    doc.setFont('helvetica', 'bold');
+    doc.text('Médico Tratante:', 20, y);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Dr/a. ${vc.doctor?.firstName} ${vc.doctor?.lastName}`, 70, y);
+    
+    y += 10;
+    
+    // Paciente
+    doc.setFont('helvetica', 'bold');
+    doc.text('Paciente:', 20, y);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`${vc.patient?.firstName} ${vc.patient?.lastName}`, 70, y);
+
+    y += 10;
+
+    // Fecha y Hora
+    doc.setFont('helvetica', 'bold');
+    doc.text('Fecha:', 20, y);
+    doc.setFont('helvetica', 'normal');
+    const date = new Date(vc.Appointment?.date).toLocaleDateString();
+    doc.text(date, 70, y);
+
+    y += 10;
+
+    // Duración
+    doc.setFont('helvetica', 'bold');
+    doc.text('Duración:', 20, y);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`${vc.duration || 0} minutos`, 70, y);
+
+    y += 20;
+
+    // Notas Clínicas
+    if (vc.notes) {
+      doc.setFont('helvetica', 'bold');
+      doc.text('Notas Clínicas / Resumen:', 20, y);
+      doc.line(20, y + 2, 190, y + 2);
+      
+      y += 15;
+      
+      doc.setFont('helvetica', 'normal');
+      const notes = doc.splitTextToSize(vc.notes, 170);
+      doc.text(notes, 20, y);
     }
-  }
 
-  formatTime(time: string): string {
-    if (!time) return '';
-    const [hours, minutes] = time.split(':');
-    const h = parseInt(hours);
-    const ampm = h >= 12 ? 'PM' : 'AM';
-    const displayH = h % 12 || 12;
-    return `${displayH}:${minutes} ${ampm}`;
-  }
+    // Pie de página
+    const pageHeight = doc.internal.pageSize.height;
+    doc.setFontSize(8);
+    doc.setTextColor(150, 150, 150);
+    doc.text(`Generado el ${new Date().toLocaleString()}`, 20, pageHeight - 10);
+    doc.text('Medicus App', 180, pageHeight - 10);
 
-  canJoin(apt: any): boolean {
-    return apt.status === 'Confirmed' || apt.status === 'Completed';
-  }
-
-  joinCall(apt: any) {
-    this.router.navigate(['/video-call', apt.id]);
+    doc.save(`Medicus_Informe_${vc.id}.pdf`);
   }
 }

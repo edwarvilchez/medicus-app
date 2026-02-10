@@ -32,17 +32,19 @@
     "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.8",
     "bootstrap-icons": "^1.13.1",
+    "buffer": "^6.0.3",
     "chart.js": "^4.5.1",
+    "events": "^3.3.0",
+    "exceljs": "^4.3.0",
     "jspdf": "^4.0.0",
     "jspdf-autotable": "^5.0.7",
     "ng2-charts": "^8.0.0",
+    "process": "^0.11.10",
     "rxjs": "~7.8.0",
     "simple-peer": "^9.11.1",
     "socket.io-client": "^4.8.3",
     "sweetalert2": "^11.26.17",
-    "tslib": "^2.3.0",
-    "exceljs": "^4.3.0"
-    ,"events": "^3.3.0"
+    "tslib": "^2.3.0"
   },
   "devDependencies": {
     "@angular/build": "^21.1.2",

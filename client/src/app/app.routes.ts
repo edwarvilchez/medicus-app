@@ -47,7 +47,7 @@ export const routes: Routes = [
     path: 'video-history', 
     component: VideoHistory, 
     canActivate: [authGuard, roleGuard],
-    data: { roles: ['SUPERADMIN', 'ADMINISTRATIVE', 'DOCTOR'] },
+    data: { roles: ['SUPERADMIN', 'ADMINISTRATIVE', 'DOCTOR', 'PATIENT'] },
     title: 'Medicus - Historial de Videoconsultas'
   },
   { 

@@ -382,6 +382,7 @@ export class Appointments implements OnInit {
         
         if (response && response.videoConsultation && response.videoConsultation.id) {
           const consultationId = response.videoConsultation.id;
+          console.log(`🚀 Navigating to /video-call/${consultationId}`);
           // Navegar al componente de videollamada
           this.router.navigate(['/video-call', consultationId]);
         } else {

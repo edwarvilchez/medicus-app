@@ -94,7 +94,7 @@ exports.getVideoConsultation = async (req, res) => {
         include: [
           { model: User, as: 'doctor', attributes: ['id', 'firstName', 'lastName', 'email'] },
           { model: User, as: 'patient', attributes: ['id', 'firstName', 'lastName', 'email'] },
-          { model: Appointment, attributes: ['id', 'date', 'time', 'reason', 'status'] }
+          { model: Appointment, attributes: ['id', 'date', 'reason', 'status'] }
         ]
       });
     } else {
@@ -104,7 +104,7 @@ exports.getVideoConsultation = async (req, res) => {
         include: [
           { model: User, as: 'doctor', attributes: ['id', 'firstName', 'lastName', 'email'] },
           { model: User, as: 'patient', attributes: ['id', 'firstName', 'lastName', 'email'] },
-          { model: Appointment, attributes: ['id', 'date', 'time', 'reason', 'status'] }
+          { model: Appointment, attributes: ['id', 'date', 'reason', 'status'] }
         ]
       });
     }
@@ -115,6 +115,8 @@ exports.getVideoConsultation = async (req, res) => {
 
     res.json(videoConsultation);
   } catch (error) {
+    const fs = require('fs');
+    fs.appendFileSync('server_error.log', `[${new Date().toISOString()}] Error getting VC ${id}: ${error.stack}\n`);
     console.error(`❌ Error obteniendo videoconsulta ${req.params.id}:`, error);
     res.status(500).json({ message: 'Error del servidor al obtener videoconsulta', error: error.message });
   }
@@ -229,7 +231,7 @@ exports.getDoctorVideoConsultations = async (req, res) => {
       where: { doctorId },
       include: [
         { model: User, as: 'patient', attributes: ['id', 'firstName', 'lastName', 'email'] },
-        { model: Appointment, attributes: ['id', 'date', 'time', 'status'] }
+        { model: Appointment, attributes: ['id', 'date', 'status'] }
       ],
       order: [['createdAt', 'DESC']]
     });
@@ -255,7 +257,7 @@ exports.getPatientVideoConsultations = async (req, res) => {
           attributes: ['id', 'firstName', 'lastName', 'email'],
           include: [{ model: Doctor, attributes: ['licenseNumber'] }]
         },
-        { model: Appointment, attributes: ['id', 'date', 'time', 'status'] }
+        { model: Appointment, attributes: ['id', 'date', 'status'] }
       ],
       order: [['createdAt', 'DESC']]
     });
