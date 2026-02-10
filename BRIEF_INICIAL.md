@@ -7,7 +7,7 @@
 **Versión Actual:** 1.8.0  
 **Estado:** Producción SaaS Multi-entidad  
 **Licencia:** MIT  
-**Autor:** Edwar Vilchez
+**Autor:** Edwar "eddiemonster" Vilchez
 **Última Actualización:** 10 de Febrero, 2026
 
 ---
