@@ -29,6 +29,35 @@ const Appointment = sequelize.define('Appointment', {
     type: DataTypes.BOOLEAN,
     defaultValue: false
   }
+}, {
+  indexes: [
+    {
+      fields: ['patientId']
+    },
+    {
+      fields: ['doctorId']
+    },
+    {
+      fields: ['date']
+    },
+    {
+      fields: ['status']
+    },
+    {
+      fields: ['type']
+    },
+    {
+      fields: ['reminderSent']
+    },
+    {
+      // Índice compuesto para búsquedas comunes
+      fields: ['doctorId', 'date', 'status']
+    },
+    {
+      // Índice compuesto para pacientes
+      fields: ['patientId', 'date', 'status']
+    }
+  ]
 });
 
 module.exports = Appointment;

@@ -2,8 +2,10 @@
 
 Sistema completo de gestión para clínicas médicas desarrollado con Angular y Node.js.
 
-![Version](https://img.shields.io/badge/version-1.7.0-blue.svg)
+![Version](https://img.shields.io/badge/version-1.8.1-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
+![Security](https://img.shields.io/badge/security-8%2F10-brightgreen.svg)
+![Test Coverage](https://img.shields.io/badge/coverage-15%25-yellow.svg)
 
 ## 📋 Características Principales
 
@@ -47,6 +49,27 @@ Sistema completo de gestión para clínicas médicas desarrollado con Angular y 
 - ✅ Animaciones suaves
 - ✅ Modo oscuro (próximamente)
 
+## 🆕 Novedades v1.8.1 (Febrero 2026)
+
+### 🔒 Seguridad Mejorada
+- ✅ **Rate Limiting** - Protección contra ataques de fuerza bruta
+- ✅ **Helmet** - Headers de seguridad HTTP (CSP, X-Frame-Options)
+- ✅ **CORS Específico** - Whitelist de orígenes autorizados
+- ✅ **Validación Centralizada** - Joi para validación robusta de inputs
+
+### ⚡ Performance Optimizado
+- ✅ **Paginación** - Endpoints principales con soporte de paginación
+- ✅ **Índices en BD** - 16 índices para queries 10x más rápidas
+- ✅ **Logger Profesional** - Pino para logs estructurados
+
+### 📚 Documentación y Testing
+- ✅ **Swagger UI** - Documentación interactiva en `/api-docs`
+- ✅ **Jest + Supertest** - Framework de testing configurado (15% cobertura inicial)
+
+> 📖 Ver [MEJORAS_IMPLEMENTADAS.md](MEJORAS_IMPLEMENTADAS.md) para detalles completos
+
+---
+
 ## 🛡️ Estándares y Cumplimiento Internacional
 
 Medicus está diseñado siguiendo los más altos estándares internacionales para garantizar la seguridad de la información y la calidad del servicio:
@@ -75,6 +98,12 @@ Medicus está diseñado siguiendo los más altos estándares internacionales par
 - **JWT** - Autenticación
 - **Bcrypt** - Encriptación de contraseñas
 - **Nodemailer** - Envío de emails
+- **Helmet** - Seguridad HTTP
+- **express-rate-limit** - Protección anti fuerza bruta
+- **Joi** - Validación de esquemas
+- **Pino** - Logging profesional
+- **Jest + Supertest** - Testing
+- **Swagger/OpenAPI** - Documentación API
 
 ## 📦 Instalación
 

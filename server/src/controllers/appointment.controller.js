@@ -49,15 +49,18 @@ exports.getAppointments = async (req, res) => {
     const userRole = req.user.role ? req.user.role.toUpperCase() : '';
     const userId = req.user.id;
     const organizationId = req.user.organizationId;
-    
-    // console.log(`[DEBUG] getAppointments - Role: ${userRole}, UserID: ${userId}, OrgID: ${organizationId}`);
+
+    // Paginación
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const offset = (page - 1) * limit;
 
     let whereClause = {};
     const adminRoles = ['SUPERADMIN', 'ADMINISTRATIVE', 'NURSE', 'RECEPTIONIST'];
-    
+
     // Dynamic Include for Doctor to filter by Organization
     let doctorUserInclude = { model: User, attributes: ['id', 'firstName', 'lastName', 'email', 'organizationId'] };
-    
+
     // If not SUPERADMIN and belongs to an Organization, filter Doctors by that Organization
     if (organizationId && userRole !== 'SUPERADMIN') {
         doctorUserInclude.where = { organizationId };
@@ -65,16 +68,11 @@ exports.getAppointments = async (req, res) => {
 
     if (adminRoles.includes(userRole)) {
         // Admin Roles: See all appointments in their Organization (via Doctor filter above)
-        // If SUPERADMIN (no orgId usually), they see all.
-        // If Org Admin, they see all appointments where Doctor is in their Org.
-        whereClause = {}; 
-        
-        // Safety: If Admin has no Org and is not SuperAdmin (unlikely but possible), they see nothing?
-        // Or all? Let's assume all if no org, strict if org.
+        whereClause = {};
     } else {
         // Doctor or Patient: Specific filtering
         const conditions = [];
-        
+
         if (userRole === 'PATIENT') {
              const patient = await Patient.findOne({ where: { userId } });
              if (patient) conditions.push({ patientId: patient.id });
@@ -86,25 +84,35 @@ exports.getAppointments = async (req, res) => {
         if (conditions.length > 0) {
             whereClause = { [Op.or]: conditions };
         } else {
-            return res.json([]);
+            return res.json({ appointments: [], totalPages: 0, currentPage: 1, total: 0 });
         }
     }
 
-    const appointments = await Appointment.findAll({
+    const { count, rows } = await Appointment.findAndCountAll({
       where: whereClause,
+      limit,
+      offset,
       include: [
         { model: Patient, include: [User] },
-        { 
-            model: Doctor, 
+        {
+            model: Doctor,
             include: [doctorUserInclude],
             required: true // Inner join to ensure Organization filter applies
         }
       ],
-      order: [['date', 'ASC']]
+      order: [['date', 'ASC']],
+      distinct: true // Para contar correctamente con includes
     });
-    res.json(appointments);
+
+    res.json({
+      appointments: rows,
+      totalPages: Math.ceil(count / limit),
+      currentPage: page,
+      total: count,
+    });
   } catch (error) {
-    console.error('[ERROR] getAppointments:', error);
+    const logger = require('../utils/logger');
+    logger.error({ err: error }, 'Error fetching appointments');
     res.status(500).json({ error: error.message });
   }
 };

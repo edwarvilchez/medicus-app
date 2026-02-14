@@ -3,29 +3,42 @@ const { Patient, User } = require('../models');
 exports.getPatients = async (req, res) => {
   try {
     const { organizationId, role } = req.user;
-    
+
+    // Paginación
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const offset = (page - 1) * limit;
+
     let whereClause = {};
     if (role === 'SUPERADMIN') {
       whereClause = {};
     } else if (organizationId) {
       whereClause = { organizationId };
     } else {
-      // If user has no organization (e.g. standalone patient?), they shouldn't be listing patients.
-      // But for safety, let's just return nothing or throw error.
-      // Assuming only Staff/Doctors call this.
-      return res.json([]);
+      // If user has no organization, they shouldn't be listing patients
+      return res.json({ patients: [], totalPages: 0, currentPage: 1, total: 0 });
     }
 
-    const patients = await Patient.findAll({ 
+    const { count, rows } = await Patient.findAndCountAll({
+      limit,
+      offset,
       include: [{
         model: User,
         where: whereClause,
         attributes: ['id', 'firstName', 'lastName', 'email', 'organizationId']
-      }]
+      }],
+      distinct: true
     });
-    
-    res.json(patients);
+
+    res.json({
+      patients: rows,
+      totalPages: Math.ceil(count / limit),
+      currentPage: page,
+      total: count,
+    });
   } catch (error) {
+    const logger = require('../utils/logger');
+    logger.error({ err: error }, 'Error fetching patients');
     res.status(500).json({ error: error.message });
   }
 };

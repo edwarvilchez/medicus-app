@@ -30,6 +30,22 @@ const Patient = sequelize.define('Patient', {
   allergies: {
     type: DataTypes.TEXT
   }
+}, {
+  indexes: [
+    {
+      unique: true,
+      fields: ['documentId']
+    },
+    {
+      fields: ['userId']
+    },
+    {
+      fields: ['bloodType']
+    },
+    {
+      fields: ['gender']
+    }
+  ]
 });
 
 module.exports = Patient;

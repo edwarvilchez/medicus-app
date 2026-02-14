@@ -73,7 +73,29 @@ const User = sequelize.define('User', {
         user.password = await bcrypt.hash(user.password, salt);
       }
     }
-  }
+  },
+  indexes: [
+    {
+      unique: true,
+      fields: ['email']
+    },
+    {
+      unique: true,
+      fields: ['username']
+    },
+    {
+      fields: ['organizationId']
+    },
+    {
+      fields: ['accountType']
+    },
+    {
+      fields: ['isActive']
+    },
+    {
+      fields: ['resetToken']
+    }
+  ]
 });
 
 User.prototype.comparePassword = async function(candidatePassword) {
