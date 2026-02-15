@@ -1,7 +1,15 @@
 const fs = require('fs');
 const path = require('path');
 const { parse } = require('csv-parse');
-const ExcelJS = require('exceljs');
+
+// Try to load ExcelJS, but don't fail if it's not available
+let ExcelJS;
+try {
+  ExcelJS = require('exceljs');
+} catch (err) {
+  console.warn('ExcelJS not available. Excel file import will be disabled.');
+  ExcelJS = null;
+}
 
 function isCsvFile(filePath) {
   return ['.csv'].includes(path.extname(filePath).toLowerCase());
@@ -32,6 +40,9 @@ async function parseCsv(filePath) {
 }
 
 async function parseXlsx(filePath) {
+  if (!ExcelJS) {
+    throw new Error('ExcelJS is not installed. Please install it to import Excel files.');
+  }
   const workbook = new ExcelJS.Workbook();
   await workbook.xlsx.readFile(filePath);
   const worksheet = workbook.worksheets[0];
