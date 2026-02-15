@@ -2,6 +2,61 @@
 
 Todas las modificaciones notables del proyecto serán documentadas en este archivo.
 
+## [1.8.2] - 2026-02-15
+
+### 🚀 Deployment & Docker
+
+- ✅ **Configuración Docker Completa**: Sistema listo para desplegar en Easypanel
+  - `client/Dockerfile`: Multi-stage build (Angular + Nginx)
+  - `server/Dockerfile`: Optimizado para producción (non-root user, health checks)
+  - `docker-compose.yml`: 3 servicios orquestados (db, server, client)
+  - `.dockerignore`: Optimización de build (exclusión de node_modules, tests)
+- ✅ **Nginx Configuration**: SPA routing + cache optimization + security headers
+- ✅ **Health Checks**: Implementados en todos los servicios (db, server, client)
+- ✅ **Persistent Volumes**: postgres_data, uploads_data
+- ✅ **Network Isolation**: Red privada `medicus_network`
+- ✅ **Environment Variables**: Template de producción (.env.production.example)
+
+### 📚 Documentación de Deployment
+
+- ✅ **DEPLOYMENT_EASYPANEL.md**: Guía completa paso a paso
+  - Configuración de servicios
+  - Variables de entorno seguras
+  - Troubleshooting
+  - Post-deployment checklist
+  - CI/CD workflow
+  - Monitoreo y logs
+
+### 🔧 Mejoras en Dockerfiles
+
+- ✅ **Security**: Non-root user en servidor
+- ✅ **Optimization**: Multi-stage build en frontend
+- ✅ **Caching**: Layer optimization para builds más rápidos
+- ✅ **Production Ready**: Health checks y restart policies
+
+### 📦 Archivos Nuevos
+
+- `DEPLOYMENT_EASYPANEL.md` - Guía completa de deployment
+- `client/Dockerfile` - Docker para Angular con Nginx
+- `client/nginx.conf` - Configuración Nginx optimizada
+- `client/.dockerignore` - Exclusiones para build
+- `server/.dockerignore` - Exclusiones para build
+- `.env.production.example` - Template de variables de entorno
+
+### 🔧 Archivos Modificados
+
+- `docker-compose.yml` - Actualizado con 3 servicios completos
+- `server/Dockerfile` - Optimizado para producción
+
+### 🎯 Resultado
+
+- ✅ **Deployment Ready**: Listo para Easypanel/Railway/Render
+- ✅ **CI/CD Ready**: Auto-deploy desde GitHub
+- ✅ **Production Grade**: Security, health checks, monitoring
+- ✅ **SSL/HTTPS**: Configurado automáticamente
+
+---
+
 ## [1.8.1] - 2026-02-14
 
 ### 🔒 Mejoras de Seguridad

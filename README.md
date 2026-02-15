@@ -2,10 +2,12 @@
 
 Sistema completo de gestión para clínicas médicas desarrollado con Angular y Node.js.
 
-![Version](https://img.shields.io/badge/version-1.8.1-blue.svg)
+![Version](https://img.shields.io/badge/version-1.8.2-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Security](https://img.shields.io/badge/security-8%2F10-brightgreen.svg)
 ![Test Coverage](https://img.shields.io/badge/coverage-15%25-yellow.svg)
+![Docker](https://img.shields.io/badge/docker-ready-blue.svg)
+![Deployment](https://img.shields.io/badge/deployment-easypanel-success.svg)
 
 ## 📋 Características Principales
 
@@ -49,7 +51,21 @@ Sistema completo de gestión para clínicas médicas desarrollado con Angular y 
 - ✅ Animaciones suaves
 - ✅ Modo oscuro (próximamente)
 
-## 🆕 Novedades v1.8.1 (Febrero 2026)
+## 🆕 Novedades v1.8.2 (Febrero 2026)
+
+### 🚀 Deployment Ready
+- ✅ **Docker Completo** - Configuración lista para producción
+- ✅ **Easypanel/Railway/Render** - Deploy en un click desde GitHub
+- ✅ **CI/CD Automático** - Push to GitHub → Auto-deploy
+- ✅ **Health Checks** - Monitoreo automático de servicios
+- ✅ **SSL/HTTPS** - Configuración automática
+- ✅ **Documentación Completa** - Guía paso a paso en [DEPLOYMENT_EASYPANEL.md](DEPLOYMENT_EASYPANEL.md)
+
+> 📖 Ver [DEPLOYMENT_EASYPANEL.md](DEPLOYMENT_EASYPANEL.md) para instrucciones completas de deployment
+
+---
+
+## 🔒 Novedades v1.8.1 (Febrero 2026)
 
 ### 🔒 Seguridad Mejorada
 - ✅ **Rate Limiting** - Protección contra ataques de fuerza bruta
@@ -105,7 +121,50 @@ Medicus está diseñado siguiendo los más altos estándares internacionales par
 - **Jest + Supertest** - Testing
 - **Swagger/OpenAPI** - Documentación API
 
-## 📦 Instalación
+## 🚀 Deployment en Producción
+
+### Opción A: Deployment con Docker (Recomendado)
+
+**Rápido y fácil** - Listo para Easypanel, Railway, Render, o cualquier plataforma con Docker.
+
+```bash
+# 1. Clonar repositorio
+git clone https://github.com/edwarvilchez/medicus-app.git
+cd medicus-app
+
+# 2. Configurar variables de entorno
+cp .env.production.example .env
+# Editar .env con tus valores reales
+
+# 3. Levantar con Docker Compose
+docker-compose up -d
+
+# 4. Ejecutar migraciones
+docker exec medicus-server npm run migrate
+```
+
+**Servicios desplegados:**
+- 🗄️ PostgreSQL 14 (puerto 5432)
+- 🔧 Backend API (puerto 5000)
+- 🌐 Frontend Angular (puerto 80)
+
+**Documentación completa:** Ver [DEPLOYMENT_EASYPANEL.md](DEPLOYMENT_EASYPANEL.md)
+
+---
+
+### Opción B: Easypanel/Railway (Un Click)
+
+1. **Fork** el repositorio
+2. Conecta tu cuenta en [Easypanel](https://easypanel.io) o [Railway](https://railway.app)
+3. Selecciona el repo → **Deploy**
+4. Configura variables de entorno
+5. ✅ ¡Listo!
+
+**Guía detallada:** [DEPLOYMENT_EASYPANEL.md](DEPLOYMENT_EASYPANEL.md)
+
+---
+
+## 📦 Instalación Local (Desarrollo)
 
 ### Prerrequisitos
 

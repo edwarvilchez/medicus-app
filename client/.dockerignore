@@ -1,0 +1,17 @@
+node_modules
+npm-debug.log
+.angular
+dist
+.git
+.gitignore
+*.md
+.vscode
+.DS_Store
+Thumbs.db
+.idea
+*.log
+e2e
+coverage
+.nyc_output
+*.spec.ts
+*.test.ts
