@@ -3,11 +3,12 @@ FROM node:18-alpine
 # Set working directory
 WORKDIR /usr/src/app
 
-# Copy server package files
+# Copy server package files (cache bust: 2026-02-15-v2)
 COPY server/package*.json ./
 
 # Install dependencies
-RUN npm install --only=production && \
+RUN rm -f package-lock.json && \
+    npm install --only=production && \
     npm cache clean --force
 
 # Copy server source
