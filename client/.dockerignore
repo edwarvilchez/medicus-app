@@ -1,17 +1,50 @@
+# Dependencies
 node_modules
 npm-debug.log
-.angular
-dist
+yarn-error.log
+package-lock.json
+
+# Angular build artifacts
+dist/
+.angular/
+.angular-cache/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Git
 .git
 .gitignore
+.gitattributes
+
+# Documentation
 *.md
-.vscode
-.DS_Store
-Thumbs.db
-.idea
-*.log
-e2e
-coverage
-.nyc_output
+docs/
+
+# Tests
+e2e/
+coverage/
 *.spec.ts
 *.test.ts
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+tmp/
+temp/
+.cache/

@@ -1,19 +1,51 @@
+# Dependencies
 node_modules
 npm-debug.log
+yarn-error.log
+package-lock.json
+
+# Environment files
 .env
+.env.*
+!.env.example
+
+# Git
 .git
 .gitignore
+.gitattributes
+
+# Documentation
 *.md
-test
-coverage
-.vscode
-.DS_Store
-Thumbs.db
-.idea
-*.log
-.nyc_output
-dist
-build
+docs/
+
+# Tests
+test/
+tests/
+__tests__/
+coverage/
 *.test.js
 *.spec.js
-__tests__
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+tmp/
+temp/
+.cache/
+
+# Build artifacts
+dist/
+build/
