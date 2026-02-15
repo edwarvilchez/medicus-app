@@ -3,6 +3,7 @@
 ## 📊 STATUS ACTUAL DEL PROYECTO
 
 ### ✅ Estado Git
+
 - **Rama Actual:** develop
 - **Último Commit:** bfe34f4 (v1.8.1)
 - **Estado:** Working tree limpio
@@ -12,12 +13,14 @@
   - ✅ master (local + remoto)
 
 ### 📦 Componentes del Proyecto
+
 - **Backend:** Node.js 18 + Express + PostgreSQL
 - **Frontend:** Angular 21 (Standalone)
 - **Base de Datos:** PostgreSQL 14
 - **WebSockets:** Socket.io (VideoConsultas)
 
 ### ✅ Docker Files Existentes
+
 - ✅ `docker-compose.yml` (raíz)
 - ✅ `server/Dockerfile` (backend)
 - ❌ `client/Dockerfile` (falta, lo crearemos)
@@ -27,12 +30,14 @@
 ## 🎯 ¿Qué es Easypanel?
 
 **Easypanel** es una plataforma moderna de hosting/deployment similar a:
+
 - Heroku
 - Railway
 - Vercel
 - Render
 
 **Características:**
+
 - ✅ Deploy con Docker (nuestro caso)
 - ✅ Deploy desde GitHub
 - ✅ Base de datos PostgreSQL incluida
@@ -46,19 +51,23 @@
 ## 📋 PREREQUISITOS
 
 ### 1. Cuenta en Easypanel
+
 ```
 https://easypanel.io
 ```
+
 - Regístrate (tienen plan gratuito/trial)
 - Conecta tu servidor (VPS) o usa su infraestructura
 
 ### 2. Repositorio en GitHub
+
 ```
 ✅ Ya tienes: https://github.com/edwarvilchez/medicus-app
 ✅ Todas las ramas están actualizadas
 ```
 
 ### 3. Variables de Entorno Preparadas
+
 ```
 Las configuraremos directamente en Easypanel
 ```
@@ -216,7 +225,7 @@ dist
 Reemplaza `docker-compose.yml`:
 
 ```yaml
-version: '3.8'
+version: "3.8"
 
 services:
   # PostgreSQL Database
@@ -340,6 +349,7 @@ PORT=5000
 ### 2.3 Configurar Base de Datos PostgreSQL
 
 **Opción A: Usar PostgreSQL de Easypanel**
+
 1. En tu proyecto → Add Service → PostgreSQL
 2. Versión: 14
 3. Easypanel creará automáticamente:
@@ -349,12 +359,14 @@ PORT=5000
    - Connection string
 
 **Opción B: Base de Datos Externa**
+
 - Puedes usar Supabase, AWS RDS, etc.
 - Solo actualiza las variables DB_HOST, DB_PORT, etc.
 
 ### 2.4 Deployment Automático
 
 Easypanel detectará automáticamente `docker-compose.yml` y:
+
 1. ✅ Construirá las imágenes Docker
 2. ✅ Creará los servicios (db, server, client)
 3. ✅ Configurará las redes
@@ -364,18 +376,21 @@ Easypanel detectará automáticamente `docker-compose.yml` y:
 ### 2.5 Configurar Dominios
 
 **Backend API:**
+
 ```
 Easypanel te dará un subdominio: medicus-api.easypanel.host
 O configura tu dominio: api.tudominio.com
 ```
 
 **Frontend:**
+
 ```
 Easypanel te dará: medicus.easypanel.host
 O configura: www.tudominio.com
 ```
 
 **Actualizar CORS:**
+
 - En variables de entorno, actualiza `CLIENT_URL` con tu dominio real
 
 ---
@@ -430,11 +445,13 @@ git push origin master
 ### 4.1 Variables de Entorno Seguras
 
 ✅ **JWT_SECRET:** Genera uno aleatorio
+
 ```bash
 node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 ```
 
 ✅ **DB_PASSWORD:** Usa contraseñas fuertes
+
 ```
 Mínimo 16 caracteres, letras + números + símbolos
 ```
@@ -447,6 +464,7 @@ Mínimo 16 caracteres, letras + números + símbolos
 ### 4.3 Firewall y Rate Limiting
 
 ✅ Ya implementado en v1.8.1:
+
 - Rate limiting: 5 intentos/15min (auth)
 - Helmet headers
 - CORS configurado
@@ -458,6 +476,7 @@ Mínimo 16 caracteres, letras + números + símbolos
 ### 5.1 Logs
 
 Easypanel Panel → Logs:
+
 - Ver logs en tiempo real
 - Filtrar por servicio (db, server, client)
 - Descargar logs históricos
@@ -465,6 +484,7 @@ Easypanel Panel → Logs:
 ### 5.2 Métricas
 
 Easypanel Dashboard:
+
 - CPU usage
 - Memory usage
 - Network I/O
@@ -473,6 +493,7 @@ Easypanel Dashboard:
 ### 5.3 Alertas
 
 Configura alertas por email si:
+
 - Servicio se cae
 - CPU/Memory > 80%
 - Errores frecuentes en logs
@@ -511,13 +532,58 @@ git push origin master
 ### Problema: Base de datos no conecta
 
 **Solución:**
+
 1. Verifica variables DB_HOST, DB_PORT en Easypanel
 2. Si usas PostgreSQL de Easypanel, usa el internal hostname: `db:5432`
 3. Verifica que el contenedor `db` esté healthy
 
+### Problema: Error "database medicus_prod does not exist"
+
+**Causa:** El archivo `server/src/config/db.config.js` tenía nombres de base de datos hardcodeados (`medicus_dev`, `medicus_qa`, `medicus_prod`) en lugar de usar la variable de entorno `DB_NAME`.
+
+**Solución Aplicada (v1.8.1):**
+
+```javascript
+// ❌ ANTES (hardcoded)
+production: {
+  database: 'medicus_prod',
+  // ...
+}
+
+// ✅ DESPUÉS (usando env var)
+production: {
+  database: process.env.DB_NAME || 'medicus_prod',
+  // ...
+}
+```
+
+**Pasos para verificar:**
+
+1. Asegúrate de que `DB_NAME` esté configurado en las variables de entorno de EasyPanel
+2. El valor debe coincidir con el nombre de la base de datos creada en PostgreSQL
+3. Ejemplo: `DB_NAME=medicus_app_db`
+
+### Problema: Error "password authentication failed for user postgres"
+
+**Causa:** Las credenciales en las variables de entorno del API no coinciden con las credenciales de PostgreSQL.
+
+**Solución:**
+
+1. Ve al servicio PostgreSQL en EasyPanel
+2. Copia las credenciales exactas (Usuario, Contraseña, Base de datos)
+3. Actualiza las variables de entorno del API:
+   ```env
+   DB_USER=medicus_app_admin  # Debe coincidir exactamente
+   DB_PASSWORD=472025          # Debe coincidir exactamente
+   DB_NAME=medicus_app_db      # Debe coincidir exactamente
+   DB_HOST=medicus_app_medicus_app_db  # Nombre interno del servicio
+   ```
+4. Reinicia el servicio API (click en "Implementar")
+
 ### Problema: Frontend no carga el API
 
 **Solución:**
+
 1. Verifica CORS en `server/src/index.js`
 2. Actualiza `CLIENT_URL` en variables de entorno
 3. Verifica que nginx.conf tenga el proxy correcto
@@ -525,12 +591,14 @@ git push origin master
 ### Problema: WebSocket no funciona
 
 **Solución:**
+
 1. Verifica que nginx.conf tenga la configuración `/socket.io`
 2. Asegúrate de que Socket.io esté en el mismo dominio o configurado con CORS
 
 ### Problema: Migraciones fallan
 
 **Solución:**
+
 ```bash
 # Accede al contenedor
 docker exec -it medicus-server sh
@@ -579,12 +647,14 @@ npx sequelize-cli db:migrate
 Después de seguir esta guía, tendrás:
 
 ✅ **API Backend:** https://api.tudominio.com
-   - Swagger: https://api.tudominio.com/api-docs
-   - Health: https://api.tudominio.com/
+
+- Swagger: https://api.tudominio.com/api-docs
+- Health: https://api.tudominio.com/
 
 ✅ **Frontend Angular:** https://www.tudominio.com
-   - SPA con routing
-   - Proxy a API configurado
+
+- SPA con routing
+- Proxy a API configurado
 
 ✅ **Base de Datos:** PostgreSQL 14 (privada, solo accesible internamente)
 
@@ -598,4 +668,4 @@ Después de seguir esta guía, tendrás:
 
 **🚀 ¡Listo para desplegar MEDICUS v1.8.1 en producción!**
 
-_Última actualización: 14 de Febrero, 2026_
+_Última actualización: 15 de Febrero, 2026_
