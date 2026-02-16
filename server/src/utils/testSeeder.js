@@ -1,162 +1,233 @@
-const { Role, User, Patient, Doctor, Specialty, Department } = require('../models');
+const { Role, User, Patient, Doctor, Nurse, Staff, Specialty, Department, Organization } = require('../models');
+
+/**
+ * Seed test users for ALL environments (dev + production).
+ * Runs automatically on every server start.
+ *
+ * Password convention:
+ *   - All seed accounts use a single shared password so QA can
+ *     switch roles quickly: process.env.TEST_PASSWORD || 'Med1cus!2026'
+ *
+ * Coverage matrix (9 users):
+ *   SUPERADMIN  × HOSPITAL      → admin (owns the test org)
+ *   DOCTOR      × PROFESSIONAL  → dr.cardenas (independent, no org)
+ *   DOCTOR      × HOSPITAL      → dr.luna (inside org, team member)
+ *   NURSE       × HOSPITAL      → enf.rios (inside org)
+ *   RECEPTIONIST× HOSPITAL      → recep.vega (inside org)
+ *   ADMINISTRATIVE × CLINIC     → staff.mora (inside org)
+ *   PATIENT     × PATIENT       → pac.torres (with full patient profile)
+ *   PATIENT     × PATIENT       → pac.rivas (second patient for multi-patient tests)
+ *   DOCTOR      × PROFESSIONAL  → dr.beta (production/beta tester, independent)
+ */
+
+const SEED_PASSWORD = process.env.TEST_PASSWORD || 'Med1cus!2026';
 
 const seedTestData = async () => {
   try {
-    // 1. Ensure Roles (Fetched from DB, seeded by seeds.js)
+    // ── 1. Load all roles ──────────────────────────────────────────────
     const roles = {};
-    const roleNames = ['SUPERADMIN', 'DOCTOR', 'NURSE', 'ADMINISTRATIVE', 'PATIENT'];
-    
+    const roleNames = ['SUPERADMIN', 'DOCTOR', 'NURSE', 'RECEPTIONIST', 'ADMINISTRATIVE', 'PATIENT'];
+
     for (const name of roleNames) {
-        roles[name] = await Role.findOne({ where: { name } });
-        if (!roles[name]) {
-            console.warn(`Role ${name} not found, skipping related users.`);
-        }
+      roles[name] = await Role.findOne({ where: { name } });
+      if (!roles[name]) {
+        console.warn(`⚠ Role ${name} not found — skipping related users.`);
+      }
     }
 
-    // --- USERS DATA ---
+    // ── 2. Upsert helper ──────────────────────────────────────────────
+    const upsertUser = async (data) => {
+      if (!roles[data.role]) return null;
+
+      const [user, created] = await User.findOrCreate({
+        where: { email: data.email },
+        defaults: {
+          username: data.username,
+          email: data.email,
+          password: SEED_PASSWORD,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          businessName: data.businessName || null,
+          accountType: data.accountType || 'PATIENT',
+          roleId: roles[data.role].id,
+          organizationId: data.organizationId || null,
+          gender: data.gender || null,
+        },
+      });
+
+      if (!created) {
+        await user.update({ password: SEED_PASSWORD });
+      }
+
+      console.log(`  ${created ? '✔ Created' : '↻ Updated'} ${data.role.padEnd(14)} ${data.email}`);
+      return user;
+    };
+
+    // ── 3. Create SUPERADMIN + Organization ────────────────────────────
+    const admin = await upsertUser({
+      username: 'admin',
+      email: 'admin@medicus.com',
+      firstName: 'Admin',
+      lastName: 'Medicus',
+      role: 'SUPERADMIN',
+      accountType: 'HOSPITAL',
+      businessName: 'Hospital Central Medicus',
+    });
+
+    let org = null;
+    if (admin) {
+      [org] = await Organization.findOrCreate({
+        where: { name: 'Hospital Central Medicus' },
+        defaults: {
+          name: 'Hospital Central Medicus',
+          type: 'HOSPITAL',
+          ownerId: admin.id,
+        },
+      });
+      // Assign admin to org
+      if (!admin.organizationId) {
+        await admin.update({ organizationId: org.id });
+      }
+    }
+
+    // ── 4. Users definition ────────────────────────────────────────────
     const users = [
-        // NEW SAAS MULTI-ENTITY PROFILES
-        {
-            username: 'dr.mendez', email: 'dr.mendez@medicus.com', password: process.env.TEST_PASSWORD || 'medicus123',
-            firstName: 'Javier', lastName: 'Méndez', role: 'DOCTOR',
-            accountType: 'PROFESSIONAL',
-            specialtyConfig: { name: 'Traumatología', license: 'MED-777', phone: '+58414-9998877' }
-        },
-        {
-            username: 'clinica.salud', email: 'contacto@saludexpress.com', password: process.env.TEST_PASSWORD || 'medicus123',
-            firstName: 'Admin', lastName: 'SaludExpress', role: 'ADMINISTRATIVE',
-            accountType: 'CLINIC',
-            businessName: 'Centro Médico Salud Express'
-        },
-        {
-            username: 'hgc.admin', email: 'admin@hgc.com', password: process.env.TEST_PASSWORD || 'medicus123',
-            firstName: 'Dirección', lastName: 'HGC', role: 'ADMINISTRATIVE',
-            accountType: 'HOSPITAL',
-            businessName: 'Hospital General del Centro'
-        },
-        // SUPERADMIN
-        {
-            username: 'superadmin', email: 'admin@medicus.com', password: process.env.TEST_PASSWORD || 'medicus123',
-            firstName: 'Administrador', lastName: 'Sistema', role: 'SUPERADMIN'
-        },
-        // DOCTORS
-        {
-            username: 'dr.martinez', email: 'dr.martinez@medicus.com', password: process.env.TEST_PASSWORD || 'medicus123',
-            firstName: 'Carlos', lastName: 'Martínez', role: 'DOCTOR',
-            specialtyConfig: { name: 'Cardiología', license: 'MED-001', phone: '+58412-1111111' }
-        },
-        {
-            username: 'dr.rodriguez', email: 'dr.rodriguez@medicus.com', password: process.env.TEST_PASSWORD || 'medicus123',
-            firstName: 'Ana', lastName: 'Rodríguez', role: 'DOCTOR',
-            specialtyConfig: { name: 'Pediatría', license: 'MED-002', phone: '+58412-2222222' }
-        },
-        {
-            username: 'dr.lopez', email: 'dr.lopez@medicus.com', password: process.env.TEST_PASSWORD || 'medicus123',
-            firstName: 'Miguel', lastName: 'López', role: 'DOCTOR',
-            specialtyConfig: { name: 'Dermatología', license: 'MED-003', phone: '+58412-3333333' }
-        },
-        // NURSES
-        {
-            username: 'enf.garcia', email: 'enf.garcia@medicus.com', password: process.env.TEST_PASSWORD || 'medicus123',
-            firstName: 'María', lastName: 'García', role: 'NURSE'
-        },
-        {
-            username: 'enf.fernandez', email: 'enf.fernandez@medicus.com', password: process.env.TEST_PASSWORD || 'medicus123',
-            firstName: 'Laura', lastName: 'Fernández', role: 'NURSE'
-        },
-        {
-            username: 'enf.torres', email: 'enf.torres@medicus.com', password: process.env.TEST_PASSWORD || 'medicus123',
-            firstName: 'Carmen', lastName: 'Torres', role: 'NURSE'
-        },
-        // ADMINISTRATIVE
-        {
-            username: 'staff.ramirez', email: 'staff.ramirez@medicus.com', password: process.env.TEST_PASSWORD || 'medicus123',
-            firstName: 'Pedro', lastName: 'Ramírez', role: 'ADMINISTRATIVE'
-        },
-        {
-            username: 'staff.morales', email: 'staff.morales@medicus.com', password: process.env.TEST_PASSWORD || 'medicus123',
-            firstName: 'Sofía', lastName: 'Morales', role: 'ADMINISTRATIVE'
-        },
-        {
-            username: 'staff.silva', email: 'staff.silva@medicus.com', password: process.env.TEST_PASSWORD || 'medicus123',
-            firstName: 'Roberto', lastName: 'Silva', role: 'ADMINISTRATIVE'
-        },
-        // PATIENTS
-        {
-            username: 'pac.gonzalez', email: 'pac.gonzalez@email.com', password: process.env.TEST_PASSWORD || 'medicus123',
-            firstName: 'Juan', lastName: 'González', role: 'PATIENT',
-            patientConfig: { documentId: 'V-11111111', phone: '+58424-1111111', gender: 'Male' }
-        },
-        {
-            username: 'pac.perez', email: 'pac.perez@email.com', password: process.env.TEST_PASSWORD || 'medicus123',
-            firstName: 'Elena', lastName: 'Pérez', role: 'PATIENT',
-            patientConfig: { documentId: 'V-22222222', phone: '+58424-2222222', gender: 'Female' }
-        },
-        {
-            username: 'pac.diaz', email: 'pac.diaz@email.com', password: process.env.TEST_PASSWORD || 'medicus123',
-            firstName: 'Luis', lastName: 'Díaz', role: 'PATIENT',
-            patientConfig: { documentId: 'V-33333333', phone: '+58424-3333333', gender: 'Male' }
-        }
+      // Independent doctor (no org) — tests solo-professional flow
+      {
+        username: 'dr.cardenas',
+        email: 'dr.cardenas@medicus.com',
+        firstName: 'Andrés',
+        lastName: 'Cárdenas',
+        role: 'DOCTOR',
+        accountType: 'PROFESSIONAL',
+        profile: { type: 'DOCTOR', license: 'MED-1001', phone: '+58412-1001001', specialty: 'Cardiología' },
+      },
+      // Org doctor — tests team-member flow
+      {
+        username: 'dr.luna',
+        email: 'dr.luna@medicus.com',
+        firstName: 'Valeria',
+        lastName: 'Luna',
+        role: 'DOCTOR',
+        accountType: 'HOSPITAL',
+        organizationId: org?.id,
+        profile: { type: 'DOCTOR', license: 'MED-1002', phone: '+58412-1002002', specialty: 'Pediatría' },
+      },
+      // Nurse inside org
+      {
+        username: 'enf.rios',
+        email: 'enf.rios@medicus.com',
+        firstName: 'Carolina',
+        lastName: 'Ríos',
+        role: 'NURSE',
+        accountType: 'HOSPITAL',
+        organizationId: org?.id,
+        profile: { type: 'NURSE', license: 'ENF-2001', phone: '+58412-2001001', shift: 'Morning' },
+      },
+      // Receptionist inside org
+      {
+        username: 'recep.vega',
+        email: 'recep.vega@medicus.com',
+        firstName: 'Isabel',
+        lastName: 'Vega',
+        role: 'RECEPTIONIST',
+        accountType: 'HOSPITAL',
+        organizationId: org?.id,
+        profile: { type: 'STAFF', employeeId: 'EMP-RECEP-01', position: 'RECEPTIONIST' },
+      },
+      // Administrative (clinic type) inside org
+      {
+        username: 'staff.mora',
+        email: 'staff.mora@medicus.com',
+        firstName: 'Ricardo',
+        lastName: 'Mora',
+        role: 'ADMINISTRATIVE',
+        accountType: 'CLINIC',
+        organizationId: org?.id,
+        businessName: 'Clínica Salud Integral',
+        profile: { type: 'STAFF', employeeId: 'EMP-ADM-01', position: 'ADMINISTRATIVE' },
+      },
+      // Patient 1 — full profile
+      {
+        username: 'pac.torres',
+        email: 'pac.torres@email.com',
+        firstName: 'Miguel',
+        lastName: 'Torres',
+        role: 'PATIENT',
+        accountType: 'PATIENT',
+        gender: 'Male',
+        profile: { type: 'PATIENT', documentId: 'V-12345678', phone: '+58424-1234567', gender: 'Male' },
+      },
+      // Patient 2 — for multi-patient / appointment tests
+      {
+        username: 'pac.rivas',
+        email: 'pac.rivas@email.com',
+        firstName: 'Lucía',
+        lastName: 'Rivas',
+        role: 'PATIENT',
+        accountType: 'PATIENT',
+        gender: 'Female',
+        profile: { type: 'PATIENT', documentId: 'V-87654321', phone: '+58424-7654321', gender: 'Female' },
+      },
+      // Beta/production tester — independent doctor for prod QA
+      {
+        username: 'dr.beta',
+        email: 'beta@medicus.com',
+        firstName: 'Beta',
+        lastName: 'Tester',
+        role: 'DOCTOR',
+        accountType: 'PROFESSIONAL',
+        profile: { type: 'DOCTOR', license: 'BETA-001', phone: '+58412-0000000', specialty: 'Medicina General' },
+      },
     ];
 
-    for (const userData of users) {
-        if (!roles[userData.role]) continue;
+    // ── 5. Create users + profiles ─────────────────────────────────────
+    for (const data of users) {
+      const user = await upsertUser(data);
+      if (!user || !data.profile) continue;
 
-        console.log(`Processing user: ${userData.username} (${userData.email})...`);
-        const [user, created] = await User.findOrCreate({
-            where: { email: userData.email }, // Check by email to avoid duplicates
-            defaults: {
-                username: userData.username,
-                email: userData.email,
-                password: userData.password,
-                firstName: userData.firstName,
-                lastName: userData.lastName,
-                businessName: userData.businessName,
-                accountType: userData.accountType || 'PATIENT',
-                roleId: roles[userData.role].id
-            }
+      const p = data.profile;
+
+      if (p.type === 'DOCTOR') {
+        const [dept] = await Department.findOrCreate({
+          where: { name: p.specialty },
+          defaults: { name: p.specialty },
         });
+        const [spec] = await Specialty.findOrCreate({
+          where: { name: p.specialty, departmentId: dept.id },
+          defaults: { name: p.specialty, departmentId: dept.id },
+        });
+        await Doctor.findOrCreate({
+          where: { userId: user.id },
+          defaults: { userId: user.id, licenseNumber: p.license, phone: p.phone, specialtyId: spec.id },
+        });
+      }
 
-        console.log(`User ${userData.username}: created=${created}, id=${user.id}`);
+      if (p.type === 'NURSE') {
+        await Nurse.findOrCreate({
+          where: { userId: user.id },
+          defaults: { userId: user.id, licenseNumber: p.license, phone: p.phone, shift: p.shift || 'Morning' },
+        });
+      }
 
-        // Handle specific role data
-        if (userData.role === 'DOCTOR' && userData.specialtyConfig) {
-            const [dept] = await Department.findOrCreate({ 
-                where: { name: userData.specialtyConfig.name }, 
-                defaults: { name: userData.specialtyConfig.name } 
-            });
-            const [spec] = await Specialty.findOrCreate({ 
-                where: { name: userData.specialtyConfig.name, departmentId: dept.id }, 
-                defaults: { name: userData.specialtyConfig.name, departmentId: dept.id } 
-            });
-            
-            await Doctor.findOrCreate({
-                where: { userId: user.id },
-                defaults: {
-                    userId: user.id,
-                    licenseNumber: userData.specialtyConfig.license,
-                    phone: userData.specialtyConfig.phone,
-                    specialtyId: spec.id
-                }
-            });
-        }
+      if (p.type === 'STAFF') {
+        await Staff.findOrCreate({
+          where: { userId: user.id },
+          defaults: { userId: user.id, employeeId: p.employeeId, position: p.position },
+        });
+      }
 
-        if (userData.role === 'PATIENT' && userData.patientConfig) {
-             await Patient.findOrCreate({
-                where: { userId: user.id },
-                defaults: {
-                    userId: user.id,
-                    documentId: userData.patientConfig.documentId,
-                    phone: userData.patientConfig.phone,
-                    gender: userData.patientConfig.gender
-                }
-            });
-        }
+      if (p.type === 'PATIENT') {
+        await Patient.findOrCreate({
+          where: { userId: user.id },
+          defaults: { userId: user.id, documentId: p.documentId, phone: p.phone, gender: p.gender },
+        });
+      }
     }
 
-    console.log('Test data seeded successfully');
+    console.log(`\n✅ Seed complete — all accounts use password: ${SEED_PASSWORD}\n`);
   } catch (error) {
-    console.error('Error seeding test data:', error);
+    console.error('❌ Error seeding test data:', error);
   }
 };
 
