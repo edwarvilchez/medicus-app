@@ -6,10 +6,23 @@ on:
       - master
       - staging
 
+concurrency:
+  group: deploy-medicus-global
+  cancel-in-progress: false
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Wait for staging window (30s)
+        if: github.ref == 'refs/heads/staging'
+        run: sleep 30
+
+      - name: Wait for production window (7200s)
+        if: github.ref == 'refs/heads/master'
+        run: |
+          echo "⏱️ Iniciando ventana de seguridad de 2 horas para Producción..."
+          sleep 7200
       - name: Deploy API
         if: env.API_WEBHOOK != ''
         run: |
