@@ -193,11 +193,10 @@ export class Appointments implements OnInit {
   }
 
   loadAppointments() {
-    console.log('[DEBUG] loadAppointments called');
     this.appointmentService.getAppointments().subscribe({
-      next: (data) => {
-        console.log('[DEBUG] appointments received:', data);
-        this.appointments.set(data);
+      next: (data: any) => {
+        const list = Array.isArray(data) ? data : data.appointments ?? [];
+        this.appointments.set(list);
       },
       error: (err) => console.error('[ERROR] loading appointments:', err)
     });
