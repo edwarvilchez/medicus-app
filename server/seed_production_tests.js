@@ -120,19 +120,28 @@ async function seedProductionTests() {
         console.log(`  (Actualizado password para usuario existente)`);
       }
 
-      // Crear Perfiles específicos
+      // Crear o Actualizar Perfiles específicos
       if (u.role === 'DOCTOR') {
-        await Doctor.findOrCreate({
+        const [doc] = await Doctor.findOrCreate({
           where: { userId: user.id },
           defaults: { userId: user.id, licenseNumber: 'PROD-DOC-001', phone: '+58412-0000001' },
           transaction
         });
+        if (doc) {
+          doc.licenseNumber = 'PROD-DOC-001';
+          await doc.save({ transaction });
+        }
       } else if (u.role === 'NURSE') {
-        await Nurse.findOrCreate({
+        const [nur] = await Nurse.findOrCreate({
           where: { userId: user.id },
           defaults: { userId: user.id, licenseNumber: 'PROD-NUR-001', shift: 'Mañana' },
           transaction
         });
+        if (nur) {
+          nur.licenseNumber = 'PROD-NUR-001';
+          nur.shift = 'Mañana';
+          await nur.save({ transaction });
+        }
       } else if (u.role === 'RECEPTIONIST' || u.role === 'ADMINISTRATIVE') {
         await Staff.findOrCreate({
           where: { userId: user.id },
@@ -140,11 +149,15 @@ async function seedProductionTests() {
           transaction
         });
       } else if (u.role === 'PATIENT') {
-        await Patient.findOrCreate({
+        const [pat] = await Patient.findOrCreate({
           where: { userId: user.id },
           defaults: { userId: user.id, documentId: 'V-00000001', phone: '+58412-0000002' },
           transaction
         });
+        if (pat) {
+          pat.documentId = 'V-00000001';
+          await pat.save({ transaction });
+        }
       }
     }
 
