@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { API_URL } from '../api-config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AppointmentService {
-  private apiUrl = 'http://localhost:5000/api/appointments';
+  private apiUrl = `${API_URL}/appointments`;
 
   constructor(private http: HttpClient) { }
 
@@ -23,6 +24,6 @@ export class AppointmentService {
   }
 
   getPatientByUserId(userId: string): Observable<any> {
-    return this.http.get<any>(`http://localhost:5000/api/patients/user/${userId}`);
+    return this.http.get<any>(`${API_URL}/patients/user/${userId}`);
   }
 }

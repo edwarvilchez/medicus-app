@@ -1,6 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
+import { API_URL } from '../api-config';
 
 export interface TeamMember {
   id: string;
@@ -18,7 +19,7 @@ export interface TeamMember {
   providedIn: 'root'
 })
 export class TeamService {
-  private apiUrl = 'http://localhost:5000/api/team';
+  private apiUrl = `${API_URL}/team`;
 
   // Signals for reactive state
   members = signal<TeamMember[]>([]);

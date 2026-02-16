@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 import SimplePeer from 'simple-peer';
+import { API_URL, SOCKET_URL } from '../api-config';
 
 interface VideoConsultation {
   id: number;
@@ -21,8 +22,8 @@ interface VideoConsultation {
   providedIn: 'root'
 })
 export class VideoConsultationService {
-  private apiUrl = 'http://localhost:5000/api/video-consultations';
-  private socketUrl = 'http://localhost:5000';
+  private apiUrl = `${API_URL}/video-consultations`;
+  private socketUrl = SOCKET_URL;
   private socket: Socket | null = null;
   private peer: SimplePeer.Instance | null = null;
   private currentRoomId: string = '';

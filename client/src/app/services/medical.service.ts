@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { API_URL } from '../api-config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MedicalService {
-  private recordsUrl = 'http://localhost:5000/api/medical-records';
-  private labsUrl = 'http://localhost:5000/api/lab-results';
+  private recordsUrl = `${API_URL}/medical-records`;
+  private labsUrl = `${API_URL}/lab-results`;
 
   constructor(private http: HttpClient) { }
 
