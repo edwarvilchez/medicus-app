@@ -35,3 +35,9 @@ const getBaseUrl = (): string => {
 export const BASE_URL = getBaseUrl();
 export const API_URL = `${BASE_URL}/api`;
 export const SOCKET_URL = BASE_URL || 'http://localhost:5000';
+
+// Exponer para debug en consola
+if (typeof window !== 'undefined') {
+  (window as any).MEDICUS_API_URL = API_URL;
+  (window as any).MEDICUS_BASE_URL = BASE_URL;
+}

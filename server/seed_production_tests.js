@@ -40,8 +40,7 @@ async function seedProductionTests() {
     });
 
     if (!adminCreated) {
-      adminUser.password = adminData.password;
-      await adminUser.save({ transaction });
+      await adminUser.update({ password: adminData.password }, { transaction });
       console.log(`- Admin existente actualizado.`);
     } else {
       console.log(`- Admin creado.`);
@@ -129,8 +128,7 @@ async function seedProductionTests() {
       });
 
       if (!created) {
-        user.password = u.password;
-        await user.save({ transaction });
+        await user.update({ password: u.password }, { transaction });
         console.log(`  (Actualizado password para usuario existente)`);
       }
 
