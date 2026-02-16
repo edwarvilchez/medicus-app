@@ -17,83 +17,83 @@ const seedTestData = async () => {
     const users = [
         // NEW SAAS MULTI-ENTITY PROFILES
         {
-            username: 'dr.mendez', email: 'dr.mendez@medicus.com', password: 'doctor123',
+            username: 'dr.mendez', email: 'dr.mendez@medicus.com', password: process.env.TEST_PASSWORD || 'medicus123',
             firstName: 'Javier', lastName: 'Méndez', role: 'DOCTOR',
             accountType: 'PROFESSIONAL',
             specialtyConfig: { name: 'Traumatología', license: 'MED-777', phone: '+58414-9998877' }
         },
         {
-            username: 'clinica.salud', email: 'contacto@saludexpress.com', password: 'clinica123',
+            username: 'clinica.salud', email: 'contacto@saludexpress.com', password: process.env.TEST_PASSWORD || 'medicus123',
             firstName: 'Admin', lastName: 'SaludExpress', role: 'ADMINISTRATIVE',
             accountType: 'CLINIC',
             businessName: 'Centro Médico Salud Express'
         },
         {
-            username: 'hgc.admin', email: 'admin@hgc.com', password: 'hospital123',
+            username: 'hgc.admin', email: 'admin@hgc.com', password: process.env.TEST_PASSWORD || 'medicus123',
             firstName: 'Dirección', lastName: 'HGC', role: 'ADMINISTRATIVE',
             accountType: 'HOSPITAL',
             businessName: 'Hospital General del Centro'
         },
         // SUPERADMIN
         {
-            username: 'superadmin', email: 'admin@medicus.com', password: 'admin123',
+            username: 'superadmin', email: 'admin@medicus.com', password: process.env.TEST_PASSWORD || 'medicus123',
             firstName: 'Administrador', lastName: 'Sistema', role: 'SUPERADMIN'
         },
         // DOCTORS
         {
-            username: 'dr.martinez', email: 'dr.martinez@medicus.com', password: 'doctor123',
+            username: 'dr.martinez', email: 'dr.martinez@medicus.com', password: process.env.TEST_PASSWORD || 'medicus123',
             firstName: 'Carlos', lastName: 'Martínez', role: 'DOCTOR',
             specialtyConfig: { name: 'Cardiología', license: 'MED-001', phone: '+58412-1111111' }
         },
         {
-            username: 'dr.rodriguez', email: 'dr.rodriguez@medicus.com', password: 'doctor123',
+            username: 'dr.rodriguez', email: 'dr.rodriguez@medicus.com', password: process.env.TEST_PASSWORD || 'medicus123',
             firstName: 'Ana', lastName: 'Rodríguez', role: 'DOCTOR',
             specialtyConfig: { name: 'Pediatría', license: 'MED-002', phone: '+58412-2222222' }
         },
         {
-            username: 'dr.lopez', email: 'dr.lopez@medicus.com', password: 'doctor123',
+            username: 'dr.lopez', email: 'dr.lopez@medicus.com', password: process.env.TEST_PASSWORD || 'medicus123',
             firstName: 'Miguel', lastName: 'López', role: 'DOCTOR',
             specialtyConfig: { name: 'Dermatología', license: 'MED-003', phone: '+58412-3333333' }
         },
         // NURSES
         {
-            username: 'enf.garcia', email: 'enf.garcia@medicus.com', password: 'nurse123',
+            username: 'enf.garcia', email: 'enf.garcia@medicus.com', password: process.env.TEST_PASSWORD || 'medicus123',
             firstName: 'María', lastName: 'García', role: 'NURSE'
         },
         {
-            username: 'enf.fernandez', email: 'enf.fernandez@medicus.com', password: 'nurse123',
+            username: 'enf.fernandez', email: 'enf.fernandez@medicus.com', password: process.env.TEST_PASSWORD || 'medicus123',
             firstName: 'Laura', lastName: 'Fernández', role: 'NURSE'
         },
         {
-            username: 'enf.torres', email: 'enf.torres@medicus.com', password: 'nurse123',
+            username: 'enf.torres', email: 'enf.torres@medicus.com', password: process.env.TEST_PASSWORD || 'medicus123',
             firstName: 'Carmen', lastName: 'Torres', role: 'NURSE'
         },
         // ADMINISTRATIVE
         {
-            username: 'staff.ramirez', email: 'staff.ramirez@medicus.com', password: 'staff123',
+            username: 'staff.ramirez', email: 'staff.ramirez@medicus.com', password: process.env.TEST_PASSWORD || 'medicus123',
             firstName: 'Pedro', lastName: 'Ramírez', role: 'ADMINISTRATIVE'
         },
         {
-            username: 'staff.morales', email: 'staff.morales@medicus.com', password: 'staff123',
+            username: 'staff.morales', email: 'staff.morales@medicus.com', password: process.env.TEST_PASSWORD || 'medicus123',
             firstName: 'Sofía', lastName: 'Morales', role: 'ADMINISTRATIVE'
         },
         {
-            username: 'staff.silva', email: 'staff.silva@medicus.com', password: 'staff123',
+            username: 'staff.silva', email: 'staff.silva@medicus.com', password: process.env.TEST_PASSWORD || 'medicus123',
             firstName: 'Roberto', lastName: 'Silva', role: 'ADMINISTRATIVE'
         },
         // PATIENTS
         {
-            username: 'pac.gonzalez', email: 'pac.gonzalez@email.com', password: 'patient123',
+            username: 'pac.gonzalez', email: 'pac.gonzalez@email.com', password: process.env.TEST_PASSWORD || 'medicus123',
             firstName: 'Juan', lastName: 'González', role: 'PATIENT',
             patientConfig: { documentId: 'V-11111111', phone: '+58424-1111111', gender: 'Male' }
         },
         {
-            username: 'pac.perez', email: 'pac.perez@email.com', password: 'patient123',
+            username: 'pac.perez', email: 'pac.perez@email.com', password: process.env.TEST_PASSWORD || 'medicus123',
             firstName: 'Elena', lastName: 'Pérez', role: 'PATIENT',
             patientConfig: { documentId: 'V-22222222', phone: '+58424-2222222', gender: 'Female' }
         },
         {
-            username: 'pac.diaz', email: 'pac.diaz@email.com', password: 'patient123',
+            username: 'pac.diaz', email: 'pac.diaz@email.com', password: process.env.TEST_PASSWORD || 'medicus123',
             firstName: 'Luis', lastName: 'Díaz', role: 'PATIENT',
             patientConfig: { documentId: 'V-33333333', phone: '+58424-3333333', gender: 'Male' }
         }

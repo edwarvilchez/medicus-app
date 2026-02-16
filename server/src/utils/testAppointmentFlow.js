@@ -4,8 +4,8 @@ async function test() {
     try {
         console.log('🔐 Iniciando sesión...');
         const loginRes = await axios.post('http://localhost:5000/api/auth/login', {
-            email: 'admin@medicus.com',
-            password: 'admin123'
+            email: process.env.TEST_USER_EMAIL || 'admin@medicus.com',
+            password: process.env.TEST_USER_PASSWORD || 'medicus123'
         });
         const token = loginRes.data.token;
         console.log('✅ Login exitoso. Token obtenido.');

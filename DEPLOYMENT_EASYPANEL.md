@@ -332,7 +332,7 @@ JWT_SECRET=GENERA_UN_SECRET_ALEATORIO_LARGO
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 SMTP_EMAIL=tu_email@gmail.com
-SMTP_PASSWORD=tu_app_password_de_gmail
+SMTP_PASSWORD=TU_CONTRASENA_AQUI
 FROM_NAME=Clínica Medicus
 FROM_EMAIL=tu_email@gmail.com
 
@@ -574,7 +574,7 @@ production: {
 3. Actualiza las variables de entorno del API:
    ```env
    DB_USER=medicus_app_admin  # Debe coincidir exactamente
-   DB_PASSWORD=472025          # Debe coincidir exactamente
+   DB_PASSWORD=TU_CONTRASENA_SEGURA_AQUI
    DB_NAME=medicus_app_db      # Debe coincidir exactamente
    DB_HOST=medicus_app_medicus_app_db  # Nombre interno del servicio
    ```

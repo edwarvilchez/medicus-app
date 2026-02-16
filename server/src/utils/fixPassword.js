@@ -20,16 +20,16 @@ async function fixPatientPassword() {
         lastName: 'Gonzalez',
         username: 'juang',
         email: 'pac.gonzalez@email.com',
-        password: 'patient123', // El hook beforeCreate lo hasheará
+        password: process.env.TEST_PASSWORD || 'medicus123', // El hook beforeCreate lo hasheará
         roleId: patientRole.id
       });
-      console.log('✅ Usuario creado exitosamente con password: patient123');
+      console.log(`✅ Usuario creado exitosamente con password: ${process.env.TEST_PASSWORD || 'medicus123'}`);
     } else {
       console.log(`✅ Usuario encontrado (ID: ${user.id}, Rol: ${user.Role.name})`);
-      console.log('🔄 Restableciendo contraseña a "patient123"...');
+      console.log(`🔄 Restableciendo contraseña a "${process.env.TEST_PASSWORD || 'medicus123'}"...`);
       
       // Forzar actualización de password
-      user.password = 'patient123';
+      user.password = process.env.TEST_PASSWORD || 'medicus123';
       await user.save(); // Esto disparará el hook de hasheo
       
       console.log('✅ Contraseña actualizada correctamente.');

@@ -1,8 +1,8 @@
 const http = require('http');
 
 const data = JSON.stringify({
-  email: 'admin@hgc.com',
-  password: 'hospital123'
+  email: process.env.TEST_USER_EMAIL || 'admin@hgc.com',
+  password: process.env.TEST_USER_PASSWORD || 'medicus123'
 });
 
 const options = {

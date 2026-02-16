@@ -3,15 +3,15 @@ require('dotenv').config();
 
 const grantPermissions = async () => {
   const client = new Client({
-    user: 'postgres',
-    password: '472025',
+    user: process.env.DB_USER || 'postgres',
+    password: process.env.DB_PASSWORD, // Read from environment
     host: process.env.DB_HOST || '127.0.0.1',
     port: process.env.DB_PORT || 5432,
     database: 'postgres'
   });
 
   const envs = ['medicus_dev', 'medicus_qa', 'medicus_prod'];
-  const appUser = 'medicus_app_admin';
+  const appUser = process.env.APP_DB_USER || 'medicus_app_admin';
 
   try {
     await client.connect();
@@ -22,8 +22,8 @@ const grantPermissions = async () => {
       
       // Connect to the specific database
       const dbClient = new Client({
-        user: 'postgres',
-        password: '472025',
+        user: process.env.DB_USER || 'postgres',
+        password: process.env.DB_PASSWORD, // Read from environment
         host: process.env.DB_HOST || '127.0.0.1',
         port: process.env.DB_PORT || 5432,
         database: dbName

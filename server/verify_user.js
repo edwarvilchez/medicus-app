@@ -3,8 +3,8 @@ const bcrypt = require('bcryptjs');
 
 async function verify() {
   try {
-    const email = 'admin@hgc.com';
-    const password = 'hospital123';
+    const email = process.env.TEST_USER_EMAIL || 'admin@hgc.com';
+    const password = process.env.TEST_USER_PASSWORD || 'medicus123';
 
     console.log(`🔍 Checking user: ${email}`);
     const user = await User.findOne({ where: { email }, include: [Role] });

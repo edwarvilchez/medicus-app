@@ -4,16 +4,16 @@ require('dotenv').config();
 const createSchemas = async () => {
   // Connect as postgres superuser to create databases
   const client = new Client({
-    user: 'postgres', // Using postgres superuser
-    password: '472025', // Your postgres password
+    user: process.env.DB_USER || 'postgres',
+    password: process.env.DB_PASSWORD, // Read from environment
     host: process.env.DB_HOST || '127.0.0.1',
     port: process.env.DB_PORT || 5432,
     database: 'postgres'
   });
 
   const envs = ['medicus_dev', 'medicus_qa', 'medicus_prod'];
-  const appUser = 'medicus_app_admin';
-  const appPassword = '472025';
+  const appUser = process.env.APP_DB_USER || 'medicus_app_admin';
+  const appPassword = process.env.APP_DB_PASSWORD || 'medicus_app_pass';
 
   try {
     await client.connect();

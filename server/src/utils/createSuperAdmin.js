@@ -12,7 +12,7 @@ async function createSuperAdmin() {
 
     if (superAdmin) {
       console.log('ℹ️  SUPERADMIN ya existe. Actualizando password...');
-      superAdmin.password = 'admin123';
+      superAdmin.password = process.env.SUPERADMIN_PASSWORD || 'admin123';
       await superAdmin.save();
       console.log('✅ Password actualizado.');
     } else {
@@ -29,7 +29,7 @@ async function createSuperAdmin() {
         superAdmin = await User.create({
           username: 'superadmin',
           email: 'admin@medicus.com',
-          password: 'admin123',
+          password: process.env.SUPERADMIN_PASSWORD || 'admin123',
           firstName: 'Administrador',
           lastName: 'Sistema',
           phone: '+58412-0000000',

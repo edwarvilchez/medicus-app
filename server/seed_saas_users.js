@@ -4,7 +4,7 @@ const saasUsers = [
   {
     type: 'HOSPITAL',
     email: 'admin@hgc.com',
-    password: 'hospital123',
+    password: process.env.SEED_USER_PASSWORD || 'hospital123',
     username: 'hgc.admin',
     firstName: 'Dirección',
     lastName: 'HGC',
@@ -14,7 +14,7 @@ const saasUsers = [
   {
     type: 'CLINIC',
     email: 'contacto@saludexpress.com',
-    password: 'clinica123',
+    password: process.env.SEED_USER_PASSWORD || 'clinica123',
     username: 'clinica.salud',
     firstName: 'Admin',
     lastName: 'SaludExpress',
@@ -24,7 +24,7 @@ const saasUsers = [
   {
     type: 'PROFESSIONAL',
     email: 'dr.mendez@medicus.com',
-    password: 'doctor123',
+    password: process.env.SEED_USER_PASSWORD || 'doctor123',
     username: 'dr.mendez',
     firstName: 'Javier',
     lastName: 'Méndez',

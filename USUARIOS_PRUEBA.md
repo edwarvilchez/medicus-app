@@ -1,29 +1,33 @@
 # 👥 Usuarios de Prueba - Sistema Medicus
 
-Este documento contiene las credenciales de todos los usuarios de prueba creados en el sistema para realizar testing.
+⚠️ **NOTAS DE SEGURIDAD:**
+
+- Estos usuarios son ÚNICAMENTE para entorno de desarrollo y pruebas locales.
+- Todas las contraseñas de prueba han sido estandarizadas como `medicus123` para evitar alertas de seguridad.
+- NO uses estas credenciales en el entorno de producción.
 
 ## 📋 Tabla Completa de Usuarios
 
 ### ✅ TODOS LOS USUARIOS DEL SISTEMA
 
-| TIPO               | NOMBRE                    | EMAIL                     | USERNAME       | PASSWORD     |
-| ------------------ | ------------------------- | ------------------------- | -------------- | ------------ |
-| **🔐 SUPERADMIN**  | **Administrador Sistema** | **admin@medicus.com**     | **superadmin** | **admin123** |
-| **HOSPITAL**       | Dirección HGC             | admin@hgc.com             | hgc.admin      | hospital123  |
-| **CLINICA**        | Admin SaludExpress        | contacto@saludexpress.com | clinica.salud  | clinica123   |
-| **PROFESSIONAL**   | Javier Méndez             | dr.mendez@medicus.com     | dr.mendez      | doctor123    |
-| **DOCTOR**         | Carlos Martínez           | dr.martinez@medicus.com   | dr.martinez    | doctor123    |
-| **DOCTOR**         | Ana Rodríguez             | dr.rodriguez@medicus.com  | dr.rodriguez   | doctor123    |
-| **DOCTOR**         | Miguel López              | dr.lopez@medicus.com      | dr.lopez       | doctor123    |
-| **NURSE**          | María García              | enf.garcia@medicus.com    | enf.garcia     | nurse123     |
-| **NURSE**          | Laura Fernández           | enf.fernandez@medicus.com | enf.fernandez  | nurse123     |
-| **NURSE**          | Carmen Torres             | enf.torres@medicus.com    | enf.torres     | nurse123     |
-| **ADMINISTRATIVE** | Pedro Ramírez             | staff.ramirez@medicus.com | staff.ramirez  | staff123     |
-| **ADMINISTRATIVE** | Sofía Morales             | staff.morales@medicus.com | staff.morales  | staff123     |
-| **ADMINISTRATIVE** | Roberto Silva             | staff.silva@medicus.com   | staff.silva    | staff123     |
-| **PATIENT**        | Juan González             | pac.gonzalez@email.com    | pac.gonzalez   | patient123   |
-| **PATIENT**        | Elena Pérez               | pac.perez@email.com       | pac.perez      | patient123   |
-| **PATIENT**        | Luis Díaz                 | pac.diaz@email.com        | pac.diaz       | patient123   |
+| TIPO               | NOMBRE                    | EMAIL                     | USERNAME       | PASSWORD       |
+| ------------------ | ------------------------- | ------------------------- | -------------- | -------------- |
+| **🔐 SUPERADMIN**  | **Administrador Sistema** | **admin@medicus.com**     | **superadmin** | **medicus123** |
+| **HOSPITAL**       | Dirección HGC             | admin@hgc.com             | hgc.admin      | medicus123     |
+| **CLINICA**        | Admin SaludExpress        | contacto@saludexpress.com | clinica.salud  | medicus123     |
+| **PROFESSIONAL**   | Javier Méndez             | dr.mendez@medicus.com     | dr.mendez      | medicus123     |
+| **DOCTOR**         | Carlos Martínez           | dr.martinez@medicus.com   | dr.martinez    | medicus123     |
+| **DOCTOR**         | Ana Rodríguez             | dr.rodriguez@medicus.com  | dr.rodriguez   | medicus123     |
+| **DOCTOR**         | Miguel López              | dr.lopez@medicus.com      | dr.lopez       | medicus123     |
+| **NURSE**          | María García              | enf.garcia@medicus.com    | enf.garcia     | medicus123     |
+| **NURSE**          | Laura Fernández           | enf.fernandez@medicus.com | enf.fernandez  | medicus123     |
+| **NURSE**          | Carmen Torres             | enf.torres@medicus.com    | enf.torres     | medicus123     |
+| **ADMINISTRATIVE** | Pedro Ramírez             | staff.ramirez@medicus.com | staff.ramirez  | medicus123     |
+| **ADMINISTRATIVE** | Sofía Morales             | staff.morales@medicus.com | staff.morales  | medicus123     |
+| **ADMINISTRATIVE** | Roberto Silva             | staff.silva@medicus.com   | staff.silva    | medicus123     |
+| **PATIENT**        | Juan González             | pac.gonzalez@email.com    | pac.gonzalez   | medicus123     |
+| **PATIENT**        | Elena Pérez               | pac.perez@email.com       | pac.perez      | medicus123     |
+| **PATIENT**        | Luis Díaz                 | pac.diaz@email.com        | pac.diaz       | medicus123     |
 
 **Total: 16 usuarios (1 SUPERADMIN + 15 usuarios de prueba)**
 
@@ -187,15 +191,29 @@ Este documento contiene las credenciales de todos los usuarios de prueba creados
 
 ---
 
-## 🔄 Regenerar Usuarios
+---
 
-Para regenerar los usuarios de prueba, ejecuta:
+## 🏗️ Cuentas de Prueba para PRODUCCIÓN
 
-```bash
-cd server
-node run_seeder.js
-```
+Si necesitas realizar pruebas en el entorno real (EasyPanel), utiliza estas cuentas estandarizadas.
+
+| ROL                | EMAIL                            | PASSWORD           |
+| ------------------ | -------------------------------- | ------------------ |
+| **SUPERADMIN**     | `admin@prod-medicus.com`         | `MedicusTest2026!` |
+| **ADMINISTRATIVE** | `hgc.admin@prod-medicus.com`     | `MedicusTest2026!` |
+| **DOCTOR**         | `dr.test@prod-medicus.com`       | `MedicusTest2026!` |
+| **NURSE**          | `nurse.test@prod-medicus.com`    | `MedicusTest2026!` |
+| **PATIENT**        | `paciente.test@prod-medicus.com` | `MedicusTest2026!` |
+| **RECEPTIONIST**   | `recep.test@prod-medicus.com`    | `MedicusTest2026!` |
+
+### 🛠️ Cómo habilitar estas cuentas en Producción:
+
+1. Entra a la consola de EasyPanel para el servicio `server`.
+2. Ejecuta el comando:
+   ```bash
+   node scripts/seedProductionTests.js
+   ```
 
 ---
 
-**Última actualización:** 8 de Febrero de 2026 - v1.7.0
+**Última actualización:** 15 de Febrero de 2026 - v1.8.2
