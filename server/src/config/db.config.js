@@ -5,7 +5,7 @@ const configs = {
   development: {
     username: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME || 'medicus_dev',
+    database: process.env.DB_NAME,
     host: process.env.DB_HOST,
     dialect: 'postgres',
     logging: false
@@ -13,7 +13,7 @@ const configs = {
   qa: {
     username: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME || 'medicus_qa',
+    database: process.env.DB_NAME,
     host: process.env.DB_HOST,
     dialect: 'postgres',
     logging: false
@@ -21,7 +21,7 @@ const configs = {
   production: {
     username: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME || 'medicus_prod',
+    database: process.env.DB_NAME,
     host: process.env.DB_HOST,
     dialect: 'postgres',
     logging: false,
