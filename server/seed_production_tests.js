@@ -25,7 +25,7 @@ async function seedProductionTests() {
       accountType: 'HOSPITAL'
     };
 
-    const [adminUser] = await User.findOrCreate({
+    const [adminUser, adminCreated] = await User.findOrCreate({
       where: { email: adminData.email },
       defaults: {
         username: adminData.username,
@@ -38,6 +38,14 @@ async function seedProductionTests() {
       },
       transaction
     });
+
+    if (!adminCreated) {
+      adminUser.password = adminData.password;
+      await adminUser.save({ transaction });
+      console.log(`- Admin existente actualizado.`);
+    } else {
+      console.log(`- Admin creado.`);
+    }
 
     // 3. Crear Organización de Prueba (SaaS) usando al Admin como dueño
     const [org] = await Organization.findOrCreate({
