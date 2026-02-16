@@ -1,0 +1,43 @@
+name: Promote Branches
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_branch:
+        description: "Rama origen"
+        required: true
+        default: "develop"
+        type: choice
+        options:
+          - develop
+          - staging
+      target_branch:
+        description: "Rama destino"
+        required: true
+        default: "staging"
+        type: choice
+        options:
+          - staging
+          - master
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+
+      - name: Merge Source into Target
+        run: |
+          echo "🚀 Promocionando cambios de ${{ github.event.inputs.source_branch }} a ${{ github.event.inputs.target_branch }}..."
+          git checkout ${{ github.event.inputs.target_branch }}
+          git merge origin/${{ github.event.inputs.source_branch }} --no-ff -m "chore: promote ${{ github.event.inputs.source_branch }} to ${{ github.event.inputs.target_branch }}"
+          git push origin ${{ github.event.inputs.target_branch }}
+          echo "✅ Promoción completada con éxito."
