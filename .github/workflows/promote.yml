@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       target_env:
-        description: "Entorno de destino para promocionar"
+        description: "Entorno de destino (staging o production)"
         required: true
         default: "staging"
         type: choice
@@ -46,16 +46,18 @@ jobs:
 
       - name: Merge Develop -> Staging
         run: |
-          echo "🚀 Promocionando rama Develop a Staging..."
+          echo "🚀 Promocionando Develop a Staging..."
           git fetch origin develop
           git merge origin/develop --no-ff -m "chore: promote develop to staging [skip ci]"
           git push origin staging
 
-      - name: Trigger Easypanel Staging Deployment
-        if: success()
+      - name: Wait for Staging Window (30s)
+        run: sleep 30
+
+      - name: Trigger Easypanel Staging
         run: |
-          echo "📡 Activando Webhooks de Staging en Easypanel..."
-          curl -f -X POST "${{ secrets.EASYPANEL_API_WEBHOOK }}" || echo "⚠️ Webhook API falló o no configurado"
+          echo "📡 Activando Webhook API Staging..."
+          curl -f -X POST "${{ secrets.EASYPANEL_API_WEBHOOK }}" || echo "⚠️ Webhook API falló"
 
   promote-to-production:
     if: github.event.inputs.target_env == 'production'
@@ -87,14 +89,18 @@ jobs:
 
       - name: Merge Staging -> Master
         run: |
-          echo "🚀 Promocionando rama Staging a Producción (Master)..."
+          echo "🚀 Promocionando Staging a Producción (Master)..."
           git fetch origin staging
           git merge origin/staging --no-ff -m "release: promote staging to production [skip ci]"
           git push origin master
 
-      - name: Trigger Easypanel Production Deployment
-        if: success()
+      - name: Wait for Production Window (180s)
         run: |
-          echo "📡 Activando Webhooks de Producción en Easypanel..."
-          curl -f -X POST "${{ secrets.EASYPANEL_API_WEBHOOK }}" || echo "⚠️ Webhook API falló o no configurado"
-          curl -f -X POST "${{ secrets.EASYPANEL_FRONTEND_WEBHOOK }}" || echo "⚠️ Webhook Frontend falló o no configurado"
+          echo "⏱️ Iniciando ventana de seguridad de 3 minutos para Producción..."
+          sleep 180
+
+      - name: Trigger Easypanel Production
+        run: |
+          echo "📡 Activando Webhooks de Producción..."
+          curl -f -X POST "${{ secrets.EASYPANEL_API_WEBHOOK }}" || echo "⚠️ Webhook API falló"
+          curl -f -X POST "${{ secrets.EASYPANEL_FRONTEND_WEBHOOK }}" || echo "⚠️ Webhook Frontend falló"
