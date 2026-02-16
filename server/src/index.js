@@ -15,7 +15,7 @@ const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 
 const app = express();
-const server = http.createServer(app); // Crear servidor HTTP para Socket.io
+const server = http.createServer(app);
 
 // Swagger Configuration
 const swaggerOptions = {
@@ -55,28 +55,21 @@ const swaggerOptions = {
       },
     ],
   },
-  apis: ['./src/routes/*.js'], // Path to route files for annotations
+  apis: ['./src/routes/*.js'],
 };
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
 
-// Security Middlewares
-app.use(helmet({
-  contentSecurityPolicy: false, // Desactivar temporalmente para Socket.io
-  crossOriginEmbedderPolicy: false,
-}));
-
-// CORS Configuration
+// 1. CORS - DEBE IR PRIMERO QUE TODO
 const corsOptions = {
   origin: (origin, callback) => {
-    const allowedPatterns = [
-      'localhost',
-      '127.0.0.1',
-      '.easypanel.host',
-      '.nominusve.com'
-    ];
-    
-    if (!origin || allowedPatterns.some(pattern => origin.includes(pattern))) {
+    // Permitir si no hay origen (como apps móviles o curl) 
+    // o si el origen coincide con nuestros patrones
+    if (!origin || 
+        origin.includes('localhost') || 
+        origin.includes('127.0.0.1') || 
+        origin.includes('.easypanel.host') || 
+        origin.includes('.nominusve.com')) {
       callback(null, true);
     } else {
       logger.warn({ origin }, 'CORS Blocked');
@@ -84,9 +77,18 @@ const corsOptions = {
     }
   },
   credentials: true,
-  optionsSuccessStatus: 200,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
+
+// 2. Security Middlewares
+app.use(helmet({
+  contentSecurityPolicy: false,
+  crossOriginEmbedderPolicy: false,
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
 
 // Rate Limiting for Auth endpoints
 const authLimiter = rateLimit({
