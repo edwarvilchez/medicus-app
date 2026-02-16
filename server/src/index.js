@@ -68,7 +68,21 @@ app.use(helmet({
 
 // CORS Configuration
 const corsOptions = {
-  origin: process.env.CLIENT_URL || 'http://localhost:4200',
+  origin: (origin, callback) => {
+    const allowedPatterns = [
+      'localhost',
+      '127.0.0.1',
+      '.easypanel.host',
+      '.nominusve.com'
+    ];
+    
+    if (!origin || allowedPatterns.some(pattern => origin.includes(pattern))) {
+      callback(null, true);
+    } else {
+      logger.warn({ origin }, 'CORS Blocked');
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   optionsSuccessStatus: 200,
 };
