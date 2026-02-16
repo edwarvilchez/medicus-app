@@ -16,13 +16,16 @@ jobs:
     steps:
       - name: Wait for staging window (30s)
         if: github.ref == 'refs/heads/staging'
-        run: sleep 30
+        run: |
+          echo "⏱️ Iniciando ventana de despliegue para Staging..."
+          sleep 30
 
       - name: Wait for production window (7200s)
         if: github.ref == 'refs/heads/master'
         run: |
           echo "⏱️ Iniciando ventana de seguridad de 2 horas para Producción..."
           sleep 7200
+
       - name: Deploy API
         if: env.API_WEBHOOK != ''
         run: |
@@ -33,22 +36,14 @@ jobs:
       - name: Check API Webhook Secret
         if: env.API_WEBHOOK == ''
         run: |
-          echo "❌ Error: EASYPANEL_API_WEBHOOK secret is missing in GitHub."
+          echo "❌ Error: EASYPANEL_API_WEBHOOK no está configurado."
           exit 1
         env:
           API_WEBHOOK: ${{ secrets.EASYPANEL_API_WEBHOOK }}
 
       - name: Deploy Frontend
-        if: env.FRONTEND_WEBHOOK != ''
+        if: (github.ref == 'refs/heads/master') && (env.FRONTEND_WEBHOOK != '')
         run: |
           curl -f -X POST "${{ secrets.EASYPANEL_FRONTEND_WEBHOOK }}"
-        env:
-          FRONTEND_WEBHOOK: ${{ secrets.EASYPANEL_FRONTEND_WEBHOOK }}
-
-      - name: Check Frontend Webhook Secret
-        if: env.FRONTEND_WEBHOOK == ''
-        run: |
-          echo "❌ Error: EASYPANEL_FRONTEND_WEBHOOK secret is missing in GitHub."
-          exit 1
         env:
           FRONTEND_WEBHOOK: ${{ secrets.EASYPANEL_FRONTEND_WEBHOOK }}

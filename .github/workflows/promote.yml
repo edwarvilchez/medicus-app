@@ -1,46 +1,100 @@
-name: Promote Branches
+name: Pipeline - Promotion Manager
 
 on:
   workflow_dispatch:
     inputs:
-      source_branch:
-        description: "Rama origen"
-        required: true
-        default: "develop"
-        type: choice
-        options:
-          - develop
-          - staging
-      target_branch:
-        description: "Rama destino"
+      target_env:
+        description: "Entorno de destino para promocionar"
         required: true
         default: "staging"
         type: choice
         options:
           - staging
-          - master
+          - production
 
 permissions:
   contents: write
 
 jobs:
-  promote:
+  promote-to-staging:
+    if: github.event.inputs.target_env == 'staging'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: staging
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Configure Git
         run: |
-          git config --global user.name "GitHub Action"
-          git config --global user.email "action@github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Merge Source into Target
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: "./client/package-lock.json"
+
+      - name: Validate Client Build
         run: |
-          echo "🚀 Promocionando cambios de ${{ github.event.inputs.source_branch }} a ${{ github.event.inputs.target_branch }}..."
-          git checkout ${{ github.event.inputs.target_branch }}
-          git merge origin/${{ github.event.inputs.source_branch }} --no-ff -m "chore: promote ${{ github.event.inputs.source_branch }} to ${{ github.event.inputs.target_branch }}"
-          git push origin ${{ github.event.inputs.target_branch }}
-          echo "✅ Promoción completada con éxito."
+          cd client
+          npm install
+          npm run build
+
+      - name: Merge Develop -> Staging
+        run: |
+          echo "🚀 Promocionando rama Develop a Staging..."
+          git fetch origin develop
+          git merge origin/develop --no-ff -m "chore: promote develop to staging [skip ci]"
+          git push origin staging
+
+      - name: Trigger Easypanel Staging Deployment
+        if: success()
+        run: |
+          echo "📡 Activando Webhooks de Staging en Easypanel..."
+          curl -f -X POST "${{ secrets.EASYPANEL_API_WEBHOOK }}" || echo "⚠️ Webhook API falló o no configurado"
+
+  promote-to-production:
+    if: github.event.inputs.target_env == 'production'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: "./client/package-lock.json"
+
+      - name: Validate Client Build
+        run: |
+          cd client
+          npm install
+          npm run build
+
+      - name: Merge Staging -> Master
+        run: |
+          echo "🚀 Promocionando rama Staging a Producción (Master)..."
+          git fetch origin staging
+          git merge origin/staging --no-ff -m "release: promote staging to production [skip ci]"
+          git push origin master
+
+      - name: Trigger Easypanel Production Deployment
+        if: success()
+        run: |
+          echo "📡 Activando Webhooks de Producción en Easypanel..."
+          curl -f -X POST "${{ secrets.EASYPANEL_API_WEBHOOK }}" || echo "⚠️ Webhook API falló o no configurado"
+          curl -f -X POST "${{ secrets.EASYPANEL_FRONTEND_WEBHOOK }}" || echo "⚠️ Webhook Frontend falló o no configurado"
