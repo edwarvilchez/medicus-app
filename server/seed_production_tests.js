@@ -14,23 +14,28 @@ async function seedProductionTests() {
     // Password estándar para pruebas
     const testPassword = process.env.TEST_PASSWORD || 'MedicusTest2026!';
 
+    const bcrypt = require('bcryptjs');
+    const saltRounds = 10;
+
     // 2. Crear SuperAdmin primero para que sea el dueño de la organización
     const adminData = {
       username: 'prod.admin',
       email: 'admin@prod-medicus.com',
-      password: testPassword,
+      password: testPassword, // plain text
       firstName: 'Admin',
       lastName: 'Producción',
       role: 'SUPERADMIN',
       accountType: 'HOSPITAL'
     };
 
+    const adminHashedPassword = await bcrypt.hash(adminData.password, saltRounds);
+
     const [adminUser, adminCreated] = await User.findOrCreate({
       where: { email: adminData.email },
       defaults: {
         username: adminData.username,
         email: adminData.email,
-        password: adminData.password,
+        password: adminHashedPassword,
         firstName: adminData.firstName,
         lastName: adminData.lastName,
         accountType: adminData.accountType,
@@ -40,11 +45,10 @@ async function seedProductionTests() {
     });
 
     if (!adminCreated) {
-      adminUser.password = adminData.password;
-      await adminUser.save({ transaction });
-      console.log(`- Admin existente actualizado.`);
+      await adminUser.update({ password: adminHashedPassword }, { transaction, hooks: false });
+      console.log(`- Admin existente actualizado con nuevo hash.`);
     } else {
-      console.log(`- Admin creado.`);
+      console.log(`- Admin creado con hash directo.`);
     }
 
     // 3. Crear Organización de Prueba (SaaS) usando al Admin como dueño
@@ -113,27 +117,26 @@ async function seedProductionTests() {
     for (const u of testUsers) {
       console.log(`- Procesando ${u.role}: ${u.email}...`);
       
-      const userDefaults = {
-        username: u.username,
-        email: u.email,
-        password: u.password,
-        firstName: u.firstName,
-        lastName: u.lastName,
-        roleId: getRoleId(u.role),
-        accountType: u.accountType,
-        organizationId: u.orgId
-      };
+      const userHashedPassword = await bcrypt.hash(u.password, saltRounds);
 
       const [user, created] = await User.findOrCreate({
         where: { email: u.email },
-        defaults: userDefaults,
+        defaults: {
+          username: u.username,
+          email: u.email,
+          password: userHashedPassword,
+          firstName: u.firstName,
+          lastName: u.lastName,
+          roleId: getRoleId(u.role),
+          accountType: u.accountType,
+          organizationId: u.orgId
+        },
         transaction
       });
 
       if (!created) {
-        user.password = u.password; // Actualizar password si ya existe
-        await user.save({ transaction });
-        console.log(`  (Actualizado password para usuario existente)`);
+        await user.update({ password: userHashedPassword }, { transaction, hooks: false });
+        console.log(`  (Actualizado hash manualmente)`);
       }
 
       // Crear o Actualizar Perfiles específicos
