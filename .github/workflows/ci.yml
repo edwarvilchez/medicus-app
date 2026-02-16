@@ -2,16 +2,16 @@ name: CI
 
 on:
   push:
-    branches: [ develop, master, staging ]
+    branches: [develop, master, staging]
   pull_request:
-    branches: [ develop, master, staging ]
+    branches: [develop, master, staging]
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [22.x]
 
     steps:
       - uses: actions/checkout@v4
