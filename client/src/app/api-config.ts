@@ -5,25 +5,31 @@ import { isDevMode } from '@angular/core';
 // Por defecto, asumimos que en producción el API estará en el subdominio 'api'
 // o simplemente cambiamos localhost por el host actual.
 
-const getBaseUrl = () => {
-  if (typeof window === 'undefined') return 'http://localhost:5000/api';
+const getBaseUrl = (): string => {
+  if (typeof window === 'undefined') return 'http://localhost:5000';
   
   const host = window.location.hostname;
+  let result = '';
   
   if (host === 'localhost' || host === '127.0.0.1') {
-    return 'http://localhost:5000';
+    result = 'http://localhost:5000';
+  } else if (host.includes('.easypanel.host')) {
+    result = 'https://' + host.replace('-frontend', '-api');
+  } else if (host.includes('nominusve.com')) {
+    if (host === 'medicus.nominusve.com') {
+      result = 'https://medicus-api.nominusve.com';
+    } else {
+      result = 'https://' + host.replace('medicus.', 'medicus-api.');
+    }
   }
 
-  // Si estás en EasyPanel y el API tiene su propio dominio, 
-  // podrías ponerlo aquí. Si el API está en el mismo dominio (detrás de un proxy),
-  // simplemente devuelve '/api'.
-  
-  // Por ahora, para Medicus en producción, detectamos si estamos en nominusve
-  if (host.includes('nominusve.com')) {
-    return 'https://medicus-api.nominusve.com'; 
+  if (!result) {
+    console.warn('⚠️ No se detectó entorno de producción. Usando rutas relativas.');
+  } else {
+    console.log(`🚀 Medicus API detectada: ${result}`);
   }
 
-  return '';
+  return result;
 };
 
 export const BASE_URL = getBaseUrl();
