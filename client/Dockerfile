@@ -5,11 +5,11 @@ WORKDIR /app
 
 # Install dependencies
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
 # Copy source and build
 COPY . .
-RUN npm run build
+RUN npm run build -- --configuration=production
 
 # Production stage
 FROM nginx:alpine
@@ -18,6 +18,7 @@ FROM nginx:alpine
 COPY nginx.conf /etc/nginx/nginx.conf
 
 # Copy built files
+# Nota: Verifica que la ruta de salida sea 'dist/client/browser' o similar según tu angular.json
 COPY --from=builder /app/dist/client/browser /usr/share/nginx/html
 
 EXPOSE 80
