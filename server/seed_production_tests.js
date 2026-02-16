@@ -14,26 +14,38 @@ async function seedProductionTests() {
     // Password estándar para pruebas
     const testPassword = process.env.TEST_PASSWORD || 'MedicusTest2026!';
 
-    // 2. Crear Organización de Prueba (SaaS)
+    // 2. Crear SuperAdmin primero para que sea el dueño de la organización
+    const adminData = {
+      username: 'prod.admin',
+      email: 'admin@prod-medicus.com',
+      password: testPassword,
+      firstName: 'Admin',
+      lastName: 'Producción',
+      role: 'SUPERADMIN',
+      accountType: 'HOSPITAL'
+    };
+
+    const [adminUser] = await User.findOrCreate({
+      where: { email: adminData.email },
+      defaults: {
+        ...adminData,
+        roleId: getRoleId(adminData.role)
+      },
+      transaction
+    });
+
+    // 3. Crear Organización de Prueba (SaaS) usando al Admin como dueño
     const [org] = await Organization.findOrCreate({
       where: { name: 'Hospital de Pruebas Medicus' },
       defaults: {
         name: 'Hospital de Pruebas Medicus',
         type: 'HOSPITAL',
+        ownerId: adminUser.id
       },
       transaction
     });
 
     const testUsers = [
-      {
-        username: 'prod.admin',
-        email: 'admin@prod-medicus.com',
-        password: testPassword,
-        firstName: 'Admin',
-        lastName: 'Producción',
-        role: 'SUPERADMIN',
-        accountType: 'HOSPITAL'
-      },
       {
         username: 'prod.hgc',
         email: 'hgc.admin@prod-medicus.com',
