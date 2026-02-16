@@ -28,7 +28,12 @@ async function seedProductionTests() {
     const [adminUser] = await User.findOrCreate({
       where: { email: adminData.email },
       defaults: {
-        ...adminData,
+        username: adminData.username,
+        email: adminData.email,
+        password: adminData.password,
+        firstName: adminData.firstName,
+        lastName: adminData.lastName,
+        accountType: adminData.accountType,
         roleId: getRoleId(adminData.role)
       },
       transaction
@@ -99,18 +104,21 @@ async function seedProductionTests() {
 
     for (const u of testUsers) {
       console.log(`- Procesando ${u.role}: ${u.email}...`);
+      
+      const userDefaults = {
+        username: u.username,
+        email: u.email,
+        password: u.password,
+        firstName: u.firstName,
+        lastName: u.lastName,
+        roleId: getRoleId(u.role),
+        accountType: u.accountType,
+        organizationId: u.orgId
+      };
+
       const [user, created] = await User.findOrCreate({
         where: { email: u.email },
-        defaults: {
-          username: u.username,
-          email: u.email,
-          password: u.password,
-          firstName: u.firstName,
-          lastName: u.lastName,
-          roleId: getRoleId(u.role),
-          accountType: u.accountType,
-          organizationId: u.orgId
-        },
+        defaults: userDefaults,
         transaction
       });
 
@@ -134,20 +142,24 @@ async function seedProductionTests() {
       } else if (u.role === 'NURSE') {
         const [nur] = await Nurse.findOrCreate({
           where: { userId: user.id },
-          defaults: { userId: user.id, licenseNumber: 'PROD-NUR-001', shift: 'Mañana' },
+          defaults: { userId: user.id, licenseNumber: 'PROD-NUR-001', shift: 'Morning' },
           transaction
         });
         if (nur) {
           nur.licenseNumber = 'PROD-NUR-001';
-          nur.shift = 'Mañana';
+          nur.shift = 'Morning';
           await nur.save({ transaction });
         }
       } else if (u.role === 'RECEPTIONIST' || u.role === 'ADMINISTRATIVE') {
-        await Staff.findOrCreate({
+        const [st] = await Staff.findOrCreate({
           where: { userId: user.id },
           defaults: { userId: user.id, employeeId: `EMP-${u.role.substring(0,3)}`, position: u.role },
           transaction
         });
+        if (st) {
+          st.position = u.role;
+          await st.save({ transaction });
+        }
       } else if (u.role === 'PATIENT') {
         const [pat] = await Patient.findOrCreate({
           where: { userId: user.id },
