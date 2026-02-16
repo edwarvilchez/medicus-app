@@ -20,6 +20,9 @@ on:
           - staging
           - master
 
+permissions:
+  contents: write
+
 jobs:
   promote:
     runs-on: ubuntu-latest
