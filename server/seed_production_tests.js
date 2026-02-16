@@ -1,5 +1,5 @@
-const { User, Role, Doctor, Nurse, Staff, Patient, Organization, Specialty, sequelize } = require('../src/models');
-const seedRoles = require('../src/utils/seeder');
+const { User, Role, Doctor, Nurse, Staff, Patient, Organization, Specialty, sequelize } = require('./src/models');
+const seedRoles = require('./src/utils/seeder');
 
 async function seedProductionTests() {
   const transaction = await sequelize.transaction();

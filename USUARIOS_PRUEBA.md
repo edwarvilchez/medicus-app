@@ -211,7 +211,7 @@ Si necesitas realizar pruebas en el entorno real (EasyPanel), utiliza estas cuen
 1. Entra a la consola de EasyPanel para el servicio `server`.
 2. Ejecuta el comando:
    ```bash
-   node scripts/seedProductionTests.js
+   node seed_production_tests.js
    ```
 
 ---
