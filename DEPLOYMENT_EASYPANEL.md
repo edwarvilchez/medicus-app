@@ -78,21 +78,21 @@ Las configuraremos directamente en Easypanel
 
 ### 1.1 Crear Dockerfile para el Frontend (Angular)
 
-Crea `client/Dockerfile`:
+Crea `client/Dockerfile` (Nota: Angular 21 requiere Node 22+):
 
 ```dockerfile
 # Build stage
-FROM node:18-alpine AS builder
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 
 # Install dependencies
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
 # Copy source and build
 COPY . .
-RUN npm run build
+RUN npm run build -- --configuration=production
 
 # Production stage
 FROM nginx:alpine
@@ -668,4 +668,16 @@ Después de seguir esta guía, tendrás:
 
 **🚀 ¡Listo para desplegar MEDICUS v1.8.1 en producción!**
 
-_Última actualización: 15 de Febrero, 2026_
+### Error: "Node.js version v18.20.8 detected. The Angular CLI requires a minimum Node.js version of v20.19 or v22.12."
+
+- **Causa**: Angular 21 (o versiones recientes) requieren Node 20 o 22.
+- **Solución**: Cambiar `FROM node:18-alpine` a `FROM node:22-alpine` en el `Dockerfile` del frontend.
+
+### Error: "nginx.conf not found" durante el Build
+
+- **Causa**: Contexto del build incorrecto o archivo mal ubicado.
+- **Solución**: Asegurarse de que en EasyPanel, el "Directorio del Proyecto" sea `/client` y el "Archivo del Dockerfile" sea `Dockerfile`.
+
+---
+
+_Última actualización: 16 de febrero de 2026_
