@@ -20,11 +20,11 @@ jobs:
           echo "⏱️ Iniciando ventana de despliegue para Staging..."
           sleep 30
 
-      - name: Wait for production window (7200s)
+      - name: Wait for production window (180s)
         if: github.ref == 'refs/heads/master'
         run: |
-          echo "⏱️ Iniciando ventana de seguridad de 2 horas para Producción..."
-          sleep 7200
+          echo "⏱️ Iniciando ventana de seguridad de 3 minutos para Producción..."
+          sleep 180
 
       - name: Deploy API
         if: env.API_WEBHOOK != ''
