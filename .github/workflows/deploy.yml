@@ -10,9 +10,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Deploy API
+        if: env.API_WEBHOOK != ''
         run: |
-          curl -X POST "${{ secrets.EASYPANEL_API_WEBHOOK }}"
+          curl -f -X POST "${{ secrets.EASYPANEL_API_WEBHOOK }}"
+        env:
+          API_WEBHOOK: ${{ secrets.EASYPANEL_API_WEBHOOK }}
+
+      - name: Check API Webhook Secret
+        if: env.API_WEBHOOK == ''
+        run: |
+          echo "❌ Error: EASYPANEL_API_WEBHOOK secret is missing in GitHub."
+          exit 1
+        env:
+          API_WEBHOOK: ${{ secrets.EASYPANEL_API_WEBHOOK }}
 
       - name: Deploy Frontend
+        if: env.FRONTEND_WEBHOOK != ''
         run: |
-          curl -X POST "${{ secrets.EASYPANEL_FRONTEND_WEBHOOK }}"
+          curl -f -X POST "${{ secrets.EASYPANEL_FRONTEND_WEBHOOK }}"
+        env:
+          FRONTEND_WEBHOOK: ${{ secrets.EASYPANEL_FRONTEND_WEBHOOK }}
+
+      - name: Check Frontend Webhook Secret
+        if: env.FRONTEND_WEBHOOK == ''
+        run: |
+          echo "❌ Error: EASYPANEL_FRONTEND_WEBHOOK secret is missing in GitHub."
+          exit 1
+        env:
+          FRONTEND_WEBHOOK: ${{ secrets.EASYPANEL_FRONTEND_WEBHOOK }}
