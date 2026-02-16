@@ -91,7 +91,7 @@ app.use(cors(corsOptions));
 // Rate Limiting for Auth endpoints
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 5, // 5 intentos por ventana
+  max: 50, // Aumentado para debug
   message: 'Demasiados intentos de autenticación, por favor intente nuevamente en 15 minutos',
   standardHeaders: true,
   legacyHeaders: false,
