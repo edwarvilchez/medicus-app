@@ -45,7 +45,17 @@ const MedicalRecord = sequelize.define('MedicalRecord', {
       model: 'Doctors',
       key: 'id'
     }
+  },
+  deletedAt: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
+  deletedBy: {
+    type: DataTypes.UUID,
+    allowNull: true
   }
+}, {
+  paranoid: true
 });
 
 module.exports = MedicalRecord;

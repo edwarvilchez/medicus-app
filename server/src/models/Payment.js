@@ -37,7 +37,17 @@ const Payment = sequelize.define('Payment', {
   },
   receiptUrl: {
     type: DataTypes.STRING
+  },
+  deletedAt: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
+  deletedBy: {
+    type: DataTypes.UUID,
+    allowNull: true
   }
+}, {
+  paranoid: true
 });
 
 module.exports = Payment;

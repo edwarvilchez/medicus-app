@@ -32,7 +32,17 @@ const Doctor = sequelize.define('Doctor', {
       model: 'Users',
       key: 'id'
     }
+  },
+  deletedAt: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
+  deletedBy: {
+    type: DataTypes.UUID,
+    allowNull: true
   }
+}, {
+  paranoid: true
 });
 
 module.exports = Doctor;

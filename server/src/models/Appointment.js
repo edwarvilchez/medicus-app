@@ -28,8 +28,17 @@ const Appointment = sequelize.define('Appointment', {
   reminderSent: {
     type: DataTypes.BOOLEAN,
     defaultValue: false
+  },
+  deletedAt: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
+  deletedBy: {
+    type: DataTypes.UUID,
+    allowNull: true
   }
 }, {
+  paranoid: true,
   indexes: [
     {
       fields: ['patientId']

@@ -59,6 +59,14 @@ const User = sequelize.define('User', {
     type: DataTypes.UUID,
     allowNull: true
   }
+  deletedAt: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
+  deletedBy: {
+    type: DataTypes.UUID,
+    allowNull: true
+  }
 }, {
   hooks: {
     beforeCreate: async (user) => {
@@ -74,6 +82,7 @@ const User = sequelize.define('User', {
       }
     }
   },
+  paranoid: true,
   indexes: [
     {
       unique: true,

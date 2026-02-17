@@ -23,7 +23,17 @@ const LabResult = sequelize.define('LabResult', {
   status: {
     type: DataTypes.ENUM('Pending', 'Completed'),
     defaultValue: 'Completed'
+  },
+  deletedAt: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
+  deletedBy: {
+    type: DataTypes.UUID,
+    allowNull: true
   }
+}, {
+  paranoid: true
 });
 
 module.exports = LabResult;

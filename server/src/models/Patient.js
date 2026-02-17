@@ -29,8 +29,17 @@ const Patient = sequelize.define('Patient', {
   },
   allergies: {
     type: DataTypes.TEXT
+  },
+  deletedAt: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
+  deletedBy: {
+    type: DataTypes.UUID,
+    allowNull: true
   }
 }, {
+  paranoid: true,
   indexes: [
     {
       unique: true,
