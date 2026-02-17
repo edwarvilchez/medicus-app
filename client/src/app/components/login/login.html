@@ -1,43 +1,43 @@
 <div class="min-vh-100 d-flex flex-column bg-theme-gradient">
   <!-- Main Content Wrapper -->
-  <div class="flex-grow-1 d-flex align-items-center justify-content-center py-5">
-    <div class="row w-100 max-width-1200 px-4">
+  <div class="flex-grow-1 d-flex align-items-center justify-content-center py-2">
+    <div class="row w-100 max-width-1200 px-3">
       <!-- Left Side: Hero content -->
-      <div class="col-lg-7 d-none d-lg-flex flex-column justify-content-center pe-5">
-        <div class="mb-4">
-          <div class="bg-primary rounded-4 p-3 d-inline-block shadow-lg mb-4">
-            <i class="bi bi-heart-pulse-fill text-white fs-1"></i>
+      <div class="col-lg-7 d-none d-lg-flex flex-column justify-content-center pe-4">
+        <div class="mb-3">
+          <div class="bg-primary rounded-3 p-2 d-inline-block shadow mb-3">
+            <i class="bi bi-heart-pulse-fill text-white fs-2"></i>
           </div>
-          <h1 class="display-4 fw-bold mb-3">
+          <h1 class="h2 fw-bold mb-2">
             {{ langService.translate('landing.title') }}
             <span class="gradient-text">{{ langService.translate('landing.subtitle') }}</span>
           </h1>
-          <p class="fs-5 text-muted mb-5 lh-lg">
+          <p class="fs-6 text-muted mb-3 lh-base">
             {{ langService.translate('landing.description') }}
           </p>
         </div>
 
-        <div class="row g-4">
+        <div class="row g-3">
           <div class="col-md-6">
             <div
-              class="glass-morphism p-4 rounded-4 shadow-sm cursor-pointer hover-scale transition-all"
+              class="glass-morphism p-3 rounded-3 shadow-sm cursor-pointer hover-scale transition-all"
               (click)="showSecurityLaws()"
             >
-              <i class="bi bi-shield-check text-primary fs-3 mb-2 d-block"></i>
-              <h5 class="fw-bold mb-1">{{ langService.translate('landing.security') }}</h5>
-              <p class="small text-muted mb-0">
+              <i class="bi bi-shield-check text-primary fs-4 mb-1 d-block"></i>
+              <h6 class="fw-bold mb-1">{{ langService.translate('landing.security') }}</h6>
+              <p class="x-small text-muted mb-0">
                 {{ langService.translate('landing.securityDesc') }}
               </p>
             </div>
           </div>
           <div class="col-md-6">
             <div
-              class="glass-morphism p-4 rounded-4 shadow-sm cursor-pointer hover-scale transition-all"
+              class="glass-morphism p-3 rounded-3 shadow-sm cursor-pointer hover-scale transition-all"
               (click)="checkReminders()"
             >
-              <i class="bi bi-whatsapp text-success fs-3 mb-2 d-block"></i>
-              <h5 class="fw-bold mb-1">{{ langService.translate('landing.reminders') }}</h5>
-              <p class="small text-muted mb-0">
+              <i class="bi bi-whatsapp text-success fs-4 mb-1 d-block"></i>
+              <h6 class="fw-bold mb-1">{{ langService.translate('landing.reminders') }}</h6>
+              <p class="x-small text-muted mb-0">
                 {{ langService.translate('landing.remindersDesc') }}
               </p>
             </div>
@@ -47,68 +47,68 @@
 
       <!-- Right Side: Login Form -->
       <div class="col-lg-5">
-        <div class="card-premium border-0 p-5 shadow-lg animate-fade-in">
-          <div class="text-center mb-5">
+        <div class="card-premium border-0 p-4 shadow-lg animate-fade-in">
+          <div class="text-center mb-4">
             <!-- Branding -->
-            <div class="d-flex align-items-center justify-content-center gap-2 mb-3">
-              <div class="bg-primary rounded-3 p-2 d-inline-flex">
-                <i class="bi bi-heart-pulse-fill text-white" style="font-size: 1.5rem"></i>
+            <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
+              <div class="bg-primary rounded-2 p-1 d-inline-flex">
+                <i class="bi bi-heart-pulse-fill text-white fs-5"></i>
               </div>
-              <h2 class="fw-bold mb-0 text-primary">MEDICUS</h2>
+              <h2 class="fw-bold mb-0 text-primary fs-4">MEDICUS</h2>
             </div>
-            <h3 class="h5 fw-bold mb-2">{{ langService.translate('landing.loginTitle') }}</h3>
-            <p class="text-muted small">{{ langService.translate('landing.loginDesc') }}</p>
+            <h3 class="h6 fw-bold mb-1">{{ langService.translate('landing.loginTitle') }}</h3>
+            <p class="text-muted x-small mb-0">{{ langService.translate('landing.loginDesc') }}</p>
           </div>
 
           <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
             <div
               *ngIf="error()"
-              class="alert alert-danger small border-0 py-2 mb-4 animate-fade-in"
+              class="alert alert-danger x-small border-0 py-1 mb-3 animate-fade-in"
             >
               {{ error() }}
             </div>
 
-            <div class="mb-4">
-              <label class="form-label small fw-bold text-uppercase">{{
+            <div class="mb-3">
+              <label class="form-label x-small fw-bold text-uppercase mb-1">{{
                 langService.translate('auth.email')
               }}</label>
-              <div class="input-group glass-morphism rounded-3 border">
-                <span class="input-group-text bg-transparent border-0"
-                  ><i class="bi bi-envelope text-muted"></i
+              <div class="input-group input-group-sm glass-morphism rounded-2 border">
+                <span class="input-group-text bg-transparent border-0 py-2"
+                  ><i class="bi bi-envelope text-muted small"></i
                 ></span>
                 <input
                   type="email"
                   formControlName="email"
-                  class="form-control bg-transparent border-0 py-3 shadow-none"
+                  class="form-control form-control-sm bg-transparent border-0 py-2 shadow-none"
                   placeholder="nombre@ejemplo.com"
                 />
               </div>
             </div>
 
-            <div class="mb-4">
-              <div class="d-flex justify-content-between">
-                <label class="form-label small fw-bold text-uppercase">{{
+            <div class="mb-3">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="form-label x-small fw-bold text-uppercase mb-0">{{
                   langService.translate('auth.password')
                 }}</label>
-                <a routerLink="/forgot-password" class="small text-primary text-decoration-none">{{
+                <a routerLink="/forgot-password" class="x-small text-primary text-decoration-none">{{
                   langService.translate('landing.forgotPassword')
                 }}</a>
               </div>
-              <div class="input-group glass-morphism rounded-3 border">
-                <span class="input-group-text bg-transparent border-0"
-                  ><i class="bi bi-lock text-muted"></i
+              <div class="input-group input-group-sm glass-morphism rounded-2 border">
+                <span class="input-group-text bg-transparent border-0 py-2"
+                  ><i class="bi bi-lock text-muted small"></i
                 ></span>
                 <input
                   [type]="showPassword() ? 'text' : 'password'"
                   formControlName="password"
-                  class="form-control bg-transparent border-0 py-3 shadow-none"
+                  class="form-control form-control-sm bg-transparent border-0 py-2 shadow-none"
                   placeholder="••••••••"
                 />
                 <span
-                  class="input-group-text bg-transparent border-0"
+                  class="input-group-text bg-transparent border-0 py-2 cursor-pointer"
                   (click)="togglePasswordVisibility()"
                   ><i
-                    class="bi cursor-pointer"
+                    class="bi small"
                     [ngClass]="showPassword() ? 'bi-eye' : 'bi-eye-slash'"
                   ></i
                 ></span>
@@ -117,37 +117,35 @@
 
             <button
               type="submit"
-              class="btn btn-primary-premium w-100 py-3 mb-4 mt-2 fs-5 shadow"
+              class="btn btn-primary-premium w-100 py-2 mb-3 fs-6 shadow"
               [disabled]="loginForm.invalid || loading()"
             >
               <span *ngIf="!loading()">{{ langService.translate('landing.enterSystem') }}</span>
               <span *ngIf="loading()">
-                <span class="spinner-border spinner-border-sm me-2"></span>
+                <span class="spinner-border spinner-border-sm me-1"></span>
                 {{ langService.translate('common.loading') }}
               </span>
             </button>
 
             <div class="text-center mb-0">
-              <p class="small text-muted mb-3">
+              <p class="x-small text-muted mb-2">
                 {{ langService.translate('landing.noAccount') }}
                 <a routerLink="/register" class="text-primary fw-bold text-decoration-none">
                   {{ langService.translate('landing.registerHere') }}
                 </a>
               </p>
 
-              <div class="d-flex align-items-center justify-content-center gap-2 mb-3">
-                <hr class="flex-grow-1 text-muted opacity-25" />
-                <span class="small text-muted text-uppercase fw-bold opacity-50">{{
-                  langService.translate('common.warning')
-                }}</span>
-                <hr class="flex-grow-1 text-muted opacity-25" />
+              <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
+                <hr class="flex-grow-1 text-muted opacity-25 my-1" />
+                <span class="x-small text-muted text-uppercase fw-bold opacity-50">{{ langService.translate('common.warning') }}</span>
+                <hr class="flex-grow-1 text-muted opacity-25 my-1" />
               </div>
 
               <a
                 routerLink="/agendar-cita"
-                class="btn btn-outline-primary rounded-pill w-100 py-2 border-2 fw-bold animate-bounce-subtle"
+                class="btn btn-outline-primary btn-sm rounded-pill w-100 py-2 border-2 fw-bold animate-bounce-subtle"
               >
-                <i class="bi bi-calendar-plus me-2"></i>
+                <i class="bi bi-calendar-plus me-1"></i>
                 {{ langService.translate('landing.publicBooking') }}
               </a>
             </div>
@@ -173,5 +171,29 @@
     transform: translateY(-2px);
     background-color: var(--primary);
     color: white;
+  }
+  
+  .x-small {
+    font-size: 0.75rem;
+  }
+  
+  .card-premium {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 1rem;
+    backdrop-filter: blur(20px);
+  }
+  
+  .glass-morphism {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+  
+  .hover-scale {
+    transition: transform 0.3s ease;
+  }
+
+  .hover-scale:hover {
+    transform: scale(1.02);
   }
 </style>
