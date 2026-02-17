@@ -2,6 +2,24 @@
 
 Todas las modificaciones notables del proyecto serán documentadas en este archivo.
 
+## [1.8.4] - 2026-02-17
+
+### 🐛 Correcciones Críticas en Producción
+
+- ✅ **CORS (Cross-Origin Resource Sharing)**: Habilitado encabezado `x-auth-token` en la configuración del servidor.
+  - Soluciona errores de bloqueo de peticiones (401/CORS error) en el frontend de producción.
+  - Permite la correcta transmisión de tokens de autenticación en entornos desplegados.
+- ✅ **Detección Dinámica de API URL**: Mejorada la lógica en el cliente para detectar la URL del backend en entornos Easypanel.
+  - Soporte automático para dominios personalizados (sin sufijo `-frontend`).
+  - Construcción inteligente de la URL de la API basada en el host actual.
+
+### 📦 Archivos Modificados
+
+- `server/src/index.js` - Agregado `x-auth-token` a `allowedHeaders`.
+- `client/src/app/api-config.ts` - Lógica mejorada para construir `API_URL`.
+
+---
+
 ## [1.8.3] - 2026-02-16
 
 ### 🔐 Mejoras de Autenticación

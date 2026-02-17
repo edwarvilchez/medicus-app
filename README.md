@@ -2,7 +2,7 @@
 
 Sistema completo de gestión para clínicas médicas desarrollado con Angular y Node.js.
 
-![Version](https://img.shields.io/badge/version-1.8.3-blue.svg)
+![Versión](https://img.shields.io/badge/versión-1.8.4-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Security](https://img.shields.io/badge/security-8%2F10-brightgreen.svg)
 ![Test Coverage](https://img.shields.io/badge/coverage-15%25-yellow.svg)
