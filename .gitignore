@@ -11,6 +11,7 @@ coverage/
 
 # Archivos sensibles de testing y credenciales
 CREDENCIALES_TESTING.txt
+CREDENCIALES_LOCAL.txt
 USUARIOS_PRUEBA.md
 server/check_users.js
 server/list_all_users.js
