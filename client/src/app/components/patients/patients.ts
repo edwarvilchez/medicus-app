@@ -7,6 +7,7 @@ import Swal from 'sweetalert2';
 import { LanguageService } from '../../services/language.service';
 import { ExportService } from '../../services/export.service';
 import { AuthService } from '../../services/auth.service';
+import { API_URL } from '../../api-config';
 
 @Component({
   selector: 'app-patients',
@@ -54,7 +55,7 @@ export class Patients implements OnInit {
   }
 
   loadPatients() {
-    this.http.get<any[]>('http://localhost:5000/api/patients', { headers: this.getHeaders() })
+    this.http.get<any[]>(`${API_URL}/patients`, { headers: this.getHeaders() })
       .subscribe(data => this.patients.set(data));
   }
 
@@ -90,7 +91,7 @@ export class Patients implements OnInit {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.http.delete(`http://localhost:5000/api/patients/${id}`, { headers: this.getHeaders() })
+        this.http.delete(`${API_URL}/patients/${id}`, { headers: this.getHeaders() })
           .subscribe({
             next: () => {
               this.loadPatients();
@@ -188,7 +189,7 @@ export class Patients implements OnInit {
           gender: result.value.gender
         };
 
-        this.http.post('http://localhost:5000/api/patients', patientData, { headers: this.getHeaders() })
+        this.http.post(`${API_URL}/patients`, patientData, { headers: this.getHeaders() })
           .subscribe({
             next: () => {
               this.loadPatients();

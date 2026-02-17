@@ -5,6 +5,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { LanguageService } from '../../services/language.service';
+import { API_URL } from '../../api-config';
 
 @Component({
   selector: 'app-doctors',
@@ -128,12 +129,12 @@ export class Doctors implements OnInit {
   }
 
   loadDoctors() {
-    this.http.get<any[]>('http://localhost:5000/api/doctors', { headers: this.getHeaders() })
+    this.http.get<any[]>(`${API_URL}/doctors`, { headers: this.getHeaders() })
       .subscribe(data => this.doctors.set(data));
   }
 
   loadSpecialties() {
-    this.http.get<any[]>('http://localhost:5000/api/specialties', { headers: this.getHeaders() })
+    this.http.get<any[]>(`${API_URL}/specialties`, { headers: this.getHeaders() })
       .subscribe(data => this.specialties.set(data));
   }
 
@@ -290,7 +291,7 @@ export class Doctors implements OnInit {
           specialtyId: parseInt(result.value.specialtyId)
         };
 
-        this.http.post('http://localhost:5000/api/doctors', doctorData, { headers: this.getHeaders() })
+        this.http.post(`${API_URL}/doctors`, doctorData, { headers: this.getHeaders() })
           .subscribe({
             next: () => {
               this.loadDoctors();
@@ -326,7 +327,7 @@ export class Doctors implements OnInit {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.http.delete(`http://localhost:5000/api/doctors/${id}`, { headers: this.getHeaders() })
+        this.http.delete(`${API_URL}/doctors/${id}`, { headers: this.getHeaders() })
           .subscribe({
             next: () => {
               this.loadDoctors();

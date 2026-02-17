@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { API_URL } from '../../api-config';
 
 @Component({
   selector: 'app-staff',
@@ -46,7 +47,7 @@ export class Staff implements OnInit {
   }
 
   loadStaff() {
-    this.http.get<any[]>('http://localhost:5000/api/staff', { headers: this.getHeaders() })
+    this.http.get<any[]>(`${API_URL}/staff`, { headers: this.getHeaders() })
       .subscribe(data => this.staffList.set(data));
   }
 
@@ -166,7 +167,7 @@ export class Staff implements OnInit {
           departmentName: result.value.departmentName
         };
 
-        this.http.post('http://localhost:5000/api/staff', staffData, { headers: this.getHeaders() })
+        this.http.post(`${API_URL}/staff`, staffData, { headers: this.getHeaders() })
           .subscribe({
             next: () => {
               this.loadStaff();
@@ -202,7 +203,7 @@ export class Staff implements OnInit {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.http.delete(`http://localhost:5000/api/staff/${id}`, { headers: this.getHeaders() })
+        this.http.delete(`${API_URL}/staff/${id}`, { headers: this.getHeaders() })
           .subscribe({
             next: () => {
               this.loadStaff();

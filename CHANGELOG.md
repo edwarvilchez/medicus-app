@@ -2,6 +2,48 @@
 
 Todas las modificaciones notables del proyecto serán documentadas en este archivo.
 
+## [1.8.3] - 2026-02-16
+
+### 🔐 Mejoras de Autenticación
+
+- ✅ **Login Dual**: Implementada capacidad de iniciar sesión usando email O username
+  - Los usuarios pueden usar `beta@medicus.com` o `dr.beta` indistintamente
+  - Mejora la flexibilidad y experiencia de usuario
+  - Backward compatible con el sistema existente
+- ✅ **Validación de JWT_SECRET**: Verificación explícita de la variable de entorno antes de generar tokens
+- ✅ **Logs Mejorados**: Información detallada de debugging para troubleshooting de autenticación
+
+### 🛠️ Correcciones de Infraestructura
+
+- ✅ **Service Worker Desactivado en Dev**: Comentado el registro de PWA en desarrollo para evitar conflictos de caché
+  - Previene errores de carga de módulos dinámicos
+  - Mejora la experiencia de desarrollo con hot-reload
+  - Producción mantiene capacidades PWA intactas
+- ✅ **Seeder Robusto**: Implementados try-catch individuales para cada usuario
+  - El seeder continúa ejecutándose aunque falle la creación de un usuario específico
+  - Logs detallados de errores por usuario
+  - Previene fallos en cascada durante el seeding
+
+### 🐛 Correcciones
+
+- ✅ **Redis/Bull Mock**: Reemplazados servicios de Redis y Bull con implementaciones mock
+  - Elimina dependencia de servicios externos en desarrollo
+  - Resuelve errores `ECONNREFUSED` en caché y colas
+- ✅ **Validación de Usuarios**: Scripts de verificación para confirmar creación correcta de usuarios de prueba
+
+### 📦 Archivos Modificados
+
+- `server/src/controllers/auth.controller.js` - Login dual (email/username)
+- `server/src/utils/cache.js` - Mock de Redis
+- `server/src/utils/queues.js` - Mock de Bull
+- `server/src/utils/testSeeder.js` - Try-catch por usuario
+- `client/src/index.html` - Service Worker comentado
+- `server/check_users.js` - Script de verificación (nuevo)
+- `server/manual_seed.js` - Script de seeding manual (nuevo)
+- `server/list_all_users.js` - Script de listado (nuevo)
+
+---
+
 ## [1.8.2] - 2026-02-15
 
 ### 🚀 Deployment & Docker

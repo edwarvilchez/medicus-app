@@ -4,6 +4,7 @@ import { RouterModule, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MedicalService } from '../../services/medical.service';
 import { HttpClient } from '@angular/common/http';
+import { API_URL } from '../../api-config';
 import Swal from 'sweetalert2';
 
 import { LanguageService } from '../../services/language.service';
@@ -98,7 +99,7 @@ export class MedicalHistory implements OnInit {
   }
 
   loadPatients() {
-    this.http.get<any[]>('http://localhost:5000/api/patients').subscribe(data => this.patients.set(data));
+    this.http.get<any[]>(`${API_URL}/patients`).subscribe(data => this.patients.set(data));
   }
 
   selectPatient(id: string) {

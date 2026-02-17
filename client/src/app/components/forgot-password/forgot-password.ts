@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { API_URL } from '../../api-config';
 
 @Component({
   selector: 'app-forgot-password',
@@ -30,7 +31,7 @@ export class ForgotPassword {
       this.loading.set(true);
       this.status.set({ type: '', message: '' });
 
-      this.http.post('http://localhost:5000/api/auth/forgot-password', this.forgotForm.value)
+      this.http.post(`${API_URL}/auth/forgot-password`, this.forgotForm.value)
         .subscribe({
           next: (response: any) => {
             this.loading.set(false);

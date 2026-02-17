@@ -2,7 +2,7 @@
 
 Sistema completo de gestión para clínicas médicas desarrollado con Angular y Node.js.
 
-![Version](https://img.shields.io/badge/version-1.8.2-blue.svg)
+![Version](https://img.shields.io/badge/version-1.8.3-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Security](https://img.shields.io/badge/security-8%2F10-brightgreen.svg)
 ![Test Coverage](https://img.shields.io/badge/coverage-15%25-yellow.svg)
@@ -54,6 +54,7 @@ Sistema completo de gestión para clínicas médicas desarrollado con Angular y 
 ## 🆕 Novedades v1.8.2 (Febrero 2026)
 
 ### 🚀 Deployment Ready
+
 - ✅ **Docker Completo** - Configuración lista para producción
 - ✅ **Easypanel/Railway/Render** - Deploy en un click desde GitHub
 - ✅ **CI/CD Automático** - Push to GitHub → Auto-deploy
@@ -68,17 +69,20 @@ Sistema completo de gestión para clínicas médicas desarrollado con Angular y 
 ## 🔒 Novedades v1.8.1 (Febrero 2026)
 
 ### 🔒 Seguridad Mejorada
+
 - ✅ **Rate Limiting** - Protección contra ataques de fuerza bruta
 - ✅ **Helmet** - Headers de seguridad HTTP (CSP, X-Frame-Options)
 - ✅ **CORS Específico** - Whitelist de orígenes autorizados
 - ✅ **Validación Centralizada** - Joi para validación robusta de inputs
 
 ### ⚡ Performance Optimizado
+
 - ✅ **Paginación** - Endpoints principales con soporte de paginación
 - ✅ **Índices en BD** - 16 índices para queries 10x más rápidas
 - ✅ **Logger Profesional** - Pino para logs estructurados
 
 ### 📚 Documentación y Testing
+
 - ✅ **Swagger UI** - Documentación interactiva en `/api-docs`
 - ✅ **Jest + Supertest** - Framework de testing configurado (15% cobertura inicial)
 
@@ -144,6 +148,7 @@ docker exec medicus-server npm run migrate
 ```
 
 **Servicios desplegados:**
+
 - 🗄️ PostgreSQL 14 (puerto 5432)
 - 🔧 Backend API (puerto 5000)
 - 🌐 Frontend Angular (puerto 80)

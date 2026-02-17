@@ -7,6 +7,7 @@ import { LanguageService } from '../../services/language.service';
 import { CurrencyService } from '../../services/currency.service';
 import { AuthService } from '../../services/auth.service';
 import { ExportService } from '../../services/export.service';
+import { API_URL, BASE_URL } from '../../api-config';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -71,7 +72,7 @@ export class Payments implements OnInit {
   }
 
   loadPayments() {
-    this.http.get<any[]>('http://localhost:5000/api/payments', { headers: this.getHeaders() })
+    this.http.get<any[]>(`${API_URL}/payments`, { headers: this.getHeaders() })
       .subscribe({
         next: data => {
           console.log('Payments loaded:', data);
@@ -90,7 +91,7 @@ export class Payments implements OnInit {
   }
 
   createPatientPayment() {
-    this.http.get<any[]>('http://localhost:5000/api/appointments', { headers: this.getHeaders() })
+    this.http.get<any[]>(`${API_URL}/appointments`, { headers: this.getHeaders() })
       .subscribe(appointments => {
         // Filtrar citas pendientes o confirmadas que no estén canceladas/completadas
         const validAppointments = appointments.filter(a => a.status !== 'Cancelled' && a.status !== 'Completed');
@@ -249,7 +250,7 @@ export class Payments implements OnInit {
   }
 
   submitPayment(data: any) {
-    this.http.post('http://localhost:5000/api/payments', data, { headers: this.getHeaders() })
+    this.http.post(`${API_URL}/payments`, data, { headers: this.getHeaders() })
       .subscribe({
         next: () => {
           this.loadPayments();
@@ -263,7 +264,7 @@ export class Payments implements OnInit {
   }
 
   updatePayment(id: string, data: any) {
-    this.http.put(`http://localhost:5000/api/payments/${id}`, data, { headers: this.getHeaders() })
+    this.http.put(`${API_URL}/payments/${id}`, data, { headers: this.getHeaders() })
       .subscribe({
         next: () => {
           this.loadPayments();
@@ -287,7 +288,7 @@ export class Payments implements OnInit {
       confirmButtonColor: '#ef4444'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.http.delete(`http://localhost:5000/api/payments/${id}`, { headers: this.getHeaders() })
+        this.http.delete(`${API_URL}/payments/${id}`, { headers: this.getHeaders() })
           .subscribe({
             next: () => {
               this.loadPayments();
@@ -302,7 +303,7 @@ export class Payments implements OnInit {
   }
 
   editPatientPayment(payment: any) {
-    this.http.get<any[]>('http://localhost:5000/api/appointments', { headers: this.getHeaders() })
+    this.http.get<any[]>(`${API_URL}/appointments`, { headers: this.getHeaders() })
       .subscribe(appointments => {
         const validAppointments = appointments.filter(a => a.status !== 'Cancelled' && a.status !== 'Completed');
         const appointmentOptions = validAppointments.map(a => 
@@ -412,7 +413,7 @@ export class Payments implements OnInit {
   }
 
   createAdminPayment() {
-    this.http.get<any[]>('http://localhost:5000/api/patients', { headers: this.getHeaders() })
+    this.http.get<any[]>(`${API_URL}/patients`, { headers: this.getHeaders() })
       .subscribe(patients => {
         const patientOptions = patients.map(p => 
           `<option value="${p.id}">${p.User.firstName} ${p.User.lastName} (${p.documentId || 'N/A'})</option>`
@@ -531,7 +532,7 @@ export class Payments implements OnInit {
       confirmButtonText: 'Sí, cobrar'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.http.post(`http://localhost:5000/api/payments/collect/${id}`, {}, { headers: this.getHeaders() })
+        this.http.post(`${API_URL}/payments/collect/${id}`, {}, { headers: this.getHeaders() })
           .subscribe(() => {
             this.loadPayments();
             Swal.fire('¡Éxito!', 'Pago cobrado correctamente.', 'success');
@@ -586,7 +587,7 @@ export class Payments implements OnInit {
           ${payment.receiptUrl ? `
           <div class="mt-3 text-center border-top pt-3">
             <p class="small fw-bold mb-2">${this.langService.translate('payments.receipt')}</p>
-            <a href="http://localhost:5000${payment.receiptUrl}" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill w-100">
+            <a href="${BASE_URL}${payment.receiptUrl}" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill w-100">
               <i class="bi bi-eye-fill me-1"></i> Ver Comprobante Adjunto
             </a>
           </div>` : ''}

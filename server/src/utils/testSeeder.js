@@ -183,45 +183,49 @@ const seedTestData = async () => {
 
     // ── 5. Create users + profiles ─────────────────────────────────────
     for (const data of users) {
-      const user = await upsertUser(data);
-      if (!user || !data.profile) continue;
+      try {
+        const user = await upsertUser(data);
+        if (!user || !data.profile) continue;
 
-      const p = data.profile;
+        const p = data.profile;
 
-      if (p.type === 'DOCTOR') {
-        const [dept] = await Department.findOrCreate({
-          where: { name: p.specialty },
-          defaults: { name: p.specialty },
-        });
-        const [spec] = await Specialty.findOrCreate({
-          where: { name: p.specialty, departmentId: dept.id },
-          defaults: { name: p.specialty, departmentId: dept.id },
-        });
-        await Doctor.findOrCreate({
-          where: { userId: user.id },
-          defaults: { userId: user.id, licenseNumber: p.license, phone: p.phone, specialtyId: spec.id },
-        });
-      }
+        if (p.type === 'DOCTOR') {
+          const [dept] = await Department.findOrCreate({
+            where: { name: p.specialty },
+            defaults: { name: p.specialty },
+          });
+          const [spec] = await Specialty.findOrCreate({
+            where: { name: p.specialty, departmentId: dept.id },
+            defaults: { name: p.specialty, departmentId: dept.id },
+          });
+          await Doctor.findOrCreate({
+            where: { userId: user.id },
+            defaults: { userId: user.id, licenseNumber: p.license, phone: p.phone, specialtyId: spec.id },
+          });
+        }
 
-      if (p.type === 'NURSE') {
-        await Nurse.findOrCreate({
-          where: { userId: user.id },
-          defaults: { userId: user.id, licenseNumber: p.license, phone: p.phone, shift: p.shift || 'Morning' },
-        });
-      }
+        if (p.type === 'NURSE') {
+          await Nurse.findOrCreate({
+            where: { userId: user.id },
+            defaults: { userId: user.id, licenseNumber: p.license, phone: p.phone, shift: p.shift || 'Morning' },
+          });
+        }
 
-      if (p.type === 'STAFF') {
-        await Staff.findOrCreate({
-          where: { userId: user.id },
-          defaults: { userId: user.id, employeeId: p.employeeId, position: p.position },
-        });
-      }
+        if (p.type === 'STAFF') {
+          await Staff.findOrCreate({
+            where: { userId: user.id },
+            defaults: { userId: user.id, employeeId: p.employeeId, position: p.position },
+          });
+        }
 
-      if (p.type === 'PATIENT') {
-        await Patient.findOrCreate({
-          where: { userId: user.id },
-          defaults: { userId: user.id, documentId: p.documentId, phone: p.phone, gender: p.gender },
-        });
+        if (p.type === 'PATIENT') {
+          await Patient.findOrCreate({
+            where: { userId: user.id },
+            defaults: { userId: user.id, documentId: p.documentId, phone: p.phone, gender: p.gender },
+          });
+        }
+      } catch (err) {
+        console.error(`  ❌ Failed to seed user ${data.email}:`, err.message);
       }
     }
 

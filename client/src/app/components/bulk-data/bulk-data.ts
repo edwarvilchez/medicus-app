@@ -1,6 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { API_URL } from '../../api-config';
 import { AuthService } from '../../services/auth.service';
 import { LanguageService } from '../../services/language.service';
 import Swal from 'sweetalert2';
@@ -49,7 +50,7 @@ export class BulkData {
     const token = localStorage.getItem('token');
     const headers = { 'Authorization': `Bearer ${token}` };
 
-    this.http.post(`http://localhost:5000/api/bulk/import/${this.importType()}`, formData, { headers })
+    this.http.post(`${API_URL}/bulk/import/${this.importType()}`, formData, { headers })
       .subscribe({
         next: (res: any) => {
           this.isImporting.set(false);

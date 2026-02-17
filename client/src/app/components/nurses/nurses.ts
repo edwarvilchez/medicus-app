@@ -5,6 +5,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { LanguageService } from '../../services/language.service';
+import { API_URL } from '../../api-config';
 
 @Component({
   selector: 'app-nurses',
@@ -49,7 +50,7 @@ export class Nurses implements OnInit {
   }
 
   loadNurses() {
-    this.http.get<any[]>('http://localhost:5000/api/nurses', { headers: this.getHeaders() })
+    this.http.get<any[]>(`${API_URL}/nurses`, { headers: this.getHeaders() })
       .subscribe(data => this.nurses.set(data));
   }
 
@@ -164,7 +165,7 @@ export class Nurses implements OnInit {
           specialization: result.value.specialization
         };
 
-        this.http.post('http://localhost:5000/api/nurses', nurseData, { headers: this.getHeaders() })
+        this.http.post(`${API_URL}/nurses`, nurseData, { headers: this.getHeaders() })
           .subscribe({
             next: () => {
               this.loadNurses();
@@ -200,7 +201,7 @@ export class Nurses implements OnInit {
       cancelButtonText: this.langService.translate('common.cancel')
     }).then((result) => {
       if (result.isConfirmed) {
-        this.http.delete(`http://localhost:5000/api/nurses/${id}`, { headers: this.getHeaders() })
+        this.http.delete(`${API_URL}/nurses/${id}`, { headers: this.getHeaders() })
           .subscribe({
             next: () => {
               this.loadNurses();

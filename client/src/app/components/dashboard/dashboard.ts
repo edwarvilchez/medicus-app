@@ -120,7 +120,6 @@ export class Dashboard implements OnInit {
     // Reaccionar cuando cambian los stats para actualizar los gráficos
     effect(() => {
       const stats = this.stats();
-      const locale = this.langService.locale(); 
       
       // Update Bar Chart
       if (stats.activityData && stats.activityData.length > 0) {

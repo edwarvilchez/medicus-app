@@ -130,13 +130,22 @@ exports.login = async (req, res) => {
     console.log(`[LOGIN DEBUG] Email received: "${email}"`);
     log(`[LOGIN START] Request received for: ${email}`);
     
+
     // Explicitly check env var
     if (!process.env.JWT_SECRET) {
       log(`[CRITICAL] JWT_SECRET MISSING`);
       return res.status(500).json({ message: 'Error interno: JWT_SECRET no configurado.' });
     }
 
-    const user = await User.findOne({ where: { email }, include: [Role] });
+    const user = await User.findOne({ 
+      where: { 
+        [Op.or]: [
+          { email: email },
+          { username: email }
+        ]
+      }, 
+      include: [Role] 
+    });
 
     if (!user) {
       log(`[LOGIN FAIL] User not found: ${email}`);
@@ -144,9 +153,6 @@ exports.login = async (req, res) => {
     }
 
     log(`User Found: ID=${user.id}, Role=${user.Role ? user.Role.name : 'NULL'}`);
-
-    // LOG HASH FOR ANALYSIS (Be careful with real production, but okay for debug here)
-    // log(`Stored Hash: ${user.password}`);
 
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {

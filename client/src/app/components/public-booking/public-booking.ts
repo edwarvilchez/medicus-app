@@ -5,6 +5,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { HttpClient } from '@angular/common/http';
 import Swal from 'sweetalert2';
 import { Subscription } from 'rxjs';
+import { API_URL } from '../../api-config';
 
 @Component({
   selector: 'app-public-booking',
@@ -142,7 +143,7 @@ export class PublicBooking implements OnInit, OnDestroy {
         }
       };
 
-      this.http.post('http://localhost:5000/api/public/appointments', bookingData)
+      this.http.post(`${API_URL}/public/appointments`, bookingData)
         .subscribe({
           next: (response: any) => {
             this.loading.set(false);

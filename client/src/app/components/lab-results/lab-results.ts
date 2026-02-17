@@ -36,7 +36,7 @@ export class LabResults implements OnInit {
       patientId: 'V-22222222',
       testType: 'Perfil Lipídico',
       date: new Date(new Date().setDate(new Date().getDate() - 1)),
-      status: 'Completado', // Cambiado a completado para probar PDF
+      status: 'Completado',
       labOrder: 'M0018-P25135'
     },
     {
@@ -57,8 +57,6 @@ export class LabResults implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Aquí cargaríamos los datos reales del servicio
-    // this.loadResults();
   }
 
   viewResult(result: any) {
@@ -85,7 +83,6 @@ export class LabResults implements OnInit {
       }
     });
 
-    // Simular proceso
     setTimeout(() => {
       const report = this.getMockReport(result);
       this.pdfService.generatePDF(report);
@@ -94,15 +91,13 @@ export class LabResults implements OnInit {
   }
 
   private getMockReport(result: any): LabReport {
-    // Construir datos del reporte (Simulación basada en el tipo de examen)
-    // En producción, esto vendría del backend
     const report: LabReport = {
       header: {
         labOrder: result.labOrder || '0000',
         patientName: result.patientName,
         ci: result.patientId.replace('V-', ''),
-        sex: 'Masculino', // Simulado
-        age: 48, // Simulado
+        sex: 'Masculino',
+        age: 48,
         entryDate: new Date(result.date).toLocaleDateString('es-ES'),
         entryTime: '07:15:36 am',
         address: 'MONTALBAN',
@@ -114,21 +109,17 @@ export class LabResults implements OnInit {
     };
 
     if (result.testType.includes('Hematología')) {
-      // Simular valores de hematología (Imagen 1)
       const hemItems = [...HEMATOLOGY_STRUCTURE];
-      // Clonar para no mutar constante original si se reutiliza
       const items = hemItems.map(i => ({...i}));
       
-      items[0].result = '5,26'; // Globulos Blancos
-      items[1].result = '4,8';  // Globulos Rojos
-      // ... otros valores simulados
+      items[0].result = '5,26';
+      items[1].result = '4,8';
       
       report.sections.push({
         title: 'HEMATOLOGIA',
         items: items
       });
     } else if (result.testType.includes('Lipídico') || result.testType.includes('Química')) {
-      // Simular valores químicos
       const chemItems = CHEMISTRY_STRUCTURE.map(i => ({...i}));
       
       chemItems[0].result = '97,6'; 
@@ -147,7 +138,6 @@ export class LabResults implements OnInit {
         ]
       });
     } else {
-      // Genérico
       report.sections.push({
         title: 'RESULTADOS DE EXAMEN',
         items: [
@@ -180,12 +170,10 @@ export class LabResults implements OnInit {
       cancelButtonText: 'Cancelar',
       confirmButtonColor: '#0ea5e9',
       preConfirm: () => {
-        // Lógica de subida simulada
       }
     }).then((result) => {
       if (result.isConfirmed) {
         Swal.fire('¡Éxito!', 'El resultado se ha subido correctamente.', 'success');
-        // Agregar a la lista mockeada
         const current = this.labResults();
         this.labResults.set([{
           id: Math.random(),
@@ -194,7 +182,8 @@ export class LabResults implements OnInit {
           patientId: 'V-11111111',
           testType: 'Hematología (Nuevo)',
           date: new Date(),
-          status: 'Pendiente'
+          status: 'Pendiente',
+          labOrder: 'M0018-T' + Math.floor(Math.random() * 1000)
         }, ...current]);
       }
     });

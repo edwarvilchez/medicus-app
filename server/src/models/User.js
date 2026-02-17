@@ -58,7 +58,7 @@ const User = sequelize.define('User', {
   organizationId: {
     type: DataTypes.UUID,
     allowNull: true
-  }
+  },
   deletedAt: {
     type: DataTypes.DATE,
     allowNull: true
