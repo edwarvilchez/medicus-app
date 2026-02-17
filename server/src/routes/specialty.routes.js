@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const { Specialty } = require('../models');
+const { cacheMiddleware } = require('../utils/cache');
 
-// GET all specialties
-router.get('/', async (req, res) => {
+// GET all specialties - Cache for 1 hour (specialties rarely change)
+router.get('/', cacheMiddleware(3600, 'specialties'), async (req, res) => {
   try {
     const specialties = await Specialty.findAll({
       order: [['name', 'ASC']]

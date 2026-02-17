@@ -1,79 +1,93 @@
 import { Routes } from '@angular/router';
-import { Login } from './components/login/login';
-import { Register } from './components/register/register';
-import { ForgotPassword } from './components/forgot-password/forgot-password';
-import { ResetPassword } from './components/reset-password/reset-password';
-import { PublicBooking } from './components/public-booking/public-booking';
-import { Dashboard } from './components/dashboard/dashboard';
-import { Patients } from './components/patients/patients';
-import { Appointments } from './components/appointments/appointments';
-import { Doctors } from './components/doctors/doctors';
-import { Nurses } from './components/nurses/nurses';
-import { Staff } from './components/staff/staff';
-import { Payments } from './components/payments/payments';
-import { MedicalHistory } from './components/medical-history/medical-history';
-import { VideoHistory } from './components/video-history/video-history';
-import { BulkData } from './components/bulk-data/bulk-data';
-import { TeamComponent } from './components/team/team.component';
 import { authGuard } from './guards/auth.guard';
 import { roleGuard } from './guards/role.guard';
 
 export const routes: Routes = [
-  { path: 'login', component: Login, title: 'Medicus - Iniciar Sesión' },
-  { path: 'register', component: Register, title: 'Medicus - Registro de Pacientes' },
-  { path: 'forgot-password', component: ForgotPassword, title: 'Medicus - Recuperar Contraseña' },
-  { path: 'reset-password/:token', component: ResetPassword, title: 'Medicus - Restablecer Contraseña' },
-  { path: 'agendar-cita', component: PublicBooking, title: 'Medicus - Agendar Cita' }, // Public booking - no auth required
+  // Public routes - no auth required
+  { 
+    path: 'login', 
+    loadComponent: () => import('./components/login/login').then(m => m.Login),
+    title: 'Medicus - Iniciar Sesión' 
+  },
+  { 
+    path: 'register', 
+    loadComponent: () => import('./components/register/register').then(m => m.Register),
+    title: 'Medicus - Registro de Pacientes' 
+  },
+  { 
+    path: 'forgot-password', 
+    loadComponent: () => import('./components/forgot-password/forgot-password').then(m => m.ForgotPassword),
+    title: 'Medicus - Recuperar Contraseña' 
+  },
+  { 
+    path: 'reset-password/:token', 
+    loadComponent: () => import('./components/reset-password/reset-password').then(m => m.ResetPassword),
+    title: 'Medicus - Restablecer Contraseña' 
+  },
+  { 
+    path: 'agendar-cita', 
+    loadComponent: () => import('./components/public-booking/public-booking').then(m => m.PublicBooking),
+    title: 'Medicus - Agendar Cita' 
+  },
+  
+  // Default redirect
   { 
     path: '', 
     redirectTo: 'dashboard', 
     pathMatch: 'full' 
   },
+  
+  // Protected routes - require auth
   { 
     path: 'dashboard', 
-    component: Dashboard,
+    loadComponent: () => import('./components/dashboard/dashboard').then(m => m.Dashboard),
     canActivate: [authGuard],
     title: 'Medicus - Panel Principal'
   },
   { 
     path: 'patients', 
-    component: Patients, 
+    loadComponent: () => import('./components/patients/patients').then(m => m.Patients),
     canActivate: [authGuard, roleGuard],
     data: { roles: ['SUPERADMIN', 'ADMINISTRATIVE', 'DOCTOR', 'NURSE'] },
     title: 'Medicus - Gestión de Pacientes'
   },
-  { path: 'appointments', component: Appointments, canActivate: [authGuard], title: 'Medicus - Gestión de Citas' },
+  { 
+    path: 'appointments', 
+    loadComponent: () => import('./components/appointments/appointments').then(m => m.Appointments),
+    canActivate: [authGuard], 
+    title: 'Medicus - Gestión de Citas' 
+  },
   { 
     path: 'video-history', 
-    component: VideoHistory, 
+    loadComponent: () => import('./components/video-history/video-history').then(m => m.VideoHistory),
     canActivate: [authGuard, roleGuard],
     data: { roles: ['SUPERADMIN', 'ADMINISTRATIVE', 'DOCTOR', 'PATIENT'] },
     title: 'Medicus - Historial de Videoconsultas'
   },
   { 
     path: 'doctors', 
-    component: Doctors, 
+    loadComponent: () => import('./components/doctors/doctors').then(m => m.Doctors),
     canActivate: [authGuard, roleGuard],
     data: { roles: ['SUPERADMIN', 'ADMINISTRATIVE'] },
     title: 'Medicus - Gestión de Doctores'
   },
   { 
     path: 'nurses', 
-    component: Nurses, 
+    loadComponent: () => import('./components/nurses/nurses').then(m => m.Nurses),
     canActivate: [authGuard, roleGuard],
     data: { roles: ['SUPERADMIN', 'ADMINISTRATIVE'] },
     title: 'Medicus - Gestión de Enfermeras'
   },
   { 
     path: 'staff', 
-    component: Staff, 
+    loadComponent: () => import('./components/staff/staff').then(m => m.Staff),
     canActivate: [authGuard, roleGuard], 
     data: { roles: ['SUPERADMIN'] },
     title: 'Medicus - Personal Administrativo'
   },
   { 
     path: 'history', 
-    component: MedicalHistory, 
+    loadComponent: () => import('./components/medical-history/medical-history').then(m => m.MedicalHistory),
     canActivate: [authGuard, roleGuard],
     data: { roles: ['SUPERADMIN', 'DOCTOR', 'NURSE'] },
     title: 'Medicus - Historial Médico'
@@ -94,24 +108,26 @@ export const routes: Routes = [
   },
   { 
     path: 'payments', 
-    component: Payments, 
+    loadComponent: () => import('./components/payments/payments').then(m => m.Payments),
     canActivate: [authGuard, roleGuard], 
     data: { roles: ['SUPERADMIN', 'ADMINISTRATIVE', 'PATIENT'] },
     title: 'Medicus - Control de Pagos'
   },
   { 
     path: 'bulk-import', 
-    component: BulkData, 
+    loadComponent: () => import('./components/bulk-data/bulk-data').then(m => m.BulkData),
     canActivate: [authGuard, roleGuard], 
     data: { roles: ['SUPERADMIN'] },
     title: 'Medicus - Carga Masiva'
   },
   { 
     path: 'team', 
-    component: TeamComponent, 
+    loadComponent: () => import('./components/team/team.component').then(m => m.TeamComponent),
     canActivate: [authGuard, roleGuard], 
     data: { roles: ['SUPERADMIN', 'ADMINISTRATIVE', 'DOCTOR'] },
     title: 'Medicus - Gestión de Equipo'
   },
+  
+  // Catch all - redirect to dashboard
   { path: '**', redirectTo: 'dashboard' }
 ];
