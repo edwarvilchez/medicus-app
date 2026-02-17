@@ -8,3 +8,15 @@ build/
 .vscode/
 coverage/
 *.log
+
+# Archivos sensibles de testing y credenciales
+CREDENCIALES_TESTING.txt
+USUARIOS_PRUEBA.md
+server/check_users.js
+server/list_all_users.js
+server/manual_seed.js
+test.js
+
+# Archivos CSV con datos sensibles
+api_url_search.csv
+components_api_url.csv
