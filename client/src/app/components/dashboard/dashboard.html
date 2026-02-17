@@ -1,9 +1,10 @@
-<div class="row g-3">
+<div class="row g-2">
+  <!-- Header -->
   <div class="col-12">
     <div class="d-flex justify-content-between align-items-center mb-1">
       <div>
-        <h3 class="mb-0">{{ langService.translate('dashboard.controlPanel') }}</h3>
-        <p class="text-muted small mb-0">
+        <h5 class="mb-0">{{ langService.translate('dashboard.controlPanel') }}</h5>
+        <p class="text-muted x-small mb-0">
           {{ langService.translate('dashboard.welcome') }},
           <span class="fw-bold text-dark">
             {{ getUserTitle() }} {{ authService.currentUser()?.firstName }}
@@ -25,10 +26,10 @@
   </div>
 
   <!-- ======================== -->
-  <!-- VISTA PARA PERSONAL (ADMIN / DOCTOR) -->
+  <!-- VISTA PERSONAL (ADMIN / DOCTOR) -->
   <!-- ======================== -->
   <ng-container *ngIf="!authService.hasRole(['PATIENT'])">
-    <!-- Stats Cards Row 1 -->
+    <!-- Stats Row — 6 cards -->
     <div class="col-md-2 col-6">
       <div class="card-premium p-2 border-0 h-100">
         <div class="d-flex justify-content-between align-items-center">
@@ -125,10 +126,10 @@
       </div>
     </div>
 
-    <!-- Charts Area -->
-    <div class="col-md-8">
+    <!-- Row 2: Activity chart (7) + Upcoming appointments (5) = 12 -->
+    <div class="col-md-7">
       <div class="card-premium h-100 p-3 border-0">
-        <div class="d-flex justify-content-between align-items-center mb-2">
+        <div class="d-flex justify-content-between align-items-center mb-1">
           <h6 class="mb-0 x-small fw-bold text-uppercase">
             {{ langService.translate('dashboard.activity') }}
           </h6>
@@ -136,7 +137,7 @@
             <option>{{ langService.translate('dashboard.days7') }}</option>
           </select>
         </div>
-        <div class="chart-container" style="position: relative; height: 180px; width: 100%">
+        <div class="chart-container" style="position: relative; height: 150px; width: 100%">
           <canvas baseChart [data]="barChartData" [options]="barChartOptions" [type]="barChartType">
           </canvas>
         </div>
@@ -145,51 +146,35 @@
 
     <div class="col-md-5">
       <div class="card-premium h-100 p-3 border-0">
-        <h6 class="mb-3">{{ langService.translate('dashboard.upcoming') }}</h6>
-        <div class="overflow-auto custom-scrollbar" style="max-height: 240px">
-          <div class="d-grid gap-2">
-            <!-- Admin View of Appointments -->
+        <h6 class="mb-2 x-small fw-bold text-uppercase">{{ langService.translate('dashboard.upcoming') }}</h6>
+        <div class="overflow-auto custom-scrollbar" style="max-height: 170px">
+          <div class="d-grid gap-1">
             <div
               *ngFor="let apt of stats().upcomingAppointments"
               class="d-flex align-items-center gap-2 p-2 rounded-3 bg-light bg-opacity-50"
             >
               <div
-                class="avatar-circle bg-primary bg-opacity-10 text-primary fw-bold"
-                style="
-                  width: 32px;
-                  height: 32px;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  border-radius: 50%;
-                  font-size: 0.8rem;
-                "
+                class="bg-primary bg-opacity-10 text-primary fw-bold d-flex align-items-center justify-content-center rounded-circle"
+                style="width: 28px; height: 28px; font-size: 0.75rem; flex-shrink: 0"
               >
                 {{ apt.patient.name.charAt(0) }}
               </div>
-              <div class="flex-grow-1">
-                <h6 class="mb-0 x-small fw-bold">{{ apt.patient.name }}</h6>
-                <p class="text-muted x-small mb-0">
+              <div class="flex-grow-1 min-width-0">
+                <h6 class="mb-0 x-small fw-bold text-truncate">{{ apt.patient.name }}</h6>
+                <p class="text-muted x-small mb-0 text-truncate">
                   {{ apt.doctor.specialty }} - {{ formatTime(apt.time) }}
                 </p>
               </div>
               <button
-                class="btn btn-sm btn-light rounded-circle shadow-sm p-1"
-                style="
-                  width: 24px;
-                  height: 24px;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                "
+                class="btn btn-sm btn-light rounded-circle shadow-sm p-0 d-flex align-items-center justify-content-center"
+                style="width: 22px; height: 22px; flex-shrink: 0"
                 [routerLink]="['/appointments']"
               >
-                <i class="bi bi-chevron-right" style="font-size: 0.6rem"></i>
+                <i class="bi bi-chevron-right" style="font-size: 0.55rem"></i>
               </button>
             </div>
-            <!-- Empty state -->
-            <div *ngIf="stats().upcomingAppointments?.length === 0" class="text-center py-4">
-              <i class="bi bi-calendar-x text-muted fs-4 mb-2"></i>
+            <div *ngIf="stats().upcomingAppointments?.length === 0" class="text-center py-3">
+              <i class="bi bi-calendar-x text-muted fs-5 mb-1"></i>
               <p class="text-muted x-small mb-0">
                 {{ langService.translate('dashboard.noUpcoming') }}
               </p>
@@ -199,14 +184,14 @@
       </div>
     </div>
 
-    <!-- SECCIÓN DE RENDIMIENTO POR ESPECIALIDAD -->
-    <div class="col-md-5">
+    <!-- Row 3: Specialty donut (4) + Income analysis (8) = 12 -->
+    <div class="col-md-4">
       <div class="card-premium p-3 border-0 h-100 text-center">
-        <h6 class="fw-bold mb-2 x-small text-uppercase">
+        <h6 class="fw-bold mb-1 x-small text-uppercase">
           <i class="bi bi-stethoscope text-primary me-1"></i>
           {{ langService.translate('dashboard.stats.specialtyBreakdown') }}
         </h6>
-        <div class="chart-container" style="position: relative; height: 160px; width: 100%">
+        <div class="chart-container" style="position: relative; height: 140px; width: 100%">
           <canvas baseChart [data]="pieChartData" [options]="pieChartOptions" [type]="pieChartType">
           </canvas>
         </div>
@@ -219,9 +204,8 @@
       </div>
     </div>
 
-    <!-- SECCIÓN DE ANÁLISIS DE INGRESOS COMPACTA -->
     <div
-      class="col-md-7"
+      class="col-md-8"
       *ngIf="authService.hasRole(['SUPERADMIN', 'ADMINISTRATIVE', 'RECEPTIONIST', 'DOCTOR'])"
     >
       <div class="card-premium p-3 border-0 h-100">
@@ -295,7 +279,7 @@
   </ng-container>
 
   <!-- ======================== -->
-  <!-- VISTA PARA PACIENTE (SIMPLIFICADA) -->
+  <!-- VISTA PACIENTE -->
   <!-- ======================== -->
   <ng-container *ngIf="authService.hasRole(['PATIENT'])">
     <div class="col-md-6">
@@ -330,42 +314,32 @@
     </div>
 
     <div class="col-md-8">
-      <div class="card-premium h-100 p-4 border-0">
-        <h5 class="mb-4 text-primary">{{ langService.translate('dashboard.medicalCitas') }}</h5>
+      <div class="card-premium h-100 p-3 border-0">
+        <h6 class="mb-2 text-primary fw-bold">{{ langService.translate('dashboard.medicalCitas') }}</h6>
 
         <div *ngIf="stats().upcomingAppointments?.length > 0; else noAppointments">
-          <div class="d-grid gap-3">
+          <div class="d-grid gap-2 overflow-auto custom-scrollbar" style="max-height: 220px">
             <div
               *ngFor="let apt of stats().upcomingAppointments"
-              class="d-flex align-items-center gap-3 p-3 rounded-4 bg-white shadow-sm border"
+              class="d-flex align-items-center gap-2 p-2 rounded-3 bg-white shadow-sm border"
             >
-              <!-- Icono Doctor -->
               <div
-                class="bg-primary bg-opacity-10 text-primary rounded-4 p-3 d-flex align-items-center justify-content-center"
-                style="width: 60px; height: 60px"
+                class="bg-primary bg-opacity-10 text-primary rounded-3 d-flex align-items-center justify-content-center"
+                style="width: 40px; height: 40px; flex-shrink: 0"
               >
-                <i class="bi bi-person-fill-add fs-3"></i>
+                <i class="bi bi-person-fill-add fs-5"></i>
               </div>
 
-              <div class="flex-grow-1">
-                <h6 class="mb-1 fw-bold text-dark">{{ apt.doctor.name }}</h6>
-                <div class="d-flex flex-wrap gap-3 text-muted small">
-                  <span
-                    ><i class="bi bi-bandaid me-1 text-primary"></i>
-                    {{ apt.doctor.specialty }}</span
-                  >
-                  <span
-                    ><i class="bi bi-calendar-event me-1 text-primary"></i>
-                    {{ apt.date | date: 'dd MMM yyyy' }}</span
-                  >
-                  <span
-                    ><i class="bi bi-clock me-1 text-primary"></i> {{ formatTime(apt.time) }}</span
-                  >
+              <div class="flex-grow-1 min-width-0">
+                <h6 class="mb-0 small fw-bold text-truncate">{{ apt.doctor.name }}</h6>
+                <div class="d-flex flex-wrap gap-2 text-muted x-small">
+                  <span><i class="bi bi-bandaid me-1 text-primary"></i>{{ apt.doctor.specialty }}</span>
+                  <span><i class="bi bi-calendar-event me-1 text-primary"></i>{{ apt.date | date: 'dd MMM' }}</span>
+                  <span><i class="bi bi-clock me-1 text-primary"></i>{{ formatTime(apt.time) }}</span>
                 </div>
               </div>
 
-              <!-- Status Badge -->
-              <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">
+              <span class="badge bg-success bg-opacity-10 text-success px-2 py-1 rounded-pill x-small">
                 {{ langService.translate('dashboard.confirmed') }}
               </span>
             </div>
@@ -373,14 +347,13 @@
         </div>
 
         <ng-template #noAppointments>
-          <div class="text-center py-5">
-            <div class="bg-light rounded-circle p-4 d-inline-block mb-3">
-              <i class="bi bi-calendar-heart text-muted fs-1"></i>
+          <div class="text-center py-4">
+            <div class="bg-light rounded-circle p-3 d-inline-block mb-2">
+              <i class="bi bi-calendar-heart text-muted fs-3"></i>
             </div>
-            <h5>{{ langService.translate('dashboard.noUpcoming') }}</h5>
-            <p class="text-muted mb-4">{{ langService.translate('dashboard.noUpcoming') }}</p>
-            <button class="btn btn-primary-premium px-4" (click)="goToNewAppointment()">
-              <i class="bi bi-plus-lg me-2"></i>
+            <p class="text-muted small mb-2">{{ langService.translate('dashboard.noUpcoming') }}</p>
+            <button class="btn btn-primary-premium btn-sm px-3" (click)="goToNewAppointment()">
+              <i class="bi bi-plus-lg me-1"></i>
               {{ langService.translate('dashboard.newAppointment') }}
             </button>
           </div>
@@ -388,97 +361,64 @@
       </div>
     </div>
 
-    <!-- Accesos Rápidos Paciente -->
+    <!-- Quick actions -->
     <div class="col-md-4">
-      <div class="row g-4">
-        <div class="col-12">
-          <div
-            class="card-premium p-4 border-0 bg-primary text-white"
-            style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)"
+      <div class="d-grid gap-2">
+        <div
+          class="card-premium p-3 border-0 bg-primary text-white"
+          style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)"
+        >
+          <h6 class="fw-bold mb-1">{{ langService.translate('dashboard.newAppointment') }}</h6>
+          <p class="text-white text-opacity-75 mb-2 x-small">
+            {{ langService.translate('dashboard.newAptDesc') }}
+          </p>
+          <button
+            class="btn btn-light text-primary fw-medium rounded-pill px-3 btn-sm shadow-sm"
+            (click)="goToNewAppointment()"
           >
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                <h4 class="fw-bold mb-1">
-                  {{ langService.translate('dashboard.newAppointment') }}
-                </h4>
-                <p class="text-white text-opacity-75 mb-3 small">
-                  {{ langService.translate('dashboard.newAptDesc') }}
-                </p>
-                <button
-                  class="btn btn-light text-primary fw-medium rounded-pill px-4 shadow-sm"
-                  (click)="goToNewAppointment()"
-                >
-                  {{ langService.translate('dashboard.bookNow') }}
-                </button>
+            {{ langService.translate('dashboard.bookNow') }}
+          </button>
+        </div>
+
+        <div class="card-premium p-3 border-0">
+          <h6 class="fw-bold mb-2 small">{{ langService.translate('dashboard.myResults') }}</h6>
+          <div
+            class="d-flex align-items-center justify-content-between p-2 rounded-3 bg-light cursor-pointer"
+            [routerLink]="['/lab-results']"
+          >
+            <div class="d-flex align-items-center gap-2">
+              <div class="bg-warning bg-opacity-10 text-warning p-2 rounded-3">
+                <i class="bi bi-file-earmark-medical fs-6"></i>
               </div>
-              <i class="bi bi-calendar-plus fs-1 text-white text-opacity-25"></i>
+              <div>
+                <p class="mb-0 fw-bold x-small">{{ langService.translate('sidebar.lab') }}</p>
+                <p class="text-muted x-small mb-0">{{ langService.translate('dashboard.recentExams') }}</p>
+              </div>
             </div>
+            <i class="bi bi-chevron-right text-muted x-small"></i>
           </div>
         </div>
 
-        <div class="col-12">
-          <div class="card-premium p-4 border-0">
-            <h6 class="fw-bold mb-3">{{ langService.translate('dashboard.myResults') }}</h6>
-            <div
-              class="d-flex align-items-center justify-content-between p-3 rounded-3 bg-light cursor-pointer hover-scale transition"
-              [routerLink]="['/lab-results']"
-            >
-              <div class="d-flex align-items-center gap-3">
-                <div class="bg-warning bg-opacity-10 text-warning p-2 rounded-3">
-                  <i class="bi bi-file-earmark-medical fs-5"></i>
-                </div>
-                <div>
-                  <p class="mb-0 fw-bold small">{{ langService.translate('sidebar.lab') }}</p>
-                  <p class="text-muted small mb-0">
-                    {{ langService.translate('dashboard.recentExams') }}
-                  </p>
-                </div>
-              </div>
-              <i class="bi bi-chevron-right text-muted small"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- SECCIÓN DE RENDIMIENTO POR ESPECIALIDAD (PACIENTE) -->
-    <div class="col-12 mt-4">
-      <div class="card-premium p-4 border-0">
-        <h6 class="fw-bold mb-3 d-flex align-items-center gap-2">
-          <i class="bi bi-stethoscope text-primary"></i>
-          {{ langService.translate('dashboard.stats.specialtyBreakdown') }}
-        </h6>
-        <div class="row g-3">
-          <div *ngFor="let s of stats().specialtyStats" class="col-md-3">
-            <div class="p-3 rounded-4 bg-light border shadow-sm">
-              <div class="small fw-bold text-dark mb-2">{{ s.name }}</div>
-              <div class="d-flex justify-content-between x-small">
-                <span class="text-muted">{{
-                  langService.translate('dashboard.stats.toAttend')
-                }}</span>
-                <span class="fw-bold text-warning">{{ s.pending }}</span>
-              </div>
-              <div class="d-flex justify-content-between x-small mt-1">
-                <span class="text-muted">{{
-                  langService.translate('dashboard.stats.attended')
-                }}</span>
-                <span class="fw-bold text-success">{{ s.completed }}</span>
+        <!-- Specialty mini cards -->
+        <div class="card-premium p-3 border-0">
+          <h6 class="fw-bold mb-2 x-small text-uppercase">
+            <i class="bi bi-stethoscope text-primary me-1"></i>
+            {{ langService.translate('dashboard.stats.specialtyBreakdown') }}
+          </h6>
+          <div class="d-grid gap-1">
+            <div *ngFor="let s of stats().specialtyStats" class="d-flex justify-content-between align-items-center p-2 rounded-3 bg-light">
+              <span class="x-small fw-bold text-truncate">{{ s.name }}</span>
+              <div class="d-flex gap-2">
+                <span class="badge bg-warning bg-opacity-10 text-warning x-small">{{ s.pending }}</span>
+                <span class="badge bg-success bg-opacity-10 text-success x-small">{{ s.completed }}</span>
               </div>
             </div>
-          </div>
-          <div
-            *ngIf="stats().specialtyStats?.length === 0"
-            class="col-12 text-center py-3 text-muted x-small"
-          >
-            No hay datos de especialidades disponibles
+            <div *ngIf="stats().specialtyStats?.length === 0" class="text-center py-2 text-muted x-small">
+              No hay datos
+            </div>
           </div>
         </div>
       </div>
     </div>
   </ng-container>
 </div>
-
-<style>
-  .border-dashed {
-    border: 2px dashed #e2e8f0;
-  }
-</style>

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AppointmentService } from '../../services/appointment.service';
+import { API_URL } from '../../api-config';
 import { VideoConsultationService } from '../../services/video-consultation.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import Swal from 'sweetalert2';
@@ -208,16 +209,16 @@ export class Appointments implements OnInit {
 
   loadDropdownData() {
     if (!this.isPatient()) {
-      this.http.get<any[]>('http://localhost:5000/api/patients', { headers: this.getHeaders() }).subscribe(data => {
-        this.patients.set(data);
+      this.http.get<any>(`${API_URL}/patients`, { headers: this.getHeaders() }).subscribe(data => {
+        this.patients.set(Array.isArray(data) ? data : data.patients ?? []);
       });
     }
-    
-    this.http.get<any[]>('http://localhost:5000/api/doctors', { headers: this.getHeaders() }).subscribe(data => {
-      this.doctors.set(data);
+
+    this.http.get<any>(`${API_URL}/doctors`, { headers: this.getHeaders() }).subscribe(data => {
+      this.doctors.set(Array.isArray(data) ? data : data.doctors ?? []);
     });
-    this.http.get<any[]>('http://localhost:5000/api/specialties', { headers: this.getHeaders() }).subscribe(data => {
-      this.specialties.set(data);
+    this.http.get<any>(`${API_URL}/specialties`, { headers: this.getHeaders() }).subscribe(data => {
+      this.specialties.set(Array.isArray(data) ? data : data.specialties ?? []);
     });
   }
 

@@ -4,6 +4,8 @@ const cors = require('cors');
 const morgan = require('morgan');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
 require('dotenv').config();
 const sequelize = require('./config/db.config');
 const models = require('./models');
@@ -114,10 +116,14 @@ app.use('/api/auth/register', authLimiter);
 app.use('/api/auth/forgot-password', authLimiter);
 app.use('/api/', apiLimiter);
 
+// Input Sanitization (prevent NoSQL injection and XSS)
+app.use(mongoSanitize());
+app.use(xss());
+
 // Other Middlewares
 app.use(morgan('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10kb' })); // Limit body size
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 app.use('/uploads', express.static('uploads'));
 
 // Swagger Documentation
@@ -147,6 +153,29 @@ app.use('/api/specialties', require('./routes/specialty.routes'));
 app.use('/api/video-consultations', require('./routes/videoConsultation.routes'));
 app.use('/api/bulk', require('./routes/bulk.routes'));
 app.use('/api/team', require('./routes/team.routes'));
+
+// Health Check Endpoint
+app.get('/health', async (req, res) => {
+  const healthcheck = {
+    uptime: process.uptime(),
+    message: 'OK',
+    timestamp: new Date().toISOString(),
+    version: '1.8.0',
+    environment: process.env.NODE_ENV || 'development'
+  };
+  
+  try {
+    // Check database connection
+    await sequelize.authenticate();
+    healthcheck.database = 'connected';
+    res.status(200).json(healthcheck);
+  } catch (error) {
+    healthcheck.database = 'disconnected';
+    healthcheck.message = 'ERROR';
+    logger.error({ error }, 'Health check failed');
+    res.status(503).json(healthcheck);
+  }
+});
 
 // Basic route
 app.get('/', (req, res) => {
