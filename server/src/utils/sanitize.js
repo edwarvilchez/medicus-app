@@ -1,18 +1,22 @@
 /**
  * Input sanitization for PostgreSQL/Sequelize
  * Prevents SQL injection and XSS attacks
+ * NOTE: Only removes dangerous SQL characters, not dots (.) for emails
  */
 
 const sanitizeString = (str) => {
   if (typeof str !== 'string') return str;
   
-  // Remove potentially dangerous SQL patterns
+  // Remove potentially dangerous SQL patterns ONLY
+  // Note: We DON'T remove dots (.) because they're valid in emails and names
   const sqlPatterns = [
-    /'/g, // Remove single quotes
-    /--/g, // Remove SQL comments
-    /;/g, // Remove semicolons
-    /\/\*/g, // Remove block comments start
-    /\*\//g, // Remove block comments end
+    /'/g,      // Remove single quotes
+    /--/g,     // Remove SQL comments
+    /;/g,      // Remove semicolons
+    /\/\*/g,  // Remove block comments start
+    /\*\//g,  // Remove block comments end
+    /"/g,      // Remove double quotes
+    /\\/g,     // Remove backslashes
   ];
   
   let sanitized = str;
