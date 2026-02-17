@@ -4,8 +4,6 @@ const cors = require('cors');
 const morgan = require('morgan');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-const mongoSanitize = require('express-mongo-sanitize');
-const xss = require('xss-clean');
 require('dotenv').config();
 const sequelize = require('./config/db.config');
 const models = require('./models');
@@ -15,6 +13,7 @@ const { initializeSocket } = require('./sockets/videoSocket');
 const logger = require('./utils/logger');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
+const { sanitizeInput } = require('./utils/sanitize');
 
 const app = express();
 const server = http.createServer(app);
@@ -116,14 +115,11 @@ app.use('/api/auth/register', authLimiter);
 app.use('/api/auth/forgot-password', authLimiter);
 app.use('/api/', apiLimiter);
 
-// Input Sanitization (prevent NoSQL injection and XSS)
-app.use(mongoSanitize());
-app.use(xss());
-
 // Other Middlewares
 app.use(morgan('dev'));
 app.use(express.json({ limit: '10kb' })); // Limit body size
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+app.use(sanitizeInput); // Sanitize all inputs (SQL injection protection)
 app.use('/uploads', express.static('uploads'));
 
 // Swagger Documentation
