@@ -166,7 +166,11 @@ export class LanguageService {
         license: 'Número de Colegiatura / Licencia',
         address: 'Dirección de la Sede',
         success: '¡Registro Exitoso!',
-        error: 'Error de Registro'
+        error: 'Error de Registro',
+        patientDesc: 'Accede a tu historial médico y agenda citas fácilmente',
+        professionalDesc: 'Gestiona tu consulta privada y pacientes',
+        clinicDesc: 'Administra tu centro médico y personal',
+        hospitalDesc: 'Solución completa para instituciones médicas'
       },
       dashboard: {
         controlPanel: 'Panel de Control',
@@ -505,7 +509,11 @@ export class LanguageService {
         license: 'Medical License Number',
         address: 'Office Address',
         success: 'Registration Successful!',
-        error: 'Registration Error'
+        error: 'Registration Error',
+        patientDesc: 'Access your medical history and book appointments easily',
+        professionalDesc: 'Manage your private practice and patients',
+        clinicDesc: 'Manage your medical center and staff',
+        hospitalDesc: 'Complete solution for medical institutions'
       },
       dashboard: {
         controlPanel: 'Control Panel',
