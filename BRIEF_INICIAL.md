@@ -565,7 +565,7 @@ medicus-app/
 ### SUPERADMIN
 
 - **Email:** admin@medicus.com
-- **Password:** admin123
+- **Password:** Configurable via variable de entorno `SUPERADMIN_PASSWORD`
 - **Acceso:** Total al sistema
 
 ### SaaS (Multi-Entidad) - Versión 1.7.0
@@ -655,7 +655,7 @@ npm start
 3. **Acceder:**
 
 - URL: http://localhost:4200/
-- Login: admin@medicus.com / admin123
+- Login: credenciales configuradas en `.env`
 
 ---
 

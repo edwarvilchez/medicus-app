@@ -43,7 +43,7 @@ async function createSuperAdmin() {
     console.log('├────────────────────────────────────────────────────────┤');
     console.log('│ Email:    admin@medicus.com                            │');
     console.log('│ Username: superadmin                                   │');
-    console.log('│ Password: admin123                                     │');
+    console.log('│ Password: [PROTEGIDO] (Ver variable SUPERADMIN_PASSWORD)     │');
     console.log('│ Nombre:   Administrador Sistema                        │');
     console.log('└────────────────────────────────────────────────────────┘\n');
     console.log('⚠️  IMPORTANTE: Cambia esta contraseña en producción!\n');

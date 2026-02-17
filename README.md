@@ -258,7 +258,7 @@ Credenciales por defecto:
 ```
 Admin:
 Email: admin@medicus.com
-Password: admin123
+Password: <Configurado en .env o base de datos>
 ```
 
 ## 🔐 Recuperación de Contraseña
