@@ -1,12 +1,15 @@
 {
   "name": "client",
   "version": "0.0.0",
-  "scripts": {
+"scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "echo 'Testing suite disabled'"
+    "test": "echo 'Testing suite disabled'",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "test:e2e": "cypress run --headless --browser chrome"
   },
   "prettier": {
     "printWidth": 100,
@@ -51,6 +54,7 @@
     "@angular/cli": "^21.1.2",
     "@angular/compiler-cli": "^21.1.0",
     "@types/simple-peer": "^9.11.9",
+    "cypress": "^15.10.0",
     "jsdom": "^27.1.0",
     "typescript": "~5.9.2",
     "vitest": "^4.0.8"
