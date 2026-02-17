@@ -64,16 +64,29 @@ const swaggerSpec = swaggerJsdoc(swaggerOptions);
 // 1. CORS - DEBE IR PRIMERO QUE TODO
 const corsOptions = {
   origin: (origin, callback) => {
-    // Permitir si no hay origen (como apps móviles o curl) 
-    // o si el origen coincide con nuestros patrones
-    if (!origin || 
-        origin.includes('localhost') || 
-        origin.includes('127.0.0.1') || 
-        origin.includes('.easypanel.host') || 
-        origin.includes('.nominusve.com')) {
+    // Lista de orígenes permitidos explícitamente
+    const allowedOrigins = [
+      process.env.CLIENT_URL, // URL desde variable de entorno (Prioridad)
+      /^https?:\/\/localhost(:\d+)?$/, // Localhost con cualquier puerto
+      /^https?:\/\/127\.0\.0\.1(:\d+)?$/, // IP local
+      /\.easypanel\.host$/, // Dominios de Easypanel (subdominios)
+      /\.nominusve\.com$/ // Dominios de producción personalizados
+    ];
+
+    // Permitir si no hay origen (apps móviles, curl, postman)
+    if (!origin) return callback(null, true);
+
+    // Verificar si el origen coincide con alguno de los permitidos
+    const isAllowed = allowedOrigins.some(allowed => {
+      if (!allowed) return false;
+      if (allowed instanceof RegExp) return allowed.test(origin);
+      return allowed === origin;
+    });
+
+    if (isAllowed) {
       callback(null, true);
     } else {
-      logger.warn({ origin }, 'CORS Blocked');
+      logger.warn({ origin }, 'CORS Blocked - Origin not allowed');
       callback(new Error('Not allowed by CORS'));
     }
   },
