@@ -119,7 +119,8 @@ app.use('/api/', apiLimiter);
 app.use(morgan('dev'));
 app.use(express.json({ limit: '10kb' })); // Limit body size
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
-app.use(sanitizeInput); // Sanitize all inputs (SQL injection protection)
+// TEMPORARILY DISABLED: sanitizeInput causing email issues
+// app.use(sanitizeInput);
 app.use('/uploads', express.static('uploads'));
 
 // Swagger Documentation
