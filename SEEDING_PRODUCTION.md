@@ -24,7 +24,7 @@ Los archivos con credenciales de prueba (`CREDENCIALES_TESTING.txt`, `USUARIOS_P
    # Seeding Configuration
    NODE_ENV=production
    SEED_TEST_USERS=true
-   TEST_PASSWORD=TuContraseñaSeguraAquí123!
+   TEST_PASSWORD=YOUR_SECURE_PASSWORD_HERE
    ```
 
 4. **Ejecutar el script de seeding:**
@@ -113,7 +113,7 @@ Para generar el hash bcrypt de una contraseña:
 ```javascript
 // En Node.js (puedes ejecutar esto localmente)
 const bcrypt = require("bcryptjs");
-const password = "TuContraseñaSegura123!";
+const password = "YOUR_PASSWORD_HERE"; // Reemplaza con tu contraseña real
 const hash = bcrypt.hashSync(password, 10);
 console.log(hash);
 ```
@@ -121,7 +121,7 @@ console.log(hash);
 O usando un script rápido:
 
 ```bash
-node -e "console.log(require('bcryptjs').hashSync('TuContraseña', 10))"
+node -e "console.log(require('bcryptjs').hashSync('YOUR_PASSWORD', 10))"
 ```
 
 ## 📊 Verificar Usuarios Creados
@@ -157,7 +157,7 @@ Si necesitas actualizar la contraseña de un usuario existente:
 node -e "
 const bcrypt = require('bcryptjs');
 const { User } = require('./src/models');
-const newPassword = 'NuevaContraseñaSegura123!';
+const newPassword = 'YOUR_NEW_PASSWORD_HERE';  // Reemplaza con tu nueva contraseña
 const hash = bcrypt.hashSync(newPassword, 10);
 User.update({ password: hash }, { where: { email: 'admin@tudominio.com' } })
   .then(() => { console.log('✅ Contraseña actualizada'); process.exit(0); });
