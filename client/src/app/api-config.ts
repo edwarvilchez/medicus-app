@@ -14,7 +14,15 @@ const getBaseUrl = (): string => {
   if (host === 'localhost' || host === '127.0.0.1') {
     result = 'http://localhost:5000';
   } else if (host.includes('.easypanel.host')) {
-    result = 'https://' + host.replace('-frontend', '-api');
+    if (host.includes('-frontend')) {
+      result = 'https://' + host.replace('-frontend', '-api');
+    } else {
+      // Si no tiene el sufijo -frontend, asumimos que es el nombre base (ej. medicus.xxx)
+      // y le agregamos -api (ej. medicus-api.xxx)
+      const parts = host.split('.');
+      parts[0] = parts[0] + '-api';
+      result = 'https://' + parts.join('.');
+    }
   } else if (host.includes('nominusve.com')) {
     if (host === 'medicus.nominusve.com') {
       result = 'https://medicus-api.nominusve.com';
