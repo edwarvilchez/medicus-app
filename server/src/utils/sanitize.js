@@ -55,6 +55,11 @@ const sanitizeObject = (obj) => {
  */
 const sanitizeInput = (req, res, next) => {
   try {
+    // Log original email for debugging
+    if (req.body && req.body.email) {
+      console.log('[SANITIZE] Original email:', req.body.email);
+    }
+    
     if (req.body) {
       req.body = sanitizeObject(req.body);
     }
@@ -65,6 +70,11 @@ const sanitizeInput = (req, res, next) => {
     
     if (req.query) {
       req.query = sanitizeObject(req.query);
+    }
+    
+    // Log sanitized email for debugging
+    if (req.body && req.body.email) {
+      console.log('[SANITIZE] Sanitized email:', req.body.email);
     }
     
     next();

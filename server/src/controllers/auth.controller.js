@@ -127,6 +127,7 @@ exports.login = async (req, res) => {
   const { email, password } = req.body;
   
   try {
+    console.log(`[LOGIN DEBUG] Email received: "${email}"`);
     log(`[LOGIN START] Request received for: ${email}`);
     
     // Explicitly check env var
