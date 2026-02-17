@@ -13,8 +13,9 @@
 
 require('dotenv').config();
 const { sequelize } = require('./src/models');
-const { seedRoles, seedTestData } = require('./src/utils/seeder');
-const { seedTestData: seedUsers } = require('./src/utils/testSeeder');
+// CORRECCIÓN: Importar las funciones directamente (sin destructuring)
+const seedRoles = require('./src/utils/seeder'); 
+const seedTestUsers = require('./src/utils/testSeeder');
 
 async function runProductionSeed() {
   try {
@@ -37,33 +38,26 @@ async function runProductionSeed() {
     await seedRoles();
     console.log('✅ Roles creados correctamente\n');
 
-    // 2. Seed de datos base del sistema
-    console.log('🏥 Seeding datos base del sistema...');
-    await seedTestData();
-    console.log('✅ Datos base creados correctamente\n');
-
-    // 3. Seed de usuarios de prueba (opcional)
+    // 2. Seed de usuarios de prueba (opcional)
+    // El script testSeeder crea al SUPERADMIN 'admin' además de otros usuarios
     const shouldSeedTestUsers = process.env.SEED_TEST_USERS === 'true';
     
     if (shouldSeedTestUsers) {
-      console.log('👥 Seeding usuarios de prueba...');
-      console.log('⚠️  Usando contraseña de prueba desde TEST_PASSWORD');
+      console.log('👥 Seeding usuarios del sistema (Admin + Pruebas)...');
       
       if (!process.env.TEST_PASSWORD) {
         throw new Error('TEST_PASSWORD no está definido en las variables de entorno');
       }
+      console.log('🔑 Usando contraseña segura definida en entorno');
 
-      await seedUsers();
-      console.log('✅ Usuarios de prueba creados correctamente\n');
+      await seedTestUsers();
+      console.log('✅ Usuarios creados correctamente\n');
     } else {
-      console.log('⏭️  Saltando usuarios de prueba (SEED_TEST_USERS no está en true)\n');
+      console.log('⏭️  Saltando creación de usuarios (SEED_TEST_USERS no está en true)');
+      console.log('⚠️  Asegúrese de tener al menos un usuario administrador creado manualmente.\n');
     }
 
     console.log('🎉 Seeding de producción completado exitosamente!');
-    console.log('\n📊 Resumen:');
-    console.log('   - Roles del sistema: ✅');
-    console.log('   - Datos base: ✅');
-    console.log('   - Usuarios de prueba:', shouldSeedTestUsers ? '✅' : '⏭️ (omitido)');
     
     process.exit(0);
   } catch (error) {
