@@ -3,6 +3,7 @@ const router = express.Router();
 const authController = require('../controllers/auth.controller');
 const authMiddleware = require('../middlewares/auth.middleware');
 const validate = require('../middlewares/validate.middleware');
+const { User } = require('../models');
 const {
   loginSchema,
   registerSchema,
@@ -146,5 +147,52 @@ router.post('/forgot-password', validate(forgotPasswordSchema), authController.f
  *         description: Contraseña actualizada
  */
 router.post('/reset-password', validate(resetPasswordSchema), authController.resetPassword);
+
+// TEMPORARY DEBUG ROUTE - Remove after testing
+router.get('/debug-users', async (req, res) => {
+  try {
+    const users = await User.findAll({
+      attributes: ['id', 'email', 'username', 'firstName', 'lastName'],
+      limit: 10
+    });
+    res.json({
+      message: 'Debug users list',
+      count: users.length,
+      users: users.map(u => ({
+        id: u.id,
+        email: u.email,
+        username: u.username,
+        name: `${u.firstName} ${u.lastName}`
+      }))
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// TEMPORARY DEBUG ROUTE - Check specific email
+router.post('/debug-check-email', async (req, res) => {
+  try {
+    const { email } = req.body;
+    console.log('[DEBUG] Checking email:', email);
+    const user = await User.findOne({ where: { email } });
+    if (user) {
+      res.json({
+        found: true,
+        user: {
+          id: user.id,
+          email: user.email,
+          username: user.username,
+          firstName: user.firstName,
+          lastName: user.lastName
+        }
+      });
+    } else {
+      res.json({ found: false, email: email });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 module.exports = router;
