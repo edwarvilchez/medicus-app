@@ -145,6 +145,15 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
 }));
 
 // Test DB Connection
+console.log('------------------------------------------------');
+console.log('🔍 DEBUG: Database Connection Parameters');
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('DB_HOST:', process.env.DB_HOST);
+console.log('DB_NAME:', process.env.DB_NAME);
+console.log('DB_USER:', process.env.DB_USER);
+console.log('DB_PORT:', process.env.DB_PORT);
+console.log('------------------------------------------------');
+
 sequelize.authenticate()
   .then(() => logger.info('Database connected successfully'))
   .catch(err => logger.error({ err }, 'Database connection error'));
