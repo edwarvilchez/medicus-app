@@ -38,6 +38,26 @@ const Payment = sequelize.define('Payment', {
   receiptUrl: {
     type: DataTypes.STRING
   },
+  paymentType: {
+    type: DataTypes.STRING,
+    defaultValue: 'APPOINTMENT' // 'APPOINTMENT', 'SUBSCRIPTION'
+  },
+  billingCycle: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  planType: {
+    type: DataTypes.STRING, // 'PROFESSIONAL', 'CLINIC', 'HOSPITAL'
+    allowNull: true
+  },
+  organizationId: {
+    type: DataTypes.UUID,
+    allowNull: true,
+    references: {
+      model: 'Organizations',
+      key: 'id'
+    }
+  },
   deletedAt: {
     type: DataTypes.DATE,
     allowNull: true

@@ -128,6 +128,13 @@ export const routes: Routes = [
     title: 'Medicus - Gestión de Equipo'
   },
   
+  { 
+    path: 'subscription', 
+    loadComponent: () => import('./components/subscription/subscription').then(m => m.Subscription),
+    canActivate: [authGuard], 
+    title: 'Medicus - Planes y Precios'
+  },
+  
   // Catch all - redirect to dashboard
   { path: '**', redirectTo: 'dashboard' }
 ];

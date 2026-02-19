@@ -60,7 +60,13 @@
               ></i>
             </td>
             <td *ngIf="!authService.hasRole(['PATIENT'])">
-              {{ p.Patient?.User?.firstName }} {{ p.Patient?.User?.lastName }}
+              <span *ngIf="p.Patient"
+                >{{ p.Patient?.User?.firstName }} {{ p.Patient?.User?.lastName }}</span
+              >
+              <span *ngIf="!p.Patient && p.Organization" class="fw-bold text-primary">
+                <i class="bi bi-building me-1"></i> {{ p.Organization.name }}
+              </span>
+              <span *ngIf="!p.Patient && !p.Organization" class="text-muted fst-italic">N/A</span>
             </td>
             <td>
               <div class="fw-bold small" *ngIf="p.Appointment">

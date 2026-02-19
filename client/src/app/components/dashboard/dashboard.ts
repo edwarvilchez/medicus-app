@@ -151,10 +151,10 @@ export class Dashboard implements OnInit {
         let errorMessage = 'No se pudieron cargar las estadísticas';
         
         if (err.status === 401) {
+          // Clear session immediately to prevent loop
+          this.authService.logout(); 
           errorMessage = 'Sesión expirada. Por favor, inicia sesión nuevamente.';
-          setTimeout(() => {
-            this.router.navigate(['/login']);
-          }, 2000);
+          // logout() already redirects, but checking logic keeps it safe
         } else if (err.status === 0) {
           errorMessage = 'No se puede conectar con el servidor. Verifica tu conexión.';
         } else if (err.error?.message) {
@@ -350,5 +350,38 @@ export class Dashboard implements OnInit {
     if (gender === 'Female') return 'Sra.';
 
     return '';
+  }
+
+  isTrialActive(): boolean {
+    const user = this.authService.currentUser();
+    const org = user?.Organization;
+    if (org && org.subscriptionStatus === 'TRIAL') {
+      return this.getTrialDaysLeft() >= 0;
+    }
+    return false;
+  }
+
+  getTrialDaysLeft(): number {
+    const user = this.authService.currentUser();
+    const org = user?.Organization;
+    if (!org?.trialEndsAt) return 0;
+    
+    const end = new Date(org.trialEndsAt);
+    const now = new Date();
+    const diff = end.getTime() - now.getTime();
+    return Math.ceil(diff / (1000 * 3600 * 24));
+  }
+
+  isTrialExpired(): boolean {
+    const user = this.authService.currentUser();
+    const org = user?.Organization;
+    if (org && org.subscriptionStatus === 'TRIAL') {
+        return this.getTrialDaysLeft() < 0;
+    }
+    return false;
+  }
+
+  upgradePlan() {
+    this.router.navigate(['/payments']);
   }
 }

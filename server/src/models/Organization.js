@@ -15,6 +15,14 @@ const Organization = sequelize.define('Organization', {
     type: DataTypes.ENUM('PROFESSIONAL', 'CLINIC', 'HOSPITAL'),
     allowNull: false
   },
+  subscriptionStatus: {
+    type: DataTypes.ENUM('TRIAL', 'ACTIVE', 'PAST_DUE', 'CANCELLED'),
+    defaultValue: 'TRIAL'
+  },
+  trialEndsAt: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
   ownerId: {
     type: DataTypes.UUID,
     allowNull: false

@@ -2,17 +2,17 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     // Add deletedAt and deletedBy to all main tables
     const tables = [
-      'users',
-      'patients',
-      'appointments',
-      'medical_records',
-      'lab_results',
-      'payments',
-      'doctors',
-      'nurses',
-      'staff',
-      'video_consultations',
-      'organizations'
+      'Users',
+      'Patients',
+      'Appointments',
+      'MedicalRecords',
+      'LabResults',
+      'Payments',
+      'Doctors',
+      'Nurses',
+      'Staffs',
+      'VideoConsultations',
+      'Organizations'
     ];
 
     for (const table of tables) {
@@ -45,17 +45,17 @@ module.exports = {
 
   down: async (queryInterface, Sequelize) => {
     const tables = [
-      'users',
-      'patients',
-      'appointments',
-      'medical_records',
-      'lab_results',
-      'payments',
-      'doctors',
-      'nurses',
-      'staff',
-      'video_consultations',
-      'organizations'
+      'Users',
+      'Patients',
+      'Appointments',
+      'MedicalRecords',
+      'LabResults',
+      'Payments',
+      'Doctors',
+      'Nurses',
+      'Staffs',
+      'VideoConsultations',
+      'Organizations'
     ];
 
     for (const table of tables) {

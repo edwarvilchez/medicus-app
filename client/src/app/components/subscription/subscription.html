@@ -1,0 +1,153 @@
+<div class="pricing-page">
+  <div class="container">
+    <!-- Trial Banner -->
+    <div
+      class="trial-banner d-flex flex-column flex-md-row justify-content-between align-items-center gap-4"
+    >
+      <div class="flex-grow-1">
+        <div class="d-flex align-items-center gap-3 mb-2">
+          <div class="bg-white bg-opacity-25 p-2 rounded-2">
+            <i class="bi bi-stars fs-4"></i>
+          </div>
+          <h3 class="mb-0">¡Prueba Gratis por 7 Días!</h3>
+        </div>
+        <p class="mb-0 fs-5 text-white-50">
+          Experimenta todas las funcionalidades premium sin compromiso.
+        </p>
+      </div>
+      <!-- Only show register if not logged in, or upgrade text if logged in -->
+      <a
+        *ngIf="!authService.currentUser()"
+        routerLink="/register"
+        class="btn btn-light btn-lg fw-bold rounded-pill text-primary shadow px-4"
+      >
+        Comenzar Prueba <i class="bi bi-arrow-right ms-2"></i>
+      </a>
+      <span
+        *ngIf="authService.currentUser()"
+        class="badge bg-white text-primary rounded-pill px-3 py-2 fs-6 shadow-sm"
+      >
+        <i class="bi bi-person-check-fill me-1"></i> Sesión Activa
+      </span>
+    </div>
+
+    <!-- Header -->
+    <div class="text-center mb-5">
+      <div
+        class="d-inline-flex align-items-center gap-2 bg-primary bg-opacity-10 text-primary px-3 py-1 rounded-pill fw-bold small mb-3"
+      >
+        <i class="bi bi-award-fill"></i> PLANES Y PRECIOS
+      </div>
+      <h1 class="display-4 fw-bold mb-3">Elige el plan perfecto<br />para tu organización</h1>
+      <p class="text-muted fs-5">
+        Todos los planes incluyen cumplimiento con normativas de salud.<br />
+        <strong class="text-primary">Escala tu plan a medida que crece tu práctica.</strong>
+      </p>
+    </div>
+
+    <!-- Cycle Selector -->
+    <div class="d-flex justify-content-center gap-2 mb-5 flex-wrap">
+      <button
+        *ngFor="let cycle of cycles"
+        (click)="setCycle(cycle.id)"
+        class="toggle-btn"
+        [class.active]="billingCycle() === cycle.id"
+      >
+        {{ cycle.label }}
+        <span *ngIf="cycle.discount" class="discount-badge">{{ cycle.discount }}</span>
+      </button>
+    </div>
+
+    <!-- Plans Grid -->
+    <div class="row g-4 justify-content-center">
+      <div class="col-md-6 col-lg-3" *ngFor="let plan of plans">
+        <div class="plan-card h-100 d-flex flex-column" [class.popular]="plan.popular">
+          <div *ngIf="plan.popular" class="popular-badge">Recomendado</div>
+
+          <div class="d-flex align-items-center gap-3 mb-4">
+            <div class="icon-box" [ngClass]="'icon-' + plan.color">
+              <i [class]="'bi ' + plan.icon"></i>
+            </div>
+            <div>
+              <h4 class="fw-bold mb-0 lh-1">{{ plan.name }}</h4>
+              <p class="small text-muted fw-bold text-uppercase mb-0 mt-1">{{ plan.tagline }}</p>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-baseline gap-1 mb-4">
+            <span class="price-tag">${{ getPrice(plan.price) | number }}</span>
+            <span class="period-tag"
+              >/ {{ billingCycle() === 'Mensual' ? 'mes' : billingCycle().toLowerCase() }}</span
+            >
+          </div>
+
+          <div class="mb-4 flex-grow-1">
+            <p class="x-small fw-bold text-primary text-uppercase border-bottom pb-2 mb-3">
+              {{ plan.limit }}
+            </p>
+            <div class="feature-item" *ngFor="let feature of plan.features">
+              <div class="check-icon"><i class="bi bi-check-lg"></i></div>
+              <span class="feature-text">{{ feature }}</span>
+            </div>
+          </div>
+
+          <button
+            (click)="payForPlan(plan)"
+            class="cta-btn"
+            [ngClass]="plan.popular ? 'cta-btn-primary' : 'cta-btn-secondary'"
+          >
+            Elegir Plan <i class="bi bi-arrow-right"></i>
+          </button>
+
+          <div class="mt-2 text-center x-small text-muted" *ngIf="currentPlan() === plan.type">
+            <span class="badge bg-success bg-opacity-25 text-success rounded-pill px-2">
+              Plan Actual
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact / Footer -->
+    <div class="mt-5 pt-5">
+      <div class="contact-footer">
+        <div class="row align-items-center g-5">
+          <div class="col-lg-6">
+            <h3 class="fw-bold mb-3">¿Necesitas un despliegue personalizado?</h3>
+            <p class="text-white-50 mb-4">
+              Si eres una red de hospitales o una corporación multinacional, contacta con nuestro
+              equipo ejecutivo para una solución a medida.
+            </p>
+            <div class="d-flex align-items-center gap-3">
+              <div class="bg-white bg-opacity-10 p-2 rounded-3">
+                <i class="bi bi-envelope fs-5 text-info"></i>
+              </div>
+              <div>
+                <p class="x-small fw-bold text-info text-uppercase mb-0">Email de Atención</p>
+                <a
+                  href="mailto:hola.piridawly@gmail.com"
+                  class="text-white text-decoration-none fw-bold"
+                  >hola.piridawly@gmail.com</a
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-6">
+            <div class="row g-3">
+              <div class="col-sm-6" *ngFor="let p of team">
+                <div
+                  class="bg-white bg-opacity-10 p-3 rounded-3 border border-white border-opacity-10"
+                >
+                  <p class="x-small fw-bold text-info text-uppercase mb-1">{{ p.role }}</p>
+                  <p class="fw-bold mb-0 small">{{ p.name }}</p>
+                  <p *ngIf="p.tel" class="x-small text-white-50 mt-1 mb-0">{{ p.tel }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

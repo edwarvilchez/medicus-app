@@ -14,6 +14,8 @@ const logger = require('./utils/logger');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const { sanitizeInput } = require('./utils/sanitize');
+const checkSubscription = require('./middlewares/subscription.middleware');
+const authMiddleware = require('./middlewares/auth.middleware');
 
 const app = express();
 const server = http.createServer(app);
@@ -150,19 +152,21 @@ sequelize.authenticate()
 // Routes
 app.use('/api/public', require('./routes/public.routes')); // Public routes (no auth)
 app.use('/api/auth', require('./routes/auth.routes'));
-app.use('/api/appointments', require('./routes/appointment.routes'));
-app.use('/api/patients', require('./routes/patient.routes'));
-app.use('/api/doctors', require('./routes/doctor.routes'));
-app.use('/api/nurses', require('./routes/nurse.routes'));
-app.use('/api/staff', require('./routes/staff.routes'));
-app.use('/api/medical-records', require('./routes/medicalRecord.routes'));
-app.use('/api/lab-results', require('./routes/labResult.routes'));
-app.use('/api/payments', require('./routes/payment.routes'));
-app.use('/api/stats', require('./routes/stats.routes'));
-app.use('/api/specialties', require('./routes/specialty.routes'));
-app.use('/api/video-consultations', require('./routes/videoConsultation.routes'));
-app.use('/api/bulk', require('./routes/bulk.routes'));
-app.use('/api/team', require('./routes/team.routes'));
+
+// Protected Routes with Subscription Check
+app.use('/api/appointments', authMiddleware, checkSubscription, require('./routes/appointment.routes'));
+app.use('/api/patients', authMiddleware, checkSubscription, require('./routes/patient.routes'));
+app.use('/api/doctors', authMiddleware, checkSubscription, require('./routes/doctor.routes'));
+app.use('/api/nurses', authMiddleware, checkSubscription, require('./routes/nurse.routes'));
+app.use('/api/staff', authMiddleware, checkSubscription, require('./routes/staff.routes'));
+app.use('/api/medical-records', authMiddleware, checkSubscription, require('./routes/medicalRecord.routes'));
+app.use('/api/lab-results', authMiddleware, checkSubscription, require('./routes/labResult.routes'));
+app.use('/api/payments', require('./routes/payment.routes')); // Payments should be accessible even if expired? Yes, to pay!
+app.use('/api/stats', authMiddleware, checkSubscription, require('./routes/stats.routes'));
+app.use('/api/specialties', authMiddleware, checkSubscription, require('./routes/specialty.routes'));
+app.use('/api/video-consultations', authMiddleware, checkSubscription, require('./routes/videoConsultation.routes'));
+app.use('/api/bulk', authMiddleware, checkSubscription, require('./routes/bulk.routes'));
+app.use('/api/team', authMiddleware, checkSubscription, require('./routes/team.routes'));
 
 // Health Check Endpoint
 app.get('/health', async (req, res) => {

@@ -51,6 +51,24 @@ Sistema completo de gestión para clínicas médicas desarrollado con Angular y 
 - ✅ Animaciones suaves
 - ✅ Modo oscuro (próximamente)
 
+### 💳 Gestión de Planes y Suscripciones
+
+- ✅ **Planes Escalables** (Consultorio, Clínica, Hospital, Enterprise)
+- ✅ **Ciclos de Facturación** flexibles (Mensual, Anual)
+- ✅ **Pagos Integrados** y reporte de transferencias
+- ✅ **Activación Automática** de servicios premium
+- ✅ **Gestión de Organización**
+
+## 🆕 Novedades v1.8.4 (Febrero 2026)
+
+### 💎 Módulo de Suscripciones
+
+- ✅ **Nueva UI de Precios** basada en estándares modernos
+- ✅ **Client Area** para gestión de pagos
+- ✅ **Upgrade Automático** de cuentas tras confirmación de pago
+- ✅ **Soporte B2B** con facturación a nombre de la organización
+  > 📖 Ver detalles en [README_SUBSCRIPTION.md](README_SUBSCRIPTION.md)
+
 ## 🆕 Novedades v1.8.2 (Febrero 2026)
 
 ### 🚀 Deployment Ready

@@ -54,6 +54,9 @@ LabResult.belongsTo(Patient, { foreignKey: 'patientId' });
 Patient.hasMany(Payment, { foreignKey: 'patientId' });
 Payment.belongsTo(Patient, { foreignKey: 'patientId' });
 
+Organization.hasMany(Payment, { foreignKey: 'organizationId' });
+Payment.belongsTo(Organization, { foreignKey: 'organizationId' });
+
 Appointment.hasOne(Payment, { foreignKey: 'appointmentId' });
 Payment.belongsTo(Appointment, { foreignKey: 'appointmentId' });
 

@@ -1,4 +1,42 @@
 <div class="row g-2">
+  <!-- TRIAL BANNER -->
+  <div class="col-12" *ngIf="isTrialActive()">
+    <div
+      class="alert alert-warning border-0 shadow-sm d-flex justify-content-between align-items-center p-2 mb-2"
+    >
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-hourglass-split fs-4 text-warning-emphasis"></i>
+        <div>
+          <h6 class="mb-0 fw-bold text-warning-emphasis">
+            {{ getTrialDaysLeft() }} días restantes en tu prueba gratuita
+          </h6>
+          <p class="mb-0 x-small text-muted">Aprovecha al máximo todas las funciones premium.</p>
+        </div>
+      </div>
+      <button class="btn btn-warning text-white btn-sm fw-bold shadow-sm" (click)="upgradePlan()">
+        Actualizar Plan
+      </button>
+    </div>
+  </div>
+
+  <div class="col-12" *ngIf="isTrialExpired()">
+    <div
+      class="alert alert-danger border-0 shadow-sm d-flex justify-content-between align-items-center p-2 mb-2"
+    >
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-exclamation-triangle-fill fs-4 text-danger"></i>
+        <div>
+          <h6 class="mb-0 fw-bold text-danger">Tu periodo de prueba ha finalizado</h6>
+          <p class="mb-0 x-small text-muted">
+            Para continuar usando Medicus, por favor actualiza tu plan.
+          </p>
+        </div>
+      </div>
+      <button class="btn btn-danger text-white btn-sm fw-bold shadow-sm" (click)="upgradePlan()">
+        Actualizar Ahora
+      </button>
+    </div>
+  </div>
   <!-- Header -->
   <div class="col-12">
     <div class="d-flex justify-content-between align-items-center mb-1">
@@ -146,7 +184,9 @@
 
     <div class="col-md-5">
       <div class="card-premium h-100 p-3 border-0">
-        <h6 class="mb-2 x-small fw-bold text-uppercase">{{ langService.translate('dashboard.upcoming') }}</h6>
+        <h6 class="mb-2 x-small fw-bold text-uppercase">
+          {{ langService.translate('dashboard.upcoming') }}
+        </h6>
         <div class="overflow-auto custom-scrollbar" style="max-height: 170px">
           <div class="d-grid gap-1">
             <div
@@ -315,7 +355,9 @@
 
     <div class="col-md-8">
       <div class="card-premium h-100 p-3 border-0">
-        <h6 class="mb-2 text-primary fw-bold">{{ langService.translate('dashboard.medicalCitas') }}</h6>
+        <h6 class="mb-2 text-primary fw-bold">
+          {{ langService.translate('dashboard.medicalCitas') }}
+        </h6>
 
         <div *ngIf="stats().upcomingAppointments?.length > 0; else noAppointments">
           <div class="d-grid gap-2 overflow-auto custom-scrollbar" style="max-height: 220px">
@@ -333,13 +375,22 @@
               <div class="flex-grow-1 min-width-0">
                 <h6 class="mb-0 small fw-bold text-truncate">{{ apt.doctor.name }}</h6>
                 <div class="d-flex flex-wrap gap-2 text-muted x-small">
-                  <span><i class="bi bi-bandaid me-1 text-primary"></i>{{ apt.doctor.specialty }}</span>
-                  <span><i class="bi bi-calendar-event me-1 text-primary"></i>{{ apt.date | date: 'dd MMM' }}</span>
-                  <span><i class="bi bi-clock me-1 text-primary"></i>{{ formatTime(apt.time) }}</span>
+                  <span
+                    ><i class="bi bi-bandaid me-1 text-primary"></i>{{ apt.doctor.specialty }}</span
+                  >
+                  <span
+                    ><i class="bi bi-calendar-event me-1 text-primary"></i
+                    >{{ apt.date | date: 'dd MMM' }}</span
+                  >
+                  <span
+                    ><i class="bi bi-clock me-1 text-primary"></i>{{ formatTime(apt.time) }}</span
+                  >
                 </div>
               </div>
 
-              <span class="badge bg-success bg-opacity-10 text-success px-2 py-1 rounded-pill x-small">
+              <span
+                class="badge bg-success bg-opacity-10 text-success px-2 py-1 rounded-pill x-small"
+              >
                 {{ langService.translate('dashboard.confirmed') }}
               </span>
             </div>
@@ -392,7 +443,9 @@
               </div>
               <div>
                 <p class="mb-0 fw-bold x-small">{{ langService.translate('sidebar.lab') }}</p>
-                <p class="text-muted x-small mb-0">{{ langService.translate('dashboard.recentExams') }}</p>
+                <p class="text-muted x-small mb-0">
+                  {{ langService.translate('dashboard.recentExams') }}
+                </p>
               </div>
             </div>
             <i class="bi bi-chevron-right text-muted x-small"></i>
@@ -406,14 +459,24 @@
             {{ langService.translate('dashboard.stats.specialtyBreakdown') }}
           </h6>
           <div class="d-grid gap-1">
-            <div *ngFor="let s of stats().specialtyStats" class="d-flex justify-content-between align-items-center p-2 rounded-3 bg-light">
+            <div
+              *ngFor="let s of stats().specialtyStats"
+              class="d-flex justify-content-between align-items-center p-2 rounded-3 bg-light"
+            >
               <span class="x-small fw-bold text-truncate">{{ s.name }}</span>
               <div class="d-flex gap-2">
-                <span class="badge bg-warning bg-opacity-10 text-warning x-small">{{ s.pending }}</span>
-                <span class="badge bg-success bg-opacity-10 text-success x-small">{{ s.completed }}</span>
+                <span class="badge bg-warning bg-opacity-10 text-warning x-small">{{
+                  s.pending
+                }}</span>
+                <span class="badge bg-success bg-opacity-10 text-success x-small">{{
+                  s.completed
+                }}</span>
               </div>
             </div>
-            <div *ngIf="stats().specialtyStats?.length === 0" class="text-center py-2 text-muted x-small">
+            <div
+              *ngIf="stats().specialtyStats?.length === 0"
+              class="text-center py-2 text-muted x-small"
+            >
               No hay datos
             </div>
           </div>

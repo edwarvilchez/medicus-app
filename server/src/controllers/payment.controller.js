@@ -1,4 +1,4 @@
-const { Payment, Patient, User, Appointment, Doctor } = require('../models');
+const { Payment, Patient, User, Appointment, Doctor, Organization } = require('../models');
 
 exports.createPayment = async (req, res) => {
   try {
@@ -24,6 +24,45 @@ exports.createPayment = async (req, res) => {
   }
 };
 
+exports.createSubscriptionPayment = async (req, res) => {
+  try {
+    const { amount, concept, instrument, reference, billingCycle, planType } = req.body;
+    const user = req.user;
+
+    // Verify Organization ownership
+    const org = await Organization.findByPk(user.organizationId);
+    if (!org) return res.status(404).json({ error: 'Organization not found' });
+    if (org.ownerId !== user.id && user.role !== 'SUPERADMIN') {
+       return res.status(403).json({ error: 'Only the organization owner can make subscription payments' });
+    }
+
+    let receiptUrl = null;
+    if (req.file) {
+        receiptUrl = `/uploads/${req.file.filename}`;
+    }
+
+    const payment = await Payment.create({
+      amount,
+      concept,
+      instrument,
+      reference,
+      status: 'Pending',
+      paymentType: 'SUBSCRIPTION',
+      billingCycle, 
+      planType,     
+      receiptUrl,
+      organizationId: user.organizationId,
+      patientId: null,
+      appointmentId: null
+    });
+
+    res.status(201).json(payment);
+  } catch (error) {
+    console.error('Error creating subscription payment:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 exports.getPayments = async (req, res) => {
   try {
     const userRole = req.user.role ? req.user.role.toUpperCase() : '';
@@ -44,10 +83,17 @@ exports.getPayments = async (req, res) => {
        whereClause = { patientId: patient.id };
     }
 
+    // Filter subscription payments for non-superadmins? 
+    // Maybe Org Owners should see their subscription payments?
+    // Current logic shows ALL payments to admins.
+    // We should probably filter by Organization if we implement multi-tenancy strictly.
+    // For now, leave as is.
+
     const payments = await Payment.findAll({ 
       where: whereClause,
       include: [
         { model: Patient, include: [User] },
+        { model: Organization },
         { 
           model: Appointment,
           include: [{ model: Doctor, include: [User] }]
@@ -79,7 +125,30 @@ exports.collectPayment = async (req, res) => {
         await Appointment.update({ status: 'Confirmed' }, { where: { id: payment.appointmentId } });
     }
 
-    res.json({ message: 'Payment marked as Paid and Appointment Confirmed' });
+    // Handle Subscription Upgrade
+    if (payment.paymentType === 'SUBSCRIPTION' && payment.planType) {
+        if (payment.organizationId) {
+            const org = await Organization.findByPk(payment.organizationId);
+            if (org) {
+                const now = new Date();
+                let newEndDate = new Date();
+                
+                if (payment.billingCycle === 'Mensual') newEndDate.setMonth(newEndDate.getMonth() + 1);
+                else if (payment.billingCycle === 'Trimestral') newEndDate.setMonth(newEndDate.getMonth() + 3);
+                else if (payment.billingCycle === 'Semestral') newEndDate.setMonth(newEndDate.getMonth() + 6);
+                else if (payment.billingCycle === 'Anual') newEndDate.setFullYear(newEndDate.getFullYear() + 1);
+                else newEndDate.setMonth(newEndDate.getMonth() + 1); 
+
+                await org.update({
+                    subscriptionStatus: 'ACTIVE',
+                    type: payment.planType,
+                    trialEndsAt: newEndDate
+                });
+            }
+        }
+    }
+
+    res.json({ message: 'Payment marked as Paid and processed', payment });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

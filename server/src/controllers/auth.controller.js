@@ -79,7 +79,9 @@ exports.register = async (req, res) => {
       const newOrg = await Organization.create({
         name: orgName,
         type: finalAccountType,
-        ownerId: user.id
+        ownerId: user.id,
+        subscriptionStatus: 'TRIAL',
+        trialEndsAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days trial
       }, { transaction: t });
 
       // Link user to organization
@@ -144,7 +146,10 @@ exports.login = async (req, res) => {
           { username: email }
         ]
       }, 
-      include: [Role] 
+      include: [
+        Role,
+        Organization
+      ] 
     });
 
     if (!user) {
@@ -174,7 +179,8 @@ exports.login = async (req, res) => {
       accountType: user.accountType,
       role: user.Role.name, 
       gender: user.gender,
-      organizationId: user.organizationId
+      organizationId: user.organizationId,
+      Organization: user.Organization
     } });
   } catch (error) {
     log(`[LOGIN EXCEPTION] ${error.message} \nStack: ${error.stack}`);
@@ -185,7 +191,10 @@ exports.login = async (req, res) => {
 
 exports.getMe = async (req, res) => {
   try {
-    const user = await User.findByPk(req.user.id, { include: [Role], attributes: { exclude: ['password'] } });
+    const user = await User.findByPk(req.user.id, { 
+      include: [Role, Organization], 
+      attributes: { exclude: ['password'] } 
+    });
     res.json(user);
   } catch (error) {
     res.status(500).json({ error: error.message });
