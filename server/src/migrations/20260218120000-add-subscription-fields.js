@@ -2,25 +2,33 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.addColumn('Organizations', 'subscriptionStatus', {
-      type: Sequelize.ENUM('TRIAL', 'ACTIVE', 'PAST_DUE', 'CANCELLED'),
-      defaultValue: 'TRIAL',
-      allowNull: false
-    });
+    const tableInfo = await queryInterface.describeTable('Organizations');
 
-    await queryInterface.addColumn('Organizations', 'trialEndsAt', {
-      type: Sequelize.DATE,
-      allowNull: true
-    });
+    if (!tableInfo.subscriptionStatus) {
+      await queryInterface.addColumn('Organizations', 'subscriptionStatus', {
+        type: Sequelize.ENUM('TRIAL', 'ACTIVE', 'PAST_DUE', 'CANCELLED'),
+        defaultValue: 'TRIAL'
+      });
+    }
 
-    // Update existing organizations to ACTIVE to prevent lockout
-    await queryInterface.sequelize.query(`UPDATE "Organizations" SET "subscriptionStatus" = 'ACTIVE'`);
+    if (!tableInfo.trialEndsAt) {
+      await queryInterface.addColumn('Organizations', 'trialEndsAt', {
+        type: Sequelize.DATE,
+        allowNull: true
+      });
+    }
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.removeColumn('Organizations', 'subscriptionStatus');
-    // Drop the enum type if needed, but usually just removing the column is enough for basic rollback
-    await queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_Organizations_subscriptionStatus";');
-    await queryInterface.removeColumn('Organizations', 'trialEndsAt');
+    const tableInfo = await queryInterface.describeTable('Organizations');
+    
+    if (tableInfo.subscriptionStatus) {
+        await queryInterface.removeColumn('Organizations', 'subscriptionStatus');
+        await queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_Organizations_subscriptionStatus";');
+    }
+
+    if (tableInfo.trialEndsAt) {
+        await queryInterface.removeColumn('Organizations', 'trialEndsAt');
+    }
   }
 };
