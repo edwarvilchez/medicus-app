@@ -64,6 +64,15 @@ jobs:
           echo "- **Version Tag:** $VERSION" >> $GITHUB_STEP_SUMMARY
           echo "- **Status:** Deployed & Tagged" >> $GITHUB_STEP_SUMMARY
 
+      - name: Auto-Sync Develop (Back-merge)
+        if: github.event.inputs.target_env == 'production' && success()
+        run: |
+          echo "🔄 Syncing master back into develop to prevent lag..."
+          git checkout develop
+          git merge master --no-ff -m "chore: auto-sync master back into develop [v1.8.5+]"
+          git push origin develop
+          echo "- **Auto-Sync:** Develop branch is now aligned with Master" >> $GITHUB_STEP_SUMMARY
+
       - name: Trigger Easypanel Webhooks
         if: success()
         run: |
