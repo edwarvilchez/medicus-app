@@ -2,9 +2,9 @@
 
 Sistema completo de gestión para clínicas médicas desarrollado con Angular y Node.js.
 
-![Versión](https://img.shields.io/badge/versión-1.8.4-blue.svg)
+![Versión](https://img.shields.io/badge/versión-1.8.5-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
-![Security](https://img.shields.io/badge/security-8%2F10-brightgreen.svg)
+![Security](https://img.shields.io/badge/security-9%2F10-brightgreen.svg)
 ![Test Coverage](https://img.shields.io/badge/coverage-15%25-yellow.svg)
 ![Docker](https://img.shields.io/badge/docker-ready-blue.svg)
 ![Deployment](https://img.shields.io/badge/deployment-easypanel-success.svg)
@@ -15,7 +15,7 @@ Sistema completo de gestión para clínicas médicas desarrollado con Angular y 
 
 - ✅ Sistema de autenticación con JWT
 - ✅ Roles y permisos (Admin, Doctor, Paciente)
-- ✅ **Recuperación de contraseña** con tokens seguros
+- ✅ **Recuperación de contraseña** con tokens seguros y modo simulación
 - ✅ Registro público de pacientes
 - ✅ Perfiles de usuario personalizables
 
@@ -31,7 +31,7 @@ Sistema completo de gestión para clínicas médicas desarrollado con Angular y 
 ### 📧 Sistema de Notificaciones
 
 - ✅ **Emails de confirmación** de citas
-- ✅ **Emails de recuperación** de contraseña
+- ✅ **Emails de recuperación** de contraseña (Robusto tras fallos)
 - ✅ WhatsApp simulado (listo para integración real)
 - ✅ Recordatorios automáticos
 - ✅ Enlaces a Google Calendar
@@ -58,6 +58,16 @@ Sistema completo de gestión para clínicas médicas desarrollado con Angular y 
 - ✅ **Pagos Integrados** y reporte de transferencias
 - ✅ **Activación Automática** de servicios premium
 - ✅ **Gestión de Organización**
+- ✅ **SuperAdmin Bypass**: Acceso total sin restricciones de suscripción
+
+## 🆕 Novedades v1.8.5 (Febrero 2026)
+
+### 🛠️ Robustez y DevOps
+
+- ✅ **Validador de Entorno**: El servidor valida variables críticas (SMTP, JWT, DB) antes de iniciar.
+- ✅ **Trust Proxy Fix**: Corrección para `express-rate-limit` detrás de Nginx/Easypanel.
+- ✅ **Email Sender Pro**: Sistema de envío con simulación automática si falla el SMTP.
+- ✅ **CI/CD Optimizada**: Validación paralela de Cliente/Servidor y etiquetado automático de versiones.
 
 ## 🆕 Novedades v1.8.4 (Febrero 2026)
 
