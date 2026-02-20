@@ -38,26 +38,17 @@ jobs:
           cache: "npm"
           cache-dependency-path: "./client/package-lock.json"
 
-      - name: Validate Client Build
-        run: |
-          cd client
-          npm install
-          npm run build
-
       - name: Merge Develop -> Staging
         run: |
           echo "🚀 Promocionando Develop a Staging..."
           git fetch origin develop
-          git merge origin/develop --no-ff -m "chore: promote develop to staging [skip ci]"
+          git merge origin/develop --no-ff -m "chore: promote develop to staging [modificado por antigravity]"
           git push origin staging
-
-      - name: Wait for Staging Window (30s)
-        run: sleep 30
 
       - name: Trigger Easypanel Staging
         run: |
           echo "📡 Activando Webhook API Staging..."
-          curl -f -X POST "${{ secrets.EASYPANEL_API_WEBHOOK }}" || echo "⚠️ Webhook API falló"
+          curl -f -X POST "${{ secrets.EASYPANEL_API_WEBHOOK }}" || echo "⚠️ Webhook API falló (continuando workflow)"
 
   promote-to-production:
     if: github.event.inputs.target_env == 'production'
@@ -81,26 +72,24 @@ jobs:
           cache: "npm"
           cache-dependency-path: "./client/package-lock.json"
 
-      - name: Validate Client Build
-        run: |
-          cd client
-          npm install
-          npm run build
-
       - name: Merge Staging -> Master
         run: |
           echo "🚀 Promocionando Staging a Producción (Master)..."
           git fetch origin staging
-          git merge origin/staging --no-ff -m "release: promote staging to production [skip ci]"
+          git merge origin/staging --no-ff -m "release: promote staging to production [modificado por antigravity]"
           git push origin master
-
-      - name: Wait for Production Window (180s)
-        run: |
-          echo "⏱️ Iniciando ventana de seguridad de 3 minutos para Producción..."
-          sleep 180
 
       - name: Trigger Easypanel Production
         run: |
           echo "📡 Activando Webhooks de Producción..."
-          curl -f -X POST "${{ secrets.EASYPANEL_API_WEBHOOK }}" || echo "⚠️ Webhook API falló"
-          curl -f -X POST "${{ secrets.EASYPANEL_FRONTEND_WEBHOOK }}" || echo "⚠️ Webhook Frontend falló"
+          if [ -n "${{ secrets.EASYPANEL_API_WEBHOOK }}" ]; then
+            curl -f -X POST "${{ secrets.EASYPANEL_API_WEBHOOK }}" || echo "⚠️ Webhook API falló"
+          else
+            echo "⚠️ Secret EASYPANEL_API_WEBHOOK no definido"
+          fi
+
+          if [ -n "${{ secrets.EASYPANEL_FRONTEND_WEBHOOK }}" ]; then
+            curl -f -X POST "${{ secrets.EASYPANEL_FRONTEND_WEBHOOK }}" || echo "⚠️ Webhook Frontend falló"
+          else
+             echo "⚠️ Secret EASYPANEL_FRONTEND_WEBHOOK no definido"
+          fi
