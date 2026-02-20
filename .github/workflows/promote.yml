@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       target_env:
-        description: "Entorno de destino (staging o production)"
+        description: "Target Environment to Promote To"
         required: true
         default: "staging"
         type: choice
@@ -17,7 +17,7 @@ permissions:
 
 jobs:
   promote-to-staging:
-    if: github.event.inputs.target_env == 'staging'
+    if: inputs.target_env == 'staging'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31,27 +31,27 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: "npm"
-          cache-dependency-path: "./client/package-lock.json"
-
       - name: Merge Develop -> Staging
         run: |
-          echo "🚀 Promocionando Develop a Staging..."
+          echo "🚀 Promoting Develop branch to Staging..."
           git fetch origin develop
+          # Merge strategy: Traer cambios de develop a staging
           git merge origin/develop --no-ff -m "chore: promote develop to staging [modificado por antigravity]"
           git push origin staging
 
       - name: Trigger Easypanel Staging
+        if: success()
         run: |
-          echo "📡 Activando Webhook API Staging..."
-          curl -f -X POST "${{ secrets.EASYPANEL_API_WEBHOOK }}" || echo "⚠️ Webhook API falló (continuando workflow)"
+          echo "📡 Triggering Easypanel Staging Webhook..."
+          # En Medicus usamos un solo webhook o específicos según configuración
+          if [ -n "${{ secrets.EASYPANEL_API_WEBHOOK }}" ]; then
+            curl -f -X POST "${{ secrets.EASYPANEL_API_WEBHOOK }}" || echo "⚠️ Webhook API failed"
+          else
+             echo "⚠️ Secret EASYPANEL_API_WEBHOOK missing (Staging)"
+          fi
 
   promote-to-production:
-    if: github.event.inputs.target_env == 'production'
+    if: inputs.target_env == 'production'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -65,31 +65,30 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: "npm"
-          cache-dependency-path: "./client/package-lock.json"
-
       - name: Merge Staging -> Master
         run: |
-          echo "🚀 Promocionando Staging a Producción (Master)..."
+          echo "🚀 Promoting Staging branch to Production (Master)..."
           git fetch origin staging
           git merge origin/staging --no-ff -m "release: promote staging to production [modificado por antigravity]"
           git push origin master
 
-      - name: Trigger Easypanel Production
+      - name: Wait for Production Window
         run: |
-          echo "📡 Activando Webhooks de Producción..."
+          echo "⏱️ Safety delay for database sync (30s)..."
+          sleep 30
+
+      - name: Trigger Easypanel Production
+        if: success()
+        run: |
+          echo "📡 Triggering Easypanel Production Webhooks..."
+          # Webhook API Backend
           if [ -n "${{ secrets.EASYPANEL_API_WEBHOOK }}" ]; then
-            curl -f -X POST "${{ secrets.EASYPANEL_API_WEBHOOK }}" || echo "⚠️ Webhook API falló"
-          else
-            echo "⚠️ Secret EASYPANEL_API_WEBHOOK no definido"
+            echo "Triggering API..."
+            curl -f -X POST "${{ secrets.EASYPANEL_API_WEBHOOK }}" || echo "⚠️ Webhook API failed"
           fi
 
+          # Webhook Frontend
           if [ -n "${{ secrets.EASYPANEL_FRONTEND_WEBHOOK }}" ]; then
-            curl -f -X POST "${{ secrets.EASYPANEL_FRONTEND_WEBHOOK }}" || echo "⚠️ Webhook Frontend falló"
-          else
-             echo "⚠️ Secret EASYPANEL_FRONTEND_WEBHOOK no definido"
+             echo "Triggering Frontend..."
+             curl -f -X POST "${{ secrets.EASYPANEL_FRONTEND_WEBHOOK }}" || echo "⚠️ Webhook Frontend failed"
           fi
