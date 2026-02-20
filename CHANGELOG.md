@@ -2,6 +2,40 @@
 
 Todas las modificaciones notables del proyecto serán documentadas en este archivo.
 
+## [1.8.5] - 2026-02-19
+
+### 🛡️ Integridad de Datos y Reparación en Producción
+
+- ✅ **Diagnóstico de Usuarios**: Implementado script `server/check_users_integrity.js` para detectar:
+  - Usuarios sin Rol asignado.
+  - Contraseñas no encriptadas (texto plano).
+  - Usuarios inactivos o borrados lógicamente.
+- ✅ **Reparación Automática**: Creado script `server/fix_users_integrity.js` que:
+  - Asigna rol por defecto (`PATIENT`) a usuarios huérfanos.
+  - Detecta y encripta contraseñas en riesgo usando `bcrypt`.
+  - Soporta modo "Dry Run" para simulación segura antes de aplicar cambios.
+- ✅ **Soft Deletes**: Migración general aplicada a 11 tablas principales para soportar borrado lógico (`deletedAt`, `deletedBy`) y modo `paranoid: true`.
+
+### 🚀 Optimización DevOps (CI/CD)
+
+- ✅ **Pipeline de Promoción Robusto**: Mejorado el flujo `.github/workflows/promote.yml`.
+  - Eliminados pasos de build redundantes (ya validados en CI).
+  - Lógica de merge optimizada para evitar conflictos en `develop` -> `staging`.
+  - Manejo de erroes en Webhooks de Easypanel (agregada tolerancia a fallos si faltan secrets).
+  - Mensajes de commit automatizados más claros.
+
+### 📦 Archivos Nuevos
+
+- `server/check_users_integrity.js` - Herramienta de diagnóstico.
+- `server/fix_users_integrity.js` - Herramienta de reparación.
+- `server/src/migrations/20260216200000-add-soft-deletes.js` - Migración de integridad.
+
+### 🔧 Archivos Modificados
+
+- `.github/workflows/promote.yml` - Optimización de flujo.
+
+---
+
 ## [1.8.4] - 2026-02-17
 
 ### 🐛 Correcciones Críticas en Producción
