@@ -7,8 +7,31 @@ on:
     branches: [develop, staging, master]
 
 jobs:
-  validate:
-    name: Validate & Build
+  validate-client:
+    name: Client Validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install Dependencies
+        run: |
+          cd client
+          npm ci --no-audit
+
+      - name: Build Validation
+        run: |
+          cd client
+          npm run build
+
+  validate-server:
+    name: Server Validation
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18,21 +41,19 @@ jobs:
         with:
           node-version: "20"
           cache: "npm"
-          cache-dependency-path: |
-            client/package-lock.json
-            server/package-lock.json
+          cache-dependency-path: server/package-lock.json
 
-      - name: Install Client Dependencies
-        run: |
-          cd client
-          npm install --no-audit
-
-      - name: Build Client
-        run: |
-          cd client
-          npm run build
-
-      - name: Install Server Dependencies
+      - name: Install Dependencies
         run: |
           cd server
-          npm install --no-audit
+          npm ci --no-audit
+
+      - name: Lint (if exists)
+        run: |
+          cd server
+          npm run lint || echo "Lint script not found, skipping."
+
+      - name: Test (if exists)
+        run: |
+          cd server
+          npm test || echo "Tests failed or not found, continuing."

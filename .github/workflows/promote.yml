@@ -16,13 +16,12 @@ permissions:
   contents: write
 
 jobs:
-  promote-to-staging:
-    if: inputs.target_env == 'staging'
+  promote:
+    name: Promote to ${{ github.event.inputs.target_env }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: staging
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -31,64 +30,60 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Merge Develop -> Staging
+      # --- STAGING PROMOTION ---
+      - name: Promote Develop -> Staging
+        if: github.event.inputs.target_env == 'staging'
         run: |
-          echo "🚀 Promoting Develop branch to Staging..."
-          git fetch origin develop
-          # Merge strategy: Traer cambios de develop a staging
+          echo "🚀 Promoting Develop to Staging..."
+          git checkout staging
           git merge origin/develop --no-ff -m "chore: promote develop to staging [modificado por antigravity]"
           git push origin staging
+          echo "### ✅ Promotion Result" >> $GITHUB_STEP_SUMMARY
+          echo "- **Source:** develop" >> $GITHUB_STEP_SUMMARY
+          echo "- **Target:** staging" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status:** Success" >> $GITHUB_STEP_SUMMARY
 
-      - name: Trigger Easypanel Staging
-        if: success()
+      # --- PRODUCTION PROMOTION ---
+      - name: Promote Staging -> Master (Production)
+        if: github.event.inputs.target_env == 'production'
         run: |
-          echo "📡 Triggering Easypanel Staging Webhook..."
-          # En Medicus usamos un solo webhook o específicos según configuración
-          if [ -n "${{ secrets.EASYPANEL_API_WEBHOOK }}" ]; then
-            curl -f -X POST "${{ secrets.EASYPANEL_API_WEBHOOK }}" || echo "⚠️ Webhook API failed"
-          else
-             echo "⚠️ Secret EASYPANEL_API_WEBHOOK missing (Staging)"
-          fi
-
-  promote-to-production:
-    if: inputs.target_env == 'production'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: master
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Configure Git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Merge Staging -> Master
-        run: |
-          echo "🚀 Promoting Staging branch to Production (Master)..."
-          git fetch origin staging
+          echo "🚀 Promoting Staging to Production (Master)..."
+          git checkout master
           git merge origin/staging --no-ff -m "release: promote staging to production [modificado por antigravity]"
-          git push origin master
 
-      - name: Wait for Production Window
-        run: |
-          echo "⏱️ Safety delay for database sync (30s)..."
-          sleep 30
+          # Auto-tagging
+          VERSION="v1.0.$(date +'%Y%m%d%H%M')"
+          echo "🏷️ Tagging version: $VERSION"
+          git tag -a $VERSION -m "Production Release $VERSION"
 
-      - name: Trigger Easypanel Production
+          git push origin master --tags
+
+          echo "### 🚀 Production Release Successful" >> $GITHUB_STEP_SUMMARY
+          echo "- **Source:** staging" >> $GITHUB_STEP_SUMMARY
+          echo "- **Target:** master" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version Tag:** $VERSION" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status:** Deployed & Tagged" >> $GITHUB_STEP_SUMMARY
+
+      - name: Trigger Easypanel Webhooks
         if: success()
         run: |
-          echo "📡 Triggering Easypanel Production Webhooks..."
-          # Webhook API Backend
-          if [ -n "${{ secrets.EASYPANEL_API_WEBHOOK }}" ]; then
-            echo "Triggering API..."
-            curl -f -X POST "${{ secrets.EASYPANEL_API_WEBHOOK }}" || echo "⚠️ Webhook API failed"
+          echo "📡 Triggering Easypanel Webhooks..."
+
+          # Determinar qué webhooks usar basado en el target_env
+          if [ "${{ github.event.inputs.target_env }}" == "staging" ]; then
+            WEBHOOK_API="${{ secrets.STAGING_API_WEBHOOK }}"
+            WEBHOOK_FRONT="${{ secrets.STAGING_FRONTEND_WEBHOOK }}"
+          else
+            WEBHOOK_API="${{ secrets.EASYPANEL_API_WEBHOOK }}"
+            WEBHOOK_FRONT="${{ secrets.EASYPANEL_FRONTEND_WEBHOOK }}"
           fi
 
-          # Webhook Frontend
-          if [ -n "${{ secrets.EASYPANEL_FRONTEND_WEBHOOK }}" ]; then
-             echo "Triggering Frontend..."
-             curl -f -X POST "${{ secrets.EASYPANEL_FRONTEND_WEBHOOK }}" || echo "⚠️ Webhook Frontend failed"
+          if [ -n "$WEBHOOK_API" ]; then
+            echo "Triggering API..."
+            curl -f -X POST "$WEBHOOK_API" || echo "⚠️ Webhook API failed"
+          fi
+
+          if [ -n "$WEBHOOK_FRONT" ]; then
+            echo "Triggering Frontend..."
+            curl -f -X POST "$WEBHOOK_FRONT" || echo "⚠️ Webhook Frontend failed"
           fi

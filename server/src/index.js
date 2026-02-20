@@ -16,6 +16,10 @@ const swaggerUi = require('swagger-ui-express');
 const { sanitizeInput } = require('./utils/sanitize');
 const checkSubscription = require('./middlewares/subscription.middleware');
 const authMiddleware = require('./middlewares/auth.middleware');
+const validateEnv = require('./utils/validateEnv');
+
+// Validate Environment before anything else
+validateEnv();
 
 const app = express();
 // Enable Trust Proxy for Easypanel/Nginx/Cloudflare
