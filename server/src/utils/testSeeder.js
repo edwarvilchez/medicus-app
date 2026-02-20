@@ -86,7 +86,7 @@ const seedTestData = async () => {
     // This is the stable environment for happy-path testing
     const admin = await upsertUser({
       username: 'admin',
-      email: 'admin@medicus.com',
+      email: 'edwarvilchez1977@gmail.com',
       firstName: 'Admin',
       lastName: 'Medicus',
       role: 'SUPERADMIN',
