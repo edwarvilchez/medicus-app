@@ -18,6 +18,8 @@ const checkSubscription = require('./middlewares/subscription.middleware');
 const authMiddleware = require('./middlewares/auth.middleware');
 
 const app = express();
+// Enable Trust Proxy for Easypanel/Nginx/Cloudflare
+app.set('trust proxy', 1); 
 const server = http.createServer(app);
 
 // Swagger Configuration
