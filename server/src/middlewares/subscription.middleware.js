@@ -6,8 +6,8 @@ module.exports = async (req, res, next) => {
       return res.status(401).json({ message: 'No autorizado' });
     }
 
-    // Skip for PATIENT role as they don't have subscriptions usually
-    if (req.user.role === 'PATIENT') {
+    // Skip for SUPERADMIN (No restrictions) and PATIENT
+    if (req.user.role === 'SUPERADMIN' || req.user.role === 'PATIENT') {
       return next();
     }
 
