@@ -135,7 +135,8 @@ export class LanguageService {
         credit: 'Crédito',
         currency: 'Moneda',
         bulkData: 'Carga Masiva',
-        drugGuide: 'Guía Farmacéutica'
+        drugGuide: 'Guía Farmacéutica',
+        labCatalog: 'Catálogo de Exámenes'
       },
       drug_guide: {
         title: 'Guía Farmacéutica Spilva',
@@ -546,6 +547,49 @@ export class LanguageService {
           createAccount: 'Crear Cuenta',
           gotIt: 'Entendido'
         }
+      },
+      lab_catalog: {
+        title: 'Catálogo de Laboratorio',
+        subtitle: 'Gestión de exámenes individuales y perfiles combinados',
+        rateInfo: 'Tu Guía de Precios y Tasa BCV',
+        rateDetail: 'Mantenemos nuestros precios actualizados según la tasa oficial de 1 USD = ',
+        showingInUsd: 'Mostrando en Dólares ($)',
+        showingInVes: 'Mostrando en Bolívares (Bs)',
+        bulkImport: 'Carga Masiva (CSV)',
+        newTest: 'Nuevo Examen',
+        newCombo: 'Nuevo Combo',
+        testsTab: 'Exámenes Individuales',
+        combosTab: 'Combos y Perfiles',
+        table: {
+          category: 'Categoría / Examen',
+          price: 'Precio (USD)',
+          status: 'Estado',
+          actions: 'Acciones'
+        },
+        active: 'Activo',
+        inactive: 'Inactivo',
+        noTests: 'No hay exámenes registrados.',
+        noCombos: 'No hay combos o perfiles registrados.',
+        includes: 'Incluye:',
+        comboPrice: 'Precio Combo',
+        modals: {
+          editTest: 'Editar Examen',
+          newTest: 'Nuevo Examen',
+          testName: 'Nombre del Examen',
+          price: 'Precio (USD)',
+          category: 'Categoría',
+          description: 'Descripción (Opcional)',
+          editCombo: 'Editar Combo/Perfil',
+          newCombo: 'Nuevo Combo/Perfil',
+          comboName: 'Nombre del Combo',
+          suggestedPrice: 'Precio Total Sugerido (USD)',
+          selectTests: 'Seleccionar Exámenes Incluidos',
+          importTitle: 'Importar Exámenes (CSV)',
+          importText: 'Seleccione un archivo CSV con las columnas: name, price, category, description.',
+          importSuccess: 'Importación Finalizada',
+          imported: 'Exitosos',
+          failed: 'Fallidos'
+        }
       }
     },
     en: {
@@ -671,7 +715,8 @@ export class LanguageService {
         credit: 'Credit Card',
         currency: 'Currency',
         bulkData: 'Bulk Import',
-        drugGuide: 'Drug Guide'
+        drugGuide: 'Drug Guide',
+        labCatalog: 'Lab Catalog'
       },
       drug_guide: {
         title: 'Spilva Drug Guide',
@@ -1081,6 +1126,49 @@ export class LanguageService {
           accountBenefits: 'With an account you can view your appointment history, reschedule and more.',
           createAccount: 'Create Account',
           gotIt: 'Got it'
+        }
+      },
+      lab_catalog: {
+        title: 'Laboratory Catalog',
+        subtitle: 'Management of individual tests and combined profiles',
+        rateInfo: 'Your Pricing Guide & BCV Rate',
+        rateDetail: 'We keep our prices updated according to the official rate of 1 USD = ',
+        showingInUsd: 'Showing in Dollars ($)',
+        showingInVes: 'Showing in Bolivars (Bs)',
+        bulkImport: 'Bulk Import (CSV)',
+        newTest: 'New Test',
+        newCombo: 'New Combo',
+        testsTab: 'Individual Tests',
+        combosTab: 'Combos & Profiles',
+        table: {
+          category: 'Category / Test',
+          price: 'Price (USD)',
+          status: 'Status',
+          actions: 'Actions'
+        },
+        active: 'Active',
+        inactive: 'Inactive',
+        noTests: 'No tests registered.',
+        noCombos: 'No combos or profiles registered.',
+        includes: 'Includes:',
+        comboPrice: 'Combo Price',
+        modals: {
+          editTest: 'Edit Test',
+          newTest: 'New Test',
+          testName: 'Test Name',
+          price: 'Price (USD)',
+          category: 'Category',
+          description: 'Description (Optional)',
+          editCombo: 'Edit Combo/Profile',
+          newCombo: 'New Combo/Profile',
+          comboName: 'Combo Name',
+          suggestedPrice: 'Suggested Total Price (USD)',
+          selectTests: 'Select Included Tests',
+          importTitle: 'Import Tests (CSV)',
+          importText: 'Select a CSV file with columns: name, price, category, description.',
+          importSuccess: 'Import Finished',
+          imported: 'Successful',
+          failed: 'Failed'
         }
       }
     }

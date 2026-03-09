@@ -69,6 +69,15 @@
       <span class="fw-medium">{{ langService.translate('sidebar.lab') }}</span>
     </a>
 
+    <a
+      routerLink="/lab-catalog"
+      routerLinkActive="active"
+      class="list-group-item list-group-item-action border-0 rounded-3 py-1-5 d-flex align-items-center gap-3"
+    >
+      <i class="bi bi-clipboard-list fs-5"></i>
+      <span class="fw-medium">{{ langService.translate('sidebar.labCatalog') }}</span>
+    </a>
+
     <div
       *ngIf="!authService.hasRole(['PATIENT'])"
       class="text-uppercase x-small-compact fw-bold text-muted px-3 mt-2 mb-1"

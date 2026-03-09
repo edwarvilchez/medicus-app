@@ -2,7 +2,7 @@
 
 Sistema completo de gestión para clínicas médicas desarrollado con Angular y Node.js.
 
-![Versión](https://img.shields.io/badge/versión-1.8.6-blue.svg)
+![Versión](https://img.shields.io/badge/versión-1.8.8-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Security](https://img.shields.io/badge/security-9%2F10-brightgreen.svg)
 ![Test Coverage](https://img.shields.io/badge/coverage-18%25-yellow.svg)
@@ -10,6 +10,14 @@ Sistema completo de gestión para clínicas médicas desarrollado con Angular y 
 ![Deployment](https://img.shields.io/badge/deployment-easypanel-success.svg)
 
 ## 📋 Características Principales
+
+### 🔬 Gestión de Laboratorio (Catálogo Maestro)
+
+- ✅ **Catálogo Autogestionado**: Los doctores y administradores pueden gestionar nombres, precios y categorías de exámenes.
+- ✅ **Carga Masiva (CSV)**: Importación instantánea de tarifarios completos desde archivos CSV con validación de datos.
+- ✅ **Combos y Perfiles**: Creación de paquetes de exámenes (ej: Perfil 20) con precios especiales y gestión de inclusiones.
+- ✅ **Dualidad de Moneda Dinámica**: Visualización automática de precios en USD y VES basada en la tasa oficial.
+- ✅ **Control de Tasa BCV**: Interfaz para que personal autorizado actualice la tasa cambiaria del sistema en tiempo real.
 
 ### 🌎 Soporte Bilingüe e Internacionalización (i18n)
 

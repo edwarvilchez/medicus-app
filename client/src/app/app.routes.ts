@@ -104,10 +104,17 @@ export const routes: Routes = [
     title: 'Medicus - Historial Médico'
   },
   {
+    path: 'lab-catalog',
+    loadComponent: () => import('./components/lab-catalog/lab-catalog').then(m => m.LabCatalog),
+    canActivate: [authGuard, roleGuard, firstLoginGuard],
+    data: { roles: ['SUPERADMIN', 'DOCTOR', 'NURSE', 'ADMINISTRATIVE', 'PATIENT'] },
+    title: 'Medicus - Catálogo de Laboratorio'
+  },
+  {
     path: 'lab-results',
     loadComponent: () => import('./components/lab-results/lab-results').then(m => m.LabResults),
     canActivate: [authGuard, roleGuard, firstLoginGuard],
-    data: { roles: ['SUPERADMIN', 'DOCTOR', 'NURSE'] },
+    data: { roles: ['SUPERADMIN', 'DOCTOR', 'NURSE', 'ADMINISTRATIVE', 'PATIENT'] },
     title: 'Medicus - Resultados de Laboratorio'
   },
   {

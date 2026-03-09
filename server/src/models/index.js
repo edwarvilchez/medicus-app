@@ -15,6 +15,9 @@ const VideoConsultation = require('./VideoConsultation');
 const Organization = require('./Organization');
 const AuditLog = require('./auditLog');
 const Drug = require('./Drug');
+const Prescription = require('./Prescription');
+const LabTest = require('./LabTest');
+const LabCombo = require('./LabCombo');
 
 // User - Role
 Role.hasMany(User, { foreignKey: 'roleId' });
@@ -51,6 +54,12 @@ MedicalRecord.belongsTo(Doctor, { foreignKey: 'doctorId' });
 Patient.hasMany(LabResult, { foreignKey: 'patientId' });
 LabResult.belongsTo(Patient, { foreignKey: 'patientId' });
 
+MedicalRecord.hasMany(Prescription, { foreignKey: 'medicalRecordId', as: 'prescriptions' });
+Prescription.belongsTo(MedicalRecord, { foreignKey: 'medicalRecordId' });
+
+Drug.hasMany(Prescription, { foreignKey: 'drugId' });
+Prescription.belongsTo(Drug, { foreignKey: 'drugId', as: 'drug' });
+
 // Payment Associations
 Patient.hasMany(Payment, { foreignKey: 'patientId' });
 Payment.belongsTo(Patient, { foreignKey: 'patientId' });
@@ -83,6 +92,20 @@ User.belongsTo(Organization, { foreignKey: 'organizationId' });
 Organization.hasMany(User, { foreignKey: 'organizationId' });
 Organization.belongsTo(User, { as: 'owner', foreignKey: 'ownerId' });
 
+// Laboratory Catalog Associations
+LabCombo.belongsToMany(LabTest, { 
+  through: 'LabComboTests', 
+  foreignKey: 'comboId',
+  otherKey: 'testId',
+  as: 'tests'
+});
+LabTest.belongsToMany(LabCombo, { 
+  through: 'LabComboTests', 
+  foreignKey: 'testId',
+  otherKey: 'comboId',
+  as: 'combos'
+});
+
 module.exports = {
   User,
   Role,
@@ -100,5 +123,8 @@ module.exports = {
   Organization,
   AuditLog,
   Drug,
+  Prescription,
+  LabTest,
+  LabCombo,
   sequelize
 };
