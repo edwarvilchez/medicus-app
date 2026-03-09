@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DrugService, Drug } from '../../services/drug.service';
 import { AuthService } from '../../services/auth.service';
+import { LanguageService } from '../../services/language.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -14,6 +15,7 @@ import Swal from 'sweetalert2';
 export class DrugGuideComponent implements OnInit {
   private drugService = inject(DrugService);
   private authService = inject(AuthService);
+  public lang = inject(LanguageService);
 
   drugs = signal<Drug[]>([]);
   loading = signal(false);
@@ -57,7 +59,7 @@ export class DrugGuideComponent implements OnInit {
       },
       error: () => {
         this.loading.set(false);
-        Swal.fire('Error', 'No se pudieron cargar los medicamentos', 'error');
+        Swal.fire(this.lang.translate('common.error'), this.lang.translate('drug_guide.noResults'), 'error');
       }
     });
   }
@@ -93,7 +95,7 @@ export class DrugGuideComponent implements OnInit {
 
   saveDrug() {
     if (!this.drugModel.name || !this.drugModel.activeComponents) {
-      Swal.fire('Validación', 'Nombre y componentes activos son requeridos', 'warning');
+      Swal.fire(this.lang.translate('common.warning'), this.lang.translate('drug_guide.validation'), 'warning');
       return;
     }
     const action = this.editing
@@ -106,34 +108,43 @@ export class DrugGuideComponent implements OnInit {
         this.loadDrugs();
         Swal.fire({
           icon: 'success',
-          title: this.editing ? 'Actualizado' : 'Creado',
-          text: 'El medicamento fue guardado correctamente',
+          title: this.editing
+            ? this.lang.translate('common.success')
+            : this.lang.translate('common.success'),
+          text: this.lang.translate('drug_guide.savedOk'),
           timer: 1500,
           showConfirmButton: false
         });
       },
-      error: () => Swal.fire('Error', 'No se pudo guardar el medicamento', 'error')
+      error: () => Swal.fire(this.lang.translate('common.error'), this.lang.translate('drug_guide.savedOk'), 'error')
     });
   }
 
   confirmDelete(drug: Drug) {
+    const text = this.lang.translate('drug_guide.confirmDeleteText')
+      .replace('{{name}}', drug.name);
+
     Swal.fire({
-      title: '¿Eliminar medicamento?',
-      text: `Se eliminará "${drug.name}" de la guía`,
+      title: this.lang.translate('drug_guide.confirmDelete'),
+      text,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
       cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
+      confirmButtonText: this.lang.translate('drug_guide.yes'),
+      cancelButtonText: this.lang.translate('drug_guide.no')
     }).then((result) => {
       if (result.isConfirmed) {
         this.drugService.delete(drug.id!).subscribe({
           next: () => {
             this.loadDrugs();
-            Swal.fire('Eliminado', 'Medicamento eliminado de la guía', 'success');
+            Swal.fire(
+              this.lang.translate('common.success'),
+              this.lang.translate('drug_guide.deletedOk'),
+              'success'
+            );
           },
-          error: () => Swal.fire('Error', 'No se pudo eliminar', 'error')
+          error: () => Swal.fire(this.lang.translate('common.error'), '', 'error')
         });
       }
     });
