@@ -413,6 +413,66 @@ export class LanguageService {
         quarterly: 'trimestre',
         semester: 'semestre',
         yearly: 'año'
+      },
+      public_booking: {
+        backToLogin: 'Volver al Login',
+        title: 'Agenda tu Cita Médica',
+        subtitle: 'Rápido, fácil y sin necesidad de crear una cuenta',
+        steps: {
+          personal: 'Tus Datos',
+          appointment: 'Agendar Cita'
+        },
+        personalInfo: {
+          title: 'Información Personal',
+          firstName: 'Nombre',
+          lastName: 'Apellido',
+          email: 'Email',
+          phone: 'Teléfono / WhatsApp',
+          document: 'Cédula / Documento',
+          placeholders: {
+            firstName: 'Juan',
+            lastName: 'Pérez',
+            email: 'correo@ejemplo.com',
+            phone: '+58 424-1234567',
+            document: 'V-12345678'
+          }
+        },
+        appointmentInfo: {
+          title: 'Detalles de la Cita',
+          doctor: 'Doctor / Especialidad',
+          doctorPlaceholder: 'Selecciona un doctor...',
+          date: 'Fecha',
+          time: 'Hora',
+          timePlaceholder: 'Selecciona una hora...',
+          reason: 'Motivo de Consulta',
+          reasonPlaceholder: 'Ej: Consulta General, Control, Chequeo...',
+          notes: 'Observaciones (Opcional)',
+          notesPlaceholder: 'Información adicional que quieras compartir...'
+        },
+        actions: {
+          continue: 'Continuar',
+          back: 'Atrás',
+          confirm: 'Confirmar Cita',
+          booking: 'Agendando...',
+          hasAccount: '¿Ya tienes cuenta?',
+          loginNow: 'Inicia sesión'
+        },
+        errors: {
+          required: 'Este campo es requerido',
+          email: 'Email inválido',
+          pattern: 'Formato inválido',
+          general: 'No se pudo agendar la cita. Por favor, intenta de nuevo.'
+        },
+        success: {
+          title: '¡Cita Agendada!',
+          msg: 'Tu cita ha sido registrada exitosamente.',
+          notification: 'Hemos enviado la confirmación a tu WhatsApp y email.',
+          calendar: 'Calendario',
+          didYouKnow: '💡 ¿Sabías que puedes crear una cuenta?',
+          accountBenefits: 'Con una cuenta podrás ver tu historial de citas, reagendar y mucho más.',
+          createAccount: 'Crear Cuenta',
+          gotIt: 'Entendido'
+        }
       }
     },
     en: {
@@ -816,6 +876,66 @@ export class LanguageService {
         PATIENT: 'Patient',
         NURSE: 'Nurse',
         STAFF: 'Staff'
+      },
+      public_booking: {
+        backToLogin: 'Back to Login',
+        title: 'Book your Medical Appointment',
+        subtitle: 'Quick, easy and no account required',
+        steps: {
+          personal: 'Your Info',
+          appointment: 'Schedule'
+        },
+        personalInfo: {
+          title: 'Personal Information',
+          firstName: 'First Name',
+          lastName: 'Last Name',
+          email: 'Email',
+          phone: 'Phone / WhatsApp',
+          document: 'ID / Document',
+          placeholders: {
+            firstName: 'John',
+            lastName: 'Doe',
+            email: 'email@example.com',
+            phone: '+1 555-123-4567',
+            document: 'ID-12345678'
+          }
+        },
+        appointmentInfo: {
+          title: 'Appointment Details',
+          doctor: 'Doctor / Specialty',
+          doctorPlaceholder: 'Select a doctor...',
+          date: 'Date',
+          time: 'Time',
+          timePlaceholder: 'Select a time...',
+          reason: 'Reason for Visit',
+          reasonPlaceholder: 'e.g. General Consultation, Checkup...',
+          notes: 'Notes (Optional)',
+          notesPlaceholder: 'Any additional information you want to share...'
+        },
+        actions: {
+          continue: 'Continue',
+          back: 'Back',
+          confirm: 'Confirm Appointment',
+          booking: 'Booking...',
+          hasAccount: 'Already have an account?',
+          loginNow: 'Login'
+        },
+        errors: {
+          required: 'This field is required',
+          email: 'Invalid email',
+          pattern: 'Invalid format',
+          general: 'Could not book appointment. Please try again.'
+        },
+        success: {
+          title: 'Appointment Scheduled!',
+          msg: 'Your appointment has been registered successfully.',
+          notification: 'We have sent confirmation to your WhatsApp and email.',
+          calendar: 'Calendar',
+          didYouKnow: '💡 Did you know you can create an account?',
+          accountBenefits: 'With an account you can view your appointment history, reschedule and more.',
+          createAccount: 'Create Account',
+          gotIt: 'Got it'
+        }
       }
     }
   };
