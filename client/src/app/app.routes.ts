@@ -139,6 +139,13 @@ export const routes: Routes = [
     title: 'Medicus - Gestión de Equipo'
   },
   {
+    path: 'drug-guide',
+    loadComponent: () => import('./components/drug-guide/drug-guide').then(m => m.DrugGuideComponent),
+    canActivate: [authGuard, roleGuard, firstLoginGuard],
+    data: { roles: ['SUPERADMIN', 'ADMINISTRATIVE', 'DOCTOR', 'NURSE', 'RECEPTIONIST'] },
+    title: 'Medicus - Guía Farmacéutica'
+  },
+  {
     path: 'subscription',
     loadComponent: () => import('./components/subscription/subscription').then(m => m.Subscription),
     canActivate: [authGuard, firstLoginGuard],

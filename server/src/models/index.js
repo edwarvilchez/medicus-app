@@ -14,6 +14,7 @@ const sequelize = require('../config/db.config');
 const VideoConsultation = require('./VideoConsultation');
 const Organization = require('./Organization');
 const AuditLog = require('./auditLog');
+const Drug = require('./Drug');
 
 // User - Role
 Role.hasMany(User, { foreignKey: 'roleId' });
@@ -98,5 +99,6 @@ module.exports = {
   VideoConsultation,
   Organization,
   AuditLog,
+  Drug,
   sequelize
 };
